@@ -1,0 +1,67 @@
+{
+  "StartedAtUtc": "2026-08-05T17:46:17.7884957Z",
+  "EndedAtUtc": "2026-08-05T17:56:21.6660037Z",
+  "Duration": "00:10:03.8775080",
+  "Options": {
+    "MachineCount": 2,
+    "PublishDuration": "00:10:00",
+    "Seed": 42,
+    "TestPauseResume": false,
+    "TestDataChange": false,
+    "TestStopRestartCycles": 0
+  },
+  "Endpoints": [
+    "opc.tcp://localhost:4850",
+    "opc.tcp://localhost:4851"
+  ],
+  "MachineNames": [
+    "Maschine 1",
+    "Maschine 2"
+  ],
+  "SignalCountPerMachine": [
+    308,
+    308
+  ],
+  "RegisteredNodesPerMachine": [
+    308,
+    308
+  ],
+  "UpdatesPerSecondPerMachine": [
+    90.73687987249956,
+    86.96843263316498
+  ],
+  "AveragePublishDurationMsPerMachine": [
+    0.0007536437494894186,
+    0.0007322641933438194
+  ],
+  "MaxPublishDurationMsPerMachine": [
+    2.1455,
+    0.8365
+  ],
+  "FailedUpdatesPerMachine": [
+    0,
+    0
+  ],
+  "SkippedIdenticalPerMachine": [
+    131101,
+    131011
+  ],
+  "ActiveServers": 2,
+  "ActivePublishers": 2,
+  "MemoryStartMb": 173.10546875,
+  "MemoryEndMb": 266.71484375,
+  "Machine1StoppedSuccessfully": true,
+  "Machine2StillUpdatingWhileMachine1Stopped": true,
+  "Machine2UpdatesWhileMachine1Stopped": 70.14175459030392,
+  "Machine1RestartNodeCount": 308,
+  "Machine1RestartSameNodeCount": true,
+  "PublisherCountAfterMachine1Restart": 2,
+  "ValuesStableDuringPause": false,
+  "ServerReachableDuringPause": false,
+  "PublishersDuringPause": 0,
+  "PublisherCountAfterResume": 0,
+  "NoDuplicatePublishersAfterResume": false,
+  "StopRestartCycles": [],
+  "DataChangeResults": [],
+  "Exceptions": []
+}

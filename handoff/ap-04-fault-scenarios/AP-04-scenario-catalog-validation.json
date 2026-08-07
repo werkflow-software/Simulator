@@ -1,0 +1,200 @@
+{
+  "VerificationRunId": "ap4-20260806200140-1933baa2a2c14238a8a51",
+  "StartedAtUtc": "2026-08-06T20:01:40.2762224Z",
+  "EndedAtUtc": "2026-08-06T20:01:40.2936827Z",
+  "FaultScenariosDirectory": "C:\\Users\\tobib\\OneDrive\\Desktop\\WerkFlow\\Coding\\Simulation\\Werkflow.OpcUaSimulator.App\\FaultScenarios",
+  "TotalScenarios": 22,
+  "EnabledScenarios": 22,
+  "CatalogValid": true,
+  "CatalogErrors": [],
+  "ProfileResults": [
+    {
+      "ScenarioId": "hydraulic-leak",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "oil-aging",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "tool-deflection",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "valve-delay",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "bearing-degradation",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "focus-drift",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "imbalance",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "lubricant-shortage",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "optics-contamination",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "stiff-linear-guide",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "coolant-loss",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "coolant-loss",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "fan-degradation",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "fan-degradation",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "filter-contamination",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "filter-contamination",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "intermittent-fault",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "intermittent-fault",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "laser-overheating-axis-drive",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "material-resistance-increased",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "material-resistance-increased",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "power-instability",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "power-instability",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "pump-wear",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "pump-wear",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "sensor-drift",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "sensor-drift",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "tool-wear",
+      "ProfileId": "laser-processing-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "tool-wear",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "communication-drop",
+      "ProfileId": "technical-learning-machine-300",
+      "IsValid": true,
+      "Errors": []
+    },
+    {
+      "ScenarioId": "signal-freeze",
+      "ProfileId": "technical-learning-machine-300",
+      "IsValid": true,
+      "Errors": []
+    }
+  ],
+  "Passed": true,
+  "FailedCriteria": []
+}

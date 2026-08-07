@@ -1,0 +1,23 @@
+{
+  "VerificationRunId": "ap4-20260806200140-1933baa2a2c14238a8a51",
+  "StartedAtUtc": "2026-08-06T20:01:43.0768989Z",
+  "EndedAtUtc": "2026-08-06T20:01:43.1076843Z",
+  "Seed": 42,
+  "Results": [
+    {
+      "ProfileId": "laser-processing-machine-300",
+      "ScenarioId": "laser-overheating-axis-drive",
+      "StartAccepted": true,
+      "DuplicateStartRejected": true,
+      "PauseWorked": true,
+      "TicksWhilePausedUnchanged": true,
+      "ResumeWorked": true,
+      "StopStartedRecovery": true,
+      "CancelClearsScenario": true,
+      "ResetClearsScenario": true,
+      "Passed": true
+    }
+  ],
+  "Passed": true,
+  "FailedCriteria": []
+}

@@ -1,0 +1,1429 @@
+{
+  "statistics": [
+    {
+      "ProfileId": "",
+      "SignalId": "Axis01.Load",
+      "Unit": "%",
+      "NormalMinimum": 25,
+      "NormalMaximum": 75,
+      "HardMinimum": 0,
+      "HardMaximum": 110,
+      "Samples": 296,
+      "Minimum": 28.5689823405384,
+      "Maximum": 39.28849510853345,
+      "Mean": 31.383582181472057,
+      "Median": 31.18390604502595,
+      "StandardDeviation": 2.538371799896487,
+      "PercentWithinNormal": 100,
+      "PercentBelowNormal": 0,
+      "PercentAboveNormal": 0,
+      "PercentAtHardMinimum": 0,
+      "PercentAtHardMaximum": 0,
+      "ChangeCount": 295,
+      "AverageChangeRate": 0.9805734062323788,
+      "MaxChangeRate": 5.1648810231622235,
+      "FirstTimestampUtc": "2026-08-06T15:38:23.5388928+00:00",
+      "LastTimestampUtc": "2026-08-06T15:43:22.7480432+00:00",
+      "MeanByPhase": {
+        "Idle": 29.851144074333117,
+        "Setup": 30.442054877920228,
+        "RampUp": 31.68018024253391,
+        "Processing": 32.636092885891806,
+        "PeakLoad": 35.059171577162154,
+        "RampDown": 31.31167122488994,
+        "Cooling": 30.26499152945716,
+        "Waiting": 29.909154746036407
+      },
+      "PhaseStatistics": {
+        "Idle": {
+          "Samples": 24,
+          "Minimum": 28.5689823405384,
+          "Maximum": 31.51993014705755,
+          "Mean": 29.851144074333117,
+          "PercentInExpectedRange": 0
+        },
+        "Setup": {
+          "Samples": 25,
+          "Minimum": 28.860684900602674,
+          "Maximum": 31.59192554527571,
+          "Mean": 30.442054877920228,
+          "PercentInExpectedRange": 0
+        },
+        "RampUp": {
+          "Samples": 25,
+          "Minimum": 30.592801271205282,
+          "Maximum": 33.09491370804275,
+          "Mean": 31.68018024253391,
+          "PercentInExpectedRange": 0
+        },
+        "Processing": {
+          "Samples": 72,
+          "Minimum": 31.129213276806322,
+          "Maximum": 33.8784271410057,
+          "Mean": 32.636092885891806,
+          "PercentInExpectedRange": 0
+        },
+        "PeakLoad": {
+          "Samples": 30,
+          "Minimum": 33.89728503293592,
+          "Maximum": 39.28849510853345,
+          "Mean": 35.059171577162154,
+          "PercentInExpectedRange": 0
+        },
+        "RampDown": {
+          "Samples": 24,
+          "Minimum": 30.102308893590514,
+          "Maximum": 32.61099874962163,
+          "Mean": 31.31167122488994,
+          "PercentInExpectedRange": 0
+        },
+        "Cooling": {
+          "Samples": 72,
+          "Minimum": 28.827651977539062,
+          "Maximum": 32.21828514322228,
+          "Mean": 30.26499152945716,
+          "PercentInExpectedRange": 0
+        },
+        "Waiting": {
+          "Samples": 24,
+          "Minimum": 28.68971371484532,
+          "Maximum": 31.260540109834942,
+          "Mean": 29.909154746036407,
+          "PercentInExpectedRange": 0
+        }
+      },
+      "PhaseEvaluationPassed": true,
+      "PhaseEvaluationNotes": ""
+    },
+    {
+      "ProfileId": "",
+      "SignalId": "Axis01.MotorCurrent",
+      "Unit": "A",
+      "NormalMinimum": 4,
+      "NormalMaximum": 14,
+      "HardMinimum": 0,
+      "HardMaximum": 25,
+      "Samples": 592,
+      "Minimum": 4.4659106288184365,
+      "Maximum": 7.45697552231046,
+      "Mean": 5.981955110876271,
+      "Median": 5.977635833257801,
+      "StandardDeviation": 0.9048614820795715,
+      "PercentWithinNormal": 100,
+      "PercentBelowNormal": 0,
+      "PercentAboveNormal": 0,
+      "PercentAtHardMinimum": 0,
+      "PercentAtHardMaximum": 0,
+      "ChangeCount": 591,
+      "AverageChangeRate": 1.6642448978571416,
+      "MaxChangeRate": 2.630811278973246,
+      "FirstTimestampUtc": "2026-08-06T15:38:23.5388928+00:00",
+      "LastTimestampUtc": "2026-08-06T15:43:22.748211+00:00",
+      "MeanByPhase": {
+        "Idle": 5.696172550486661,
+        "Setup": 5.853759633254124,
+        "RampUp": 6.073879226584018,
+        "Processing": 6.17118119397965,
+        "PeakLoad": 6.281353804954562,
+        "RampDown": 6.019384447125097,
+        "Cooling": 5.829001426676139,
+        "Waiting": 5.877751154712178
+      },
+      "PhaseStatistics": {
+        "Idle": {
+          "Samples": 46,
+          "Minimum": 4.649562088956213,
+          "Maximum": 6.853792644651094,
+          "Mean": 5.696172550486661,
+          "PercentInExpectedRange": 0
+        },
+        "Setup": {
+          "Samples": 49,
+          "Minimum": 4.629549320608987,
+          "Maximum": 6.848293190499404,
+          "Mean": 5.853759633254124,
+          "PercentInExpectedRange": 0
+        },
+        "RampUp": {
+          "Samples": 49,
+          "Minimum": 5.128167481210144,
+          "Maximum": 7.074219018417691,
+          "Mean": 6.073879226584018,
+          "PercentInExpectedRange": 0
+        },
+        "Processing": {
+          "Samples": 145,
+          "Minimum": 5.137690713451366,
+          "Maximum": 7.187091776140457,
+          "Mean": 6.17118119397965,
+          "PercentInExpectedRange": 0
+        },
+        "PeakLoad": {
+          "Samples": 60,
+          "Minimum": 5.159587537958769,
+          "Maximum": 7.387980748623437,
+          "Mean": 6.281353804954562,
+          "PercentInExpectedRange": 0
+        },
+        "RampDown": {
+          "Samples": 49,
+          "Minimum": 5.033407260939629,
+          "Maximum": 7.155176996155807,
+          "Mean": 6.019384447125097,
+          "PercentInExpectedRange": 0
+        },
+        "Cooling": {
+          "Samples": 144,
+          "Minimum": 4.4659106288184365,
+          "Maximum": 7.45697552231046,
+          "Mean": 5.829001426676139,
+          "PercentInExpectedRange": 0
+        },
+        "Waiting": {
+          "Samples": 50,
+          "Minimum": 4.863170732333443,
+          "Maximum": 7.22573695748779,
+          "Mean": 5.877751154712178,
+          "PercentInExpectedRange": 0
+        }
+      },
+      "PhaseEvaluationPassed": true,
+      "PhaseEvaluationNotes": ""
+    },
+    {
+      "ProfileId": "",
+      "SignalId": "Axis01.MotorTemperature",
+      "Unit": "\u00B0C",
+      "NormalMinimum": 50,
+      "NormalMaximum": 54,
+      "HardMinimum": 20,
+      "HardMaximum": 90,
+      "Samples": 592,
+      "Minimum": 24.544476005534303,
+      "Maximum": 59.02751093834949,
+      "Mean": 48.681898657600215,
+      "Median": 50.3354428273954,
+      "StandardDeviation": 5.86164675134131,
+      "PercentWithinNormal": 36.6554054054054,
+      "PercentBelowNormal": 48.817567567567565,
+      "PercentAboveNormal": 14.527027027027026,
+      "PercentAtHardMinimum": 0,
+      "PercentAtHardMaximum": 0,
+      "ChangeCount": 591,
+      "AverageChangeRate": 3.6667127760779987,
+      "MaxChangeRate": 13.456102332372389,
+      "FirstTimestampUtc": "2026-08-06T15:38:23.5388928+00:00",
+      "LastTimestampUtc": "2026-08-06T15:43:22.748211+00:00",
+      "MeanByPhase": {
+        "Idle": 43.09012634974986,
+        "Setup": 47.02464669573417,
+        "RampUp": 51.10039497664141,
+        "Processing": 51.75412156241049,
+        "PeakLoad": 52.64266922125218,
+        "RampDown": 50.00196359138904,
+        "Cooling": 46.43407151143864,
+        "Waiting": 45.08912477690295
+      },
+      "PhaseStatistics": {
+        "Idle": {
+          "Samples": 46,
+          "Minimum": 24.544476005534303,
+          "Maximum": 47.722692133171066,
+          "Mean": 43.09012634974986,
+          "PercentInExpectedRange": 84.78260869565217
+        },
+        "Setup": {
+          "Samples": 49,
+          "Minimum": 28.604225757889797,
+          "Maximum": 52.035403773148715,
+          "Mean": 47.02464669573417,
+          "PercentInExpectedRange": 46.93877551020408
+        },
+        "RampUp": {
+          "Samples": 49,
+          "Minimum": 32.51105908182797,
+          "Maximum": 56.36873628285401,
+          "Mean": 51.10039497664141,
+          "PercentInExpectedRange": 51.02040816326531
+        },
+        "Processing": {
+          "Samples": 145,
+          "Minimum": 34.512301036805624,
+          "Maximum": 59.02751093834949,
+          "Mean": 51.75412156241049,
+          "PercentInExpectedRange": 80.6896551724138
+        },
+        "PeakLoad": {
+          "Samples": 60,
+          "Minimum": 36.54426760503579,
+          "Maximum": 56.39999369016198,
+          "Mean": 52.64266922125218,
+          "PercentInExpectedRange": 75
+        },
+        "RampDown": {
+          "Samples": 49,
+          "Minimum": 35.49267880841508,
+          "Maximum": 53.70544860477838,
+          "Mean": 50.00196359138904,
+          "PercentInExpectedRange": 87.75510204081633
+        },
+        "Cooling": {
+          "Samples": 144,
+          "Minimum": 30.572625667199382,
+          "Maximum": 52.537123414434795,
+          "Mean": 46.43407151143864,
+          "PercentInExpectedRange": 84.02777777777777
+        },
+        "Waiting": {
+          "Samples": 50,
+          "Minimum": 36.76420726736467,
+          "Maximum": 49.45610669046209,
+          "Mean": 45.08912477690295,
+          "PercentInExpectedRange": 94
+        }
+      },
+      "PhaseEvaluationPassed": true,
+      "PhaseEvaluationNotes": ""
+    },
+    {
+      "ProfileId": "",
+      "SignalId": "Axis01.Speed",
+      "Unit": "mm/s",
+      "NormalMinimum": 920,
+      "NormalMaximum": 980,
+      "HardMinimum": 0,
+      "HardMaximum": 1200,
+      "Samples": 592,
+      "Minimum": 338.67086316696754,
+      "Maximum": 950.5584185239542,
+      "Mean": 646.153861961519,
+      "Median": 648.2979885886114,
+      "StandardDeviation": 300.17359786146386,
+      "PercentWithinNormal": 50,
+      "PercentBelowNormal": 50,
+      "PercentAboveNormal": 0,
+      "PercentAtHardMinimum": 0,
+      "PercentAtHardMaximum": 0,
+      "ChangeCount": 591,
+      "AverageChangeRate": 597.9732571393578,
+      "MaxChangeRate": 609.3718534339009,
+      "FirstTimestampUtc": "2026-08-06T15:38:23.5388928+00:00",
+      "LastTimestampUtc": "2026-08-06T15:43:22.748211+00:00",
+      "MeanByPhase": {
+        "Idle": 661.4589084667623,
+        "Setup": 654.1894966929578,
+        "RampUp": 654.1632505471598,
+        "Processing": 645.8031743213655,
+        "PeakLoad": 647.6404573968173,
+        "RampDown": 641.7598673539536,
+        "Cooling": 647.389159411873,
+        "Waiting": 635.2801590942933
+      },
+      "PhaseStatistics": {
+        "Idle": {
+          "Samples": 46,
+          "Minimum": 345.7716597102149,
+          "Maximum": 949.8453040360334,
+          "Mean": 661.4589084667623,
+          "PercentInExpectedRange": 0
+        },
+        "Setup": {
+          "Samples": 49,
+          "Minimum": 347.51949860294917,
+          "Maximum": 947.5183592038265,
+          "Mean": 654.1894966929578,
+          "PercentInExpectedRange": 0
+        },
+        "RampUp": {
+          "Samples": 49,
+          "Minimum": 347.7920332569533,
+          "Maximum": 947.3706205840214,
+          "Mean": 654.1632505471598,
+          "PercentInExpectedRange": 0
+        },
+        "Processing": {
+          "Samples": 145,
+          "Minimum": 347.1948243740106,
+          "Maximum": 947.487328876096,
+          "Mean": 645.8031743213655,
+          "PercentInExpectedRange": 0
+        },
+        "PeakLoad": {
+          "Samples": 60,
+          "Minimum": 347.28014280369894,
+          "Maximum": 947.3074932826157,
+          "Mean": 647.6404573968173,
+          "PercentInExpectedRange": 0
+        },
+        "RampDown": {
+          "Samples": 49,
+          "Minimum": 346.9642052114524,
+          "Maximum": 947.3832122456408,
+          "Mean": 641.7598673539536,
+          "PercentInExpectedRange": 0
+        },
+        "Cooling": {
+          "Samples": 144,
+          "Minimum": 338.67086316696754,
+          "Maximum": 950.5584185239542,
+          "Mean": 647.389159411873,
+          "PercentInExpectedRange": 0
+        },
+        "Waiting": {
+          "Samples": 50,
+          "Minimum": 343.0078296399295,
+          "Maximum": 948.0427166008684,
+          "Mean": 635.2801590942933,
+          "PercentInExpectedRange": 0
+        }
+      },
+      "PhaseEvaluationPassed": true,
+      "PhaseEvaluationNotes": ""
+    },
+    {
+      "ProfileId": "",
+      "SignalId": "Bending.PressForce",
+      "Unit": "kN",
+      "NormalMinimum": 180,
+      "NormalMaximum": 320,
+      "HardMinimum": 0,
+      "HardMaximum": 500,
+      "Samples": 296,
+      "Minimum": 76.72677415887298,
+      "Maximum": 91.40566781110027,
+      "Mean": 82.69926151474918,
+      "Median": 82.80752789475471,
+      "StandardDeviation": 5.639408093358237,
+      "PercentWithinNormal": 0,
+      "PercentBelowNormal": 100,
+      "PercentAboveNormal": 0,
+      "PercentAtHardMinimum": 0,
+      "PercentAtHardMaximum": 0,
+      "ChangeCount": 295,
+      "AverageChangeRate": 2.549699824443178,
+      "MaxChangeRate": 7.707301714543988,
+      "FirstTimestampUtc": "2026-08-06T15:38:23.5390643+00:00",
+      "LastTimestampUtc": "2026-08-06T15:43:22.748211+00:00",
+      "MeanByPhase": {
+        "Idle": 81.00117125048368,
+        "Setup": 81.44230692067659,
+        "RampUp": 83.52674447413119,
+        "Processing": 84.58332174092058,
+        "PeakLoad": 87.37883499572634,
+        "RampDown": 82.80479737237258,
+        "Cooling": 81.56378132299766,
+        "Waiting": 80.15492680058789
+      },
+      "PhaseStatistics": {
+        "Idle": {
+          "Samples": 22,
+          "Minimum": 77.5186159993396,
+          "Maximum": 84.98941595970156,
+          "Mean": 81.00117125048368,
+          "PercentInExpectedRange": 0
+        },
+        "Setup": {
+          "Samples": 24,
+          "Minimum": 77.31116811587427,
+          "Maximum": 85.68125889544648,
+          "Mean": 81.44230692067659,
+          "PercentInExpectedRange": 0
+        },
+        "RampUp": {
+          "Samples": 24,
+          "Minimum": 77.34777231675997,
+          "Maximum": 87.62757047163703,
+          "Mean": 83.52674447413119,
+          "PercentInExpectedRange": 0
+        },
+        "Processing": {
+          "Samples": 73,
+          "Minimum": 79.68651564574371,
+          "Maximum": 88.67257050044721,
+          "Mean": 84.58332174092058,
+          "PercentInExpectedRange": 0
+        },
+        "PeakLoad": {
+          "Samples": 30,
+          "Minimum": 82.49272339854609,
+          "Maximum": 91.40566781110027,
+          "Mean": 87.37883499572634,
+          "PercentInExpectedRange": 0
+        },
+        "RampDown": {
+          "Samples": 25,
+          "Minimum": 79.36618210526463,
+          "Maximum": 87.60825242575262,
+          "Mean": 82.80479737237258,
+          "PercentInExpectedRange": 0
+        },
+        "Cooling": {
+          "Samples": 72,
+          "Minimum": 77.76370154624817,
+          "Maximum": 85.21311723418643,
+          "Mean": 81.56378132299766,
+          "PercentInExpectedRange": 0
+        },
+        "Waiting": {
+          "Samples": 26,
+          "Minimum": 76.72677415887298,
+          "Maximum": 84.451139902049,
+          "Mean": 80.15492680058789,
+          "PercentInExpectedRange": 0
+        }
+      },
+      "PhaseEvaluationPassed": true,
+      "PhaseEvaluationNotes": ""
+    },
+    {
+      "ProfileId": "",
+      "SignalId": "Cooling.PrimaryCircuit.Flow",
+      "Unit": "l/min",
+      "NormalMinimum": 18,
+      "NormalMaximum": 22,
+      "HardMinimum": 0,
+      "HardMaximum": 50,
+      "Samples": 296,
+      "Minimum": 15.163635659597814,
+      "Maximum": 22.010421028422655,
+      "Mean": 20.41178008174972,
+      "Median": 21.740918847840852,
+      "StandardDeviation": 2.5311333899073887,
+      "PercentWithinNormal": 81.08108108108108,
+      "PercentBelowNormal": 17.905405405405407,
+      "PercentAboveNormal": 1.0135135135135136,
+      "PercentAtHardMinimum": 0,
+      "PercentAtHardMaximum": 0,
+      "ChangeCount": 295,
+      "AverageChangeRate": 0.5807622127893791,
+      "MaxChangeRate": 6.418608205521606,
+      "FirstTimestampUtc": "2026-08-06T15:38:23.5388928+00:00",
+      "LastTimestampUtc": "2026-08-06T15:43:22.7480432+00:00",
+      "MeanByPhase": {
+        "Idle": 20.154121439374876,
+        "Setup": 21.611495291843486,
+        "RampUp": 21.84710537252625,
+        "Processing": 21.7949196543862,
+        "PeakLoad": 21.79395556803111,
+        "RampDown": 21.71367038599292,
+        "Cooling": 17.1474938241008,
+        "Waiting": 21.428131502815152
+      },
+      "PhaseStatistics": {
+        "Idle": {
+          "Samples": 24,
+          "Minimum": 18.222133581335946,
+          "Maximum": 21.63549652383067,
+          "Mean": 20.154121439374876,
+          "PercentInExpectedRange": 0
+        },
+        "Setup": {
+          "Samples": 25,
+          "Minimum": 20.555632886550573,
+          "Maximum": 21.962014168629928,
+          "Mean": 21.611495291843486,
+          "PercentInExpectedRange": 0
+        },
+        "RampUp": {
+          "Samples": 25,
+          "Minimum": 21.69089133340046,
+          "Maximum": 22.0077098091228,
+          "Mean": 21.84710537252625,
+          "PercentInExpectedRange": 0
+        },
+        "Processing": {
+          "Samples": 72,
+          "Minimum": 21.582586641612593,
+          "Maximum": 22.009125323486785,
+          "Mean": 21.7949196543862,
+          "PercentInExpectedRange": 0
+        },
+        "PeakLoad": {
+          "Samples": 30,
+          "Minimum": 21.642259320804442,
+          "Maximum": 21.968970908191437,
+          "Mean": 21.79395556803111,
+          "PercentInExpectedRange": 0
+        },
+        "RampDown": {
+          "Samples": 24,
+          "Minimum": 19.59002661279146,
+          "Maximum": 22.010421028422655,
+          "Mean": 21.71367038599292,
+          "PercentInExpectedRange": 0
+        },
+        "Cooling": {
+          "Samples": 72,
+          "Minimum": 15.163635659597814,
+          "Maximum": 21.585839043895476,
+          "Mean": 17.1474938241008,
+          "PercentInExpectedRange": 0
+        },
+        "Waiting": {
+          "Samples": 24,
+          "Minimum": 15.201851714725162,
+          "Maximum": 21.985638627256172,
+          "Mean": 21.428131502815152,
+          "PercentInExpectedRange": 0
+        }
+      },
+      "PhaseEvaluationPassed": true,
+      "PhaseEvaluationNotes": ""
+    },
+    {
+      "ProfileId": "",
+      "SignalId": "Cooling.PrimaryCircuit.Temperature",
+      "Unit": "\u00B0C",
+      "NormalMinimum": 20,
+      "NormalMaximum": 28,
+      "HardMinimum": 5,
+      "HardMaximum": 55,
+      "Samples": 296,
+      "Minimum": 17.24817406202316,
+      "Maximum": 17.954147174161655,
+      "Mean": 17.514077908598804,
+      "Median": 17.567327627618127,
+      "StandardDeviation": 1.0307574830567372,
+      "PercentWithinNormal": 0,
+      "PercentBelowNormal": 100,
+      "PercentAboveNormal": 0,
+      "PercentAtHardMinimum": 0,
+      "PercentAtHardMaximum": 0,
+      "ChangeCount": 295,
+      "AverageChangeRate": 0.1384351843208058,
+      "MaxChangeRate": 0.5234135716918864,
+      "FirstTimestampUtc": "2026-08-06T15:38:23.5388928+00:00",
+      "LastTimestampUtc": "2026-08-06T15:43:22.7480432+00:00",
+      "MeanByPhase": {
+        "Idle": 17.632609008573425,
+        "Setup": 17.531914493843242,
+        "RampUp": 17.500145178337245,
+        "Processing": 17.526537788190687,
+        "PeakLoad": 17.53909556910454,
+        "RampDown": 17.54001560037707,
+        "Cooling": 17.66970472881561,
+        "Waiting": 17.558118108626264
+      },
+      "PhaseStatistics": {
+        "Idle": {
+          "Samples": 24,
+          "Minimum": 17.37494087168124,
+          "Maximum": 17.930599047454663,
+          "Mean": 17.632609008573425,
+          "PercentInExpectedRange": 0
+        },
+        "Setup": {
+          "Samples": 25,
+          "Minimum": 17.24817406202316,
+          "Maximum": 17.694720109597792,
+          "Mean": 17.531914493843242,
+          "PercentInExpectedRange": 0
+        },
+        "RampUp": {
+          "Samples": 25,
+          "Minimum": 17.310079771641234,
+          "Maximum": 17.771095182569834,
+          "Mean": 17.500145178337245,
+          "PercentInExpectedRange": 0
+        },
+        "Processing": {
+          "Samples": 72,
+          "Minimum": 17.274056521190424,
+          "Maximum": 17.771828001307224,
+          "Mean": 17.526537788190687,
+          "PercentInExpectedRange": 0
+        },
+        "PeakLoad": {
+          "Samples": 30,
+          "Minimum": 17.3235437363303,
+          "Maximum": 17.765357336194075,
+          "Mean": 17.53909556910454,
+          "PercentInExpectedRange": 0
+        },
+        "RampDown": {
+          "Samples": 24,
+          "Minimum": 17.276097843064214,
+          "Maximum": 17.81839777433763,
+          "Mean": 17.54001560037707,
+          "PercentInExpectedRange": 0
+        },
+        "Cooling": {
+          "Samples": 72,
+          "Minimum": 17.33427983771341,
+          "Maximum": 17.954147174161655,
+          "Mean": 17.66970472881561,
+          "PercentInExpectedRange": 0
+        },
+        "Waiting": {
+          "Samples": 24,
+          "Minimum": 17.303970544817826,
+          "Maximum": 17.77943455255654,
+          "Mean": 17.558118108626264,
+          "PercentInExpectedRange": 0
+        }
+      },
+      "PhaseEvaluationPassed": true,
+      "PhaseEvaluationNotes": ""
+    },
+    {
+      "ProfileId": "",
+      "SignalId": "Hydraulic.OilTemperature",
+      "Unit": "\u00B0C",
+      "NormalMinimum": 42,
+      "NormalMaximum": 48,
+      "HardMinimum": 0,
+      "HardMaximum": 90,
+      "Samples": 296,
+      "Minimum": 42.38272667782141,
+      "Maximum": 56.84990099286265,
+      "Mean": 48.66630999306283,
+      "Median": 48.78296612974807,
+      "StandardDeviation": 4.027260691246805,
+      "PercentWithinNormal": 23.31081081081081,
+      "PercentBelowNormal": 0,
+      "PercentAboveNormal": 76.6891891891892,
+      "PercentAtHardMinimum": 0,
+      "PercentAtHardMaximum": 0,
+      "ChangeCount": 295,
+      "AverageChangeRate": 0.4118180977325727,
+      "MaxChangeRate": 5.981781470979435,
+      "FirstTimestampUtc": "2026-08-06T15:38:23.5390643+00:00",
+      "LastTimestampUtc": "2026-08-06T15:43:22.748211+00:00",
+      "MeanByPhase": {
+        "Idle": 47.09188207800369,
+        "Setup": 47.508591841369466,
+        "RampUp": 48.935150369494316,
+        "Processing": 49.950159549568475,
+        "PeakLoad": 51.320826257419085,
+        "RampDown": 49.979852783721775,
+        "Cooling": 47.49841411050005,
+        "Waiting": 47.75453853560779
+      },
+      "PhaseStatistics": {
+        "Idle": {
+          "Samples": 22,
+          "Minimum": 42.41725352617137,
+          "Maximum": 48.80552895328896,
+          "Mean": 47.09188207800369,
+          "PercentInExpectedRange": 0
+        },
+        "Setup": {
+          "Samples": 24,
+          "Minimum": 42.46767070643837,
+          "Maximum": 49.204805206210104,
+          "Mean": 47.508591841369466,
+          "PercentInExpectedRange": 0
+        },
+        "RampUp": {
+          "Samples": 24,
+          "Minimum": 42.444994249580745,
+          "Maximum": 51.3122259050119,
+          "Mean": 48.935150369494316,
+          "PercentInExpectedRange": 0
+        },
+        "Processing": {
+          "Samples": 73,
+          "Minimum": 42.39405106104984,
+          "Maximum": 52.023645762743115,
+          "Mean": 49.950159549568475,
+          "PercentInExpectedRange": 0
+        },
+        "PeakLoad": {
+          "Samples": 30,
+          "Minimum": 42.52687158886154,
+          "Maximum": 53.00988914595075,
+          "Mean": 51.320826257419085,
+          "PercentInExpectedRange": 0
+        },
+        "RampDown": {
+          "Samples": 25,
+          "Minimum": 42.38607340513527,
+          "Maximum": 56.84990099286265,
+          "Mean": 49.979852783721775,
+          "PercentInExpectedRange": 0
+        },
+        "Cooling": {
+          "Samples": 72,
+          "Minimum": 42.38272667782141,
+          "Maximum": 49.364555031276225,
+          "Mean": 47.49841411050005,
+          "PercentInExpectedRange": 0
+        },
+        "Waiting": {
+          "Samples": 26,
+          "Minimum": 42.396077796168136,
+          "Maximum": 49.030835009829985,
+          "Mean": 47.75453853560779,
+          "PercentInExpectedRange": 0
+        }
+      },
+      "PhaseEvaluationPassed": true,
+      "PhaseEvaluationNotes": ""
+    },
+    {
+      "ProfileId": "",
+      "SignalId": "Hydraulic.SupplyPressure",
+      "Unit": "bar",
+      "NormalMinimum": 175,
+      "NormalMaximum": 185,
+      "HardMinimum": 0,
+      "HardMaximum": 250,
+      "Samples": 296,
+      "Minimum": 137.6849933394263,
+      "Maximum": 191.18652022833527,
+      "Mean": 161.3837657643244,
+      "Median": 158.35039424090454,
+      "StandardDeviation": 21.44247455297975,
+      "PercentWithinNormal": 9.797297297297296,
+      "PercentBelowNormal": 64.86486486486487,
+      "PercentAboveNormal": 25.33783783783784,
+      "PercentAtHardMinimum": 0,
+      "PercentAtHardMaximum": 0,
+      "ChangeCount": 295,
+      "AverageChangeRate": 3.4997315522147647,
+      "MaxChangeRate": 31.761583447734353,
+      "FirstTimestampUtc": "2026-08-06T15:38:23.5390643+00:00",
+      "LastTimestampUtc": "2026-08-06T15:43:22.748211+00:00",
+      "MeanByPhase": {
+        "Idle": 142.43138939962583,
+        "Setup": 147.75056939749535,
+        "RampUp": 163.6054168675434,
+        "Processing": 185.17859028868918,
+        "PeakLoad": 189.54927109062464,
+        "RampDown": 160.5198580375968,
+        "Cooling": 145.2574530556123,
+        "Waiting": 139.56090030465865
+      },
+      "PhaseStatistics": {
+        "Idle": {
+          "Samples": 22,
+          "Minimum": 138.75715819174735,
+          "Maximum": 144.26961738173114,
+          "Mean": 142.43138939962583,
+          "PercentInExpectedRange": 0
+        },
+        "Setup": {
+          "Samples": 24,
+          "Minimum": 145.93198888435566,
+          "Maximum": 149.8036586660219,
+          "Mean": 147.75056939749535,
+          "PercentInExpectedRange": 100
+        },
+        "RampUp": {
+          "Samples": 24,
+          "Minimum": 161.4827292472661,
+          "Maximum": 164.95416077202975,
+          "Mean": 163.6054168675434,
+          "PercentInExpectedRange": 100
+        },
+        "Processing": {
+          "Samples": 73,
+          "Minimum": 182.86730494502066,
+          "Maximum": 186.75284485718151,
+          "Mean": 185.17859028868918,
+          "PercentInExpectedRange": 100
+        },
+        "PeakLoad": {
+          "Samples": 30,
+          "Minimum": 186.1288152552977,
+          "Maximum": 191.18652022833527,
+          "Mean": 189.54927109062464,
+          "PercentInExpectedRange": 100
+        },
+        "RampDown": {
+          "Samples": 25,
+          "Minimum": 158.09913816524406,
+          "Maximum": 190.3517597762044,
+          "Mean": 160.5198580375968,
+          "PercentInExpectedRange": 96
+        },
+        "Cooling": {
+          "Samples": 72,
+          "Minimum": 141.0607912600569,
+          "Maximum": 146.7529575451633,
+          "Mean": 145.2574530556123,
+          "PercentInExpectedRange": 29.166666666666668
+        },
+        "Waiting": {
+          "Samples": 26,
+          "Minimum": 137.6849933394263,
+          "Maximum": 145.1314471695467,
+          "Mean": 139.56090030465865,
+          "PercentInExpectedRange": 0
+        }
+      },
+      "PhaseEvaluationPassed": true,
+      "PhaseEvaluationNotes": ""
+    },
+    {
+      "ProfileId": "",
+      "SignalId": "Process.FeedRate",
+      "Unit": "mm/min",
+      "NormalMinimum": 1800,
+      "NormalMaximum": 2400,
+      "HardMinimum": 0,
+      "HardMaximum": 6000,
+      "Samples": 296,
+      "Minimum": 2049.8141486923114,
+      "Maximum": 2223.2604140094927,
+      "Mean": 2139.344896364961,
+      "Median": 2139.86239944702,
+      "StandardDeviation": 136.14219684723147,
+      "PercentWithinNormal": 100,
+      "PercentBelowNormal": 0,
+      "PercentAboveNormal": 0,
+      "PercentAtHardMinimum": 0,
+      "PercentAtHardMaximum": 0,
+      "ChangeCount": 295,
+      "AverageChangeRate": 14.483067974671345,
+      "MaxChangeRate": 88.68131594759416,
+      "FirstTimestampUtc": "2026-08-06T15:38:23.5388928+00:00",
+      "LastTimestampUtc": "2026-08-06T15:43:22.7480432+00:00",
+      "MeanByPhase": {
+        "Idle": 2089.2446574978903,
+        "Setup": 2113.93371511474,
+        "RampUp": 2185.595993608361,
+        "Processing": 2209.177719709614,
+        "PeakLoad": 2210.3174428228103,
+        "RampDown": 2152.2593559804,
+        "Cooling": 2089.408324896955,
+        "Waiting": 2093.2277559799995
+      },
+      "PhaseStatistics": {
+        "Idle": {
+          "Samples": 24,
+          "Minimum": 2069.701770128133,
+          "Maximum": 2105.4829311687,
+          "Mean": 2089.2446574978903,
+          "PercentInExpectedRange": 0
+        },
+        "Setup": {
+          "Samples": 25,
+          "Minimum": 2094.88615637643,
+          "Maximum": 2134.9937718929764,
+          "Mean": 2113.93371511474,
+          "PercentInExpectedRange": 0
+        },
+        "RampUp": {
+          "Samples": 25,
+          "Minimum": 2171.534319594575,
+          "Maximum": 2200.437043093776,
+          "Mean": 2185.595993608361,
+          "PercentInExpectedRange": 0
+        },
+        "Processing": {
+          "Samples": 72,
+          "Minimum": 2195.349196929621,
+          "Maximum": 2223.2604140094927,
+          "Mean": 2209.177719709614,
+          "PercentInExpectedRange": 0
+        },
+        "PeakLoad": {
+          "Samples": 30,
+          "Minimum": 2197.084843888751,
+          "Maximum": 2221.869426123297,
+          "Mean": 2210.3174428228103,
+          "PercentInExpectedRange": 0
+        },
+        "RampDown": {
+          "Samples": 24,
+          "Minimum": 2134.2088148681355,
+          "Maximum": 2167.608733184545,
+          "Mean": 2152.2593559804,
+          "PercentInExpectedRange": 0
+        },
+        "Cooling": {
+          "Samples": 72,
+          "Minimum": 2049.8141486923114,
+          "Maximum": 2112.668452761378,
+          "Mean": 2089.408324896955,
+          "PercentInExpectedRange": 0
+        },
+        "Waiting": {
+          "Samples": 24,
+          "Minimum": 2072.0765700660936,
+          "Maximum": 2105.097864651101,
+          "Mean": 2093.2277559799995,
+          "PercentInExpectedRange": 0
+        }
+      },
+      "PhaseEvaluationPassed": true,
+      "PhaseEvaluationNotes": ""
+    },
+    {
+      "ProfileId": "",
+      "SignalId": "Process.PowerDemand",
+      "Unit": "kW",
+      "NormalMinimum": 8,
+      "NormalMaximum": 18,
+      "HardMinimum": 0,
+      "HardMaximum": 40,
+      "Samples": 296,
+      "Minimum": 2.3777148382935813,
+      "Maximum": 3.5897263920046485,
+      "Mean": 2.9140281843853466,
+      "Median": 2.8981291205022233,
+      "StandardDeviation": 0.32206826101069985,
+      "PercentWithinNormal": 0,
+      "PercentBelowNormal": 100,
+      "PercentAboveNormal": 0,
+      "PercentAtHardMinimum": 0,
+      "PercentAtHardMaximum": 0,
+      "ChangeCount": 295,
+      "AverageChangeRate": 0.18243787528148778,
+      "MaxChangeRate": 0.6355228610486092,
+      "FirstTimestampUtc": "2026-08-06T15:38:23.5388928+00:00",
+      "LastTimestampUtc": "2026-08-06T15:43:22.7480432+00:00",
+      "MeanByPhase": {
+        "Idle": 2.668163739830673,
+        "Setup": 2.6984454327808756,
+        "RampUp": 3.0575402421377054,
+        "Processing": 3.126576214956659,
+        "PeakLoad": 3.36189806197981,
+        "RampDown": 2.933254985747434,
+        "Cooling": 2.7144882237179186,
+        "Waiting": 2.722370664921613
+      },
+      "PhaseStatistics": {
+        "Idle": {
+          "Samples": 24,
+          "Minimum": 2.3777148382935813,
+          "Maximum": 2.976177313460254,
+          "Mean": 2.668163739830673,
+          "PercentInExpectedRange": 0
+        },
+        "Setup": {
+          "Samples": 25,
+          "Minimum": 2.5038030885250406,
+          "Maximum": 2.9244310584150104,
+          "Mean": 2.6984454327808756,
+          "PercentInExpectedRange": 0
+        },
+        "RampUp": {
+          "Samples": 25,
+          "Minimum": 2.8151410672590655,
+          "Maximum": 3.329488660161834,
+          "Mean": 3.0575402421377054,
+          "PercentInExpectedRange": 0
+        },
+        "Processing": {
+          "Samples": 72,
+          "Minimum": 2.8651206928161748,
+          "Maximum": 3.4411653505230815,
+          "Mean": 3.126576214956659,
+          "PercentInExpectedRange": 0
+        },
+        "PeakLoad": {
+          "Samples": 30,
+          "Minimum": 3.0345473983143156,
+          "Maximum": 3.5897263920046485,
+          "Mean": 3.36189806197981,
+          "PercentInExpectedRange": 0
+        },
+        "RampDown": {
+          "Samples": 24,
+          "Minimum": 2.618353393530994,
+          "Maximum": 3.193658338140039,
+          "Mean": 2.933254985747434,
+          "PercentInExpectedRange": 0
+        },
+        "Cooling": {
+          "Samples": 72,
+          "Minimum": 2.4373265869190157,
+          "Maximum": 3.076999044996316,
+          "Mean": 2.7144882237179186,
+          "PercentInExpectedRange": 0
+        },
+        "Waiting": {
+          "Samples": 24,
+          "Minimum": 2.382847656367841,
+          "Maximum": 3.020413063312829,
+          "Mean": 2.722370664921613,
+          "PercentInExpectedRange": 0
+        }
+      },
+      "PhaseEvaluationPassed": true,
+      "PhaseEvaluationNotes": ""
+    },
+    {
+      "ProfileId": "",
+      "SignalId": "Process.QualityIndex",
+      "Unit": "%",
+      "NormalMinimum": 96,
+      "NormalMaximum": 99.5,
+      "HardMinimum": 0,
+      "HardMaximum": 100,
+      "Samples": 296,
+      "Minimum": 95.68060117052147,
+      "Maximum": 96.31152597553142,
+      "Mean": 95.68023308331999,
+      "Median": 96.00844910971071,
+      "StandardDeviation": 5.58216945892413,
+      "PercentWithinNormal": 52.027027027027025,
+      "PercentBelowNormal": 47.972972972972975,
+      "PercentAboveNormal": 0,
+      "PercentAtHardMinimum": 0,
+      "PercentAtHardMaximum": 0,
+      "ChangeCount": 295,
+      "AverageChangeRate": 0.16507506815521827,
+      "MaxChangeRate": 0.5691640220662038,
+      "FirstTimestampUtc": "2026-08-06T15:38:23.5388928+00:00",
+      "LastTimestampUtc": "2026-08-06T15:43:22.7480432+00:00",
+      "MeanByPhase": {
+        "Idle": 95.99083231801079,
+        "Setup": 96.0018987572999,
+        "RampUp": 95.9924202676611,
+        "Processing": 96.00053861856738,
+        "PeakLoad": 95.99168954713559,
+        "RampDown": 95.99527862796253,
+        "Cooling": 96.02084411255996,
+        "Waiting": 96.01902465383861
+      },
+      "PhaseStatistics": {
+        "Idle": {
+          "Samples": 24,
+          "Minimum": 95.6951347726821,
+          "Maximum": 96.27280392600622,
+          "Mean": 95.99083231801079,
+          "PercentInExpectedRange": 0
+        },
+        "Setup": {
+          "Samples": 25,
+          "Minimum": 95.74058945723075,
+          "Maximum": 96.24954773741563,
+          "Mean": 96.0018987572999,
+          "PercentInExpectedRange": 100
+        },
+        "RampUp": {
+          "Samples": 25,
+          "Minimum": 95.72490880876957,
+          "Maximum": 96.26347879578321,
+          "Mean": 95.9924202676611,
+          "PercentInExpectedRange": 100
+        },
+        "Processing": {
+          "Samples": 72,
+          "Minimum": 95.68060117052147,
+          "Maximum": 96.29437567353533,
+          "Mean": 96.00053861856738,
+          "PercentInExpectedRange": 100
+        },
+        "PeakLoad": {
+          "Samples": 30,
+          "Minimum": 95.7048201635944,
+          "Maximum": 96.26505719063078,
+          "Mean": 95.99168954713559,
+          "PercentInExpectedRange": 100
+        },
+        "RampDown": {
+          "Samples": 24,
+          "Minimum": 95.73673158567502,
+          "Maximum": 96.29144471317748,
+          "Mean": 95.99527862796253,
+          "PercentInExpectedRange": 0
+        },
+        "Cooling": {
+          "Samples": 72,
+          "Minimum": 95.69152940516446,
+          "Maximum": 96.26069342723066,
+          "Mean": 96.02084411255996,
+          "PercentInExpectedRange": 0
+        },
+        "Waiting": {
+          "Samples": 24,
+          "Minimum": 95.75889850093473,
+          "Maximum": 96.31152597553142,
+          "Mean": 96.01902465383861,
+          "PercentInExpectedRange": 0
+        }
+      },
+      "PhaseEvaluationPassed": true,
+      "PhaseEvaluationNotes": ""
+    },
+    {
+      "ProfileId": "",
+      "SignalId": "Process.SpindleSpeed",
+      "Unit": "1/min",
+      "NormalMinimum": 2950,
+      "NormalMaximum": 3050,
+      "HardMinimum": 0,
+      "HardMaximum": 15000,
+      "Samples": 296,
+      "Minimum": 1159.4882550052828,
+      "Maximum": 3095.802546499901,
+      "Mean": 2044.2754162702513,
+      "Median": 2003.166027357039,
+      "StandardDeviation": 788.2836830521447,
+      "PercentWithinNormal": 24.324324324324323,
+      "PercentBelowNormal": 65.54054054054055,
+      "PercentAboveNormal": 10.135135135135135,
+      "PercentAtHardMinimum": 0,
+      "PercentAtHardMaximum": 0,
+      "ChangeCount": 295,
+      "AverageChangeRate": 105.91370664588635,
+      "MaxChangeRate": 1089.5624581635066,
+      "FirstTimestampUtc": "2026-08-06T15:38:23.5388928+00:00",
+      "LastTimestampUtc": "2026-08-06T15:43:22.7480432+00:00",
+      "MeanByPhase": {
+        "Idle": 1161.8673933710984,
+        "Setup": 1626.9424039628477,
+        "RampUp": 2333.9784958738114,
+        "Processing": 2995.9180303968287,
+        "PeakLoad": 3093.915096403912,
+        "RampDown": 2004.7636431240433,
+        "Cooling": 1301.619343645335,
+        "Waiting": 1208.5074025139986
+      },
+      "PhaseStatistics": {
+        "Idle": {
+          "Samples": 24,
+          "Minimum": 1159.4882550052828,
+          "Maximum": 1170.4020546666477,
+          "Mean": 1161.8673933710984,
+          "PercentInExpectedRange": 100
+        },
+        "Setup": {
+          "Samples": 25,
+          "Minimum": 1605.1153869144284,
+          "Maximum": 1630.3147477802686,
+          "Mean": 1626.9424039628477,
+          "PercentInExpectedRange": 100
+        },
+        "RampUp": {
+          "Samples": 25,
+          "Minimum": 2301.204529915459,
+          "Maximum": 2338.111340051974,
+          "Mean": 2333.9784958738114,
+          "PercentInExpectedRange": 100
+        },
+        "Processing": {
+          "Samples": 72,
+          "Minimum": 2992.581947041259,
+          "Maximum": 2998.6356119091015,
+          "Mean": 2995.9180303968287,
+          "PercentInExpectedRange": 100
+        },
+        "PeakLoad": {
+          "Samples": 30,
+          "Minimum": 3091.9842477118036,
+          "Maximum": 3095.802546499901,
+          "Mean": 3093.915096403912,
+          "PercentInExpectedRange": 0
+        },
+        "RampDown": {
+          "Samples": 24,
+          "Minimum": 2002.5955827457356,
+          "Maximum": 2007.0726776577503,
+          "Mean": 2004.7636431240433,
+          "PercentInExpectedRange": 100
+        },
+        "Cooling": {
+          "Samples": 72,
+          "Minimum": 1299.3194802859787,
+          "Maximum": 1303.978061153736,
+          "Mean": 1301.619343645335,
+          "PercentInExpectedRange": 0
+        },
+        "Waiting": {
+          "Samples": 24,
+          "Minimum": 1206.046476714156,
+          "Maximum": 1210.2623098406812,
+          "Mean": 1208.5074025139986,
+          "PercentInExpectedRange": 0
+        }
+      },
+      "PhaseEvaluationPassed": true,
+      "PhaseEvaluationNotes": ""
+    },
+    {
+      "ProfileId": "",
+      "SignalId": "Quality.ProcessQualityIndex",
+      "Unit": "%",
+      "NormalMinimum": 96,
+      "NormalMaximum": 99.5,
+      "HardMinimum": 0,
+      "HardMaximum": 100,
+      "Samples": 296,
+      "Minimum": 95.67890943811686,
+      "Maximum": 96.30833043895593,
+      "Mean": 95.69238736129537,
+      "Median": 96.02702918823911,
+      "StandardDeviation": 5.582719781022933,
+      "PercentWithinNormal": 55.067567567567565,
+      "PercentBelowNormal": 44.932432432432435,
+      "PercentAboveNormal": 0,
+      "PercentAtHardMinimum": 0,
+      "PercentAtHardMaximum": 0,
+      "ChangeCount": 295,
+      "AverageChangeRate": 0.174482254303417,
+      "MaxChangeRate": 0.5815563461775355,
+      "FirstTimestampUtc": "2026-08-06T15:38:23.5390643+00:00",
+      "LastTimestampUtc": "2026-08-06T15:43:22.748211+00:00",
+      "MeanByPhase": {
+        "Idle": 95.99834973388194,
+        "Setup": 96.02815724709278,
+        "RampUp": 96.04592993857078,
+        "Processing": 96.02932160107933,
+        "PeakLoad": 96.03702927966656,
+        "RampDown": 95.9919996382985,
+        "Cooling": 95.98946287398672,
+        "Waiting": 96.03885751955245
+      },
+      "PhaseStatistics": {
+        "Idle": {
+          "Samples": 22,
+          "Minimum": 95.67890943811686,
+          "Maximum": 96.27931181871155,
+          "Mean": 95.99834973388194,
+          "PercentInExpectedRange": 0
+        },
+        "Setup": {
+          "Samples": 24,
+          "Minimum": 95.74614705171481,
+          "Maximum": 96.24928890417627,
+          "Mean": 96.02815724709278,
+          "PercentInExpectedRange": 100
+        },
+        "RampUp": {
+          "Samples": 24,
+          "Minimum": 95.78866535209103,
+          "Maximum": 96.30833043895593,
+          "Mean": 96.04592993857078,
+          "PercentInExpectedRange": 100
+        },
+        "Processing": {
+          "Samples": 73,
+          "Minimum": 95.71231705795424,
+          "Maximum": 96.28969042629411,
+          "Mean": 96.02932160107933,
+          "PercentInExpectedRange": 100
+        },
+        "PeakLoad": {
+          "Samples": 30,
+          "Minimum": 95.75783658085875,
+          "Maximum": 96.2464215544696,
+          "Mean": 96.03702927966656,
+          "PercentInExpectedRange": 100
+        },
+        "RampDown": {
+          "Samples": 25,
+          "Minimum": 95.72583194805172,
+          "Maximum": 96.24299701491202,
+          "Mean": 95.9919996382985,
+          "PercentInExpectedRange": 0
+        },
+        "Cooling": {
+          "Samples": 72,
+          "Minimum": 95.72838990509108,
+          "Maximum": 96.2174810061029,
+          "Mean": 95.98946287398672,
+          "PercentInExpectedRange": 0
+        },
+        "Waiting": {
+          "Samples": 26,
+          "Minimum": 95.7167358619888,
+          "Maximum": 96.24998550387312,
+          "Mean": 96.03885751955245,
+          "PercentInExpectedRange": 0
+        }
+      },
+      "PhaseEvaluationPassed": true,
+      "PhaseEvaluationNotes": ""
+    },
+    {
+      "ProfileId": "",
+      "SignalId": "Thermal.CabinetTemperature",
+      "Unit": "\u00B0C",
+      "NormalMinimum": 29,
+      "NormalMaximum": 34,
+      "HardMinimum": 10,
+      "HardMaximum": 70,
+      "Samples": 296,
+      "Minimum": 32.63053483465956,
+      "Maximum": 37.203941283408476,
+      "Mean": 35.57306192236905,
+      "Median": 36.076807949568206,
+      "StandardDeviation": 2.5474003998838226,
+      "PercentWithinNormal": 18.91891891891892,
+      "PercentBelowNormal": 0,
+      "PercentAboveNormal": 81.08108108108108,
+      "PercentAtHardMinimum": 0,
+      "PercentAtHardMaximum": 0,
+      "ChangeCount": 295,
+      "AverageChangeRate": 0.13297506143272406,
+      "MaxChangeRate": 0.864221653489146,
+      "FirstTimestampUtc": "2026-08-06T15:38:23.5388928+00:00",
+      "LastTimestampUtc": "2026-08-06T15:43:22.7480432+00:00",
+      "MeanByPhase": {
+        "Idle": 36.2632671446974,
+        "Setup": 35.74132129312711,
+        "RampUp": 35.142684703416265,
+        "Processing": 35.20500255267529,
+        "PeakLoad": 35.26351238442237,
+        "RampDown": 35.43405929527312,
+        "Cooling": 36.18248198732307,
+        "Waiting": 36.32450360306127
+      },
+      "PhaseStatistics": {
+        "Idle": {
+          "Samples": 24,
+          "Minimum": 32.65000392859596,
+          "Maximum": 37.203941283408476,
+          "Mean": 36.2632671446974,
+          "PercentInExpectedRange": 0
+        },
+        "Setup": {
+          "Samples": 25,
+          "Minimum": 32.7237781989737,
+          "Maximum": 37.176168556644186,
+          "Mean": 35.74132129312711,
+          "PercentInExpectedRange": 0
+        },
+        "RampUp": {
+          "Samples": 25,
+          "Minimum": 32.65913074773366,
+          "Maximum": 36.363338544546984,
+          "Mean": 35.142684703416265,
+          "PercentInExpectedRange": 0
+        },
+        "Processing": {
+          "Samples": 72,
+          "Minimum": 32.64130704191505,
+          "Maximum": 36.5275834969799,
+          "Mean": 35.20500255267529,
+          "PercentInExpectedRange": 0
+        },
+        "PeakLoad": {
+          "Samples": 30,
+          "Minimum": 32.67587810323696,
+          "Maximum": 36.06789928207971,
+          "Mean": 35.26351238442237,
+          "PercentInExpectedRange": 0
+        },
+        "RampDown": {
+          "Samples": 24,
+          "Minimum": 32.644427864733636,
+          "Maximum": 36.28124089830303,
+          "Mean": 35.43405929527312,
+          "PercentInExpectedRange": 0
+        },
+        "Cooling": {
+          "Samples": 72,
+          "Minimum": 32.63053483465956,
+          "Maximum": 37.104852105952006,
+          "Mean": 36.18248198732307,
+          "PercentInExpectedRange": 0
+        },
+        "Waiting": {
+          "Samples": 24,
+          "Minimum": 32.67009958270603,
+          "Maximum": 37.16224868491183,
+          "Mean": 36.32450360306127,
+          "PercentInExpectedRange": 0
+        }
+      },
+      "PhaseEvaluationPassed": true,
+      "PhaseEvaluationNotes": ""
+    }
+  ]
+}

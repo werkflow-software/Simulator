@@ -1,0 +1,60 @@
+{
+  "StartedAtUtc": "2026-08-06T15:38:20.4402495Z",
+  "EndedAtUtc": "2026-08-06T15:38:21.3781728Z",
+  "Seed": 42,
+  "Passed": true,
+  "Laser": {
+    "ProfileId": "laser-processing-machine-300",
+    "PhaseChanges": 59,
+    "DistinctPhases": 8,
+    "JobChanges": 7,
+    "CurrentPhase": "Processing",
+    "JobName": "JOB-002",
+    "PartName": "PART-B",
+    "MotorTemperature": 58.35603834161491,
+    "MotorTemperatureInNormalRange": false,
+    "ProcessingMotorTemperatureMean": 58.35603834161491
+  },
+  "Bending": {
+    "ProfileId": "bending-hydraulic-machine-300",
+    "PhaseChanges": 59,
+    "DistinctPhases": 8,
+    "JobChanges": 7,
+    "CurrentPhase": "Processing",
+    "JobName": "JOB-002",
+    "PartName": "PART-B",
+    "MotorTemperature": 62.829668208501246,
+    "MotorTemperatureInNormalRange": false,
+    "ProcessingMotorTemperatureMean": 62.829668208501246
+  },
+  "DependencyChecks": [
+    {
+      "Pair": "Friction \u2192 Axis01.MotorCurrent",
+      "Direction": "positive",
+      "LowValue": 4.893764776348118,
+      "HighValue": 5.371080980102082,
+      "Passed": true
+    },
+    {
+      "Pair": "Friction \u2192 Axis01.Speed",
+      "Direction": "negative",
+      "LowValue": 936.1630333277517,
+      "HighValue": 947.157406797124,
+      "Passed": true
+    },
+    {
+      "Pair": "MechanicalLoad \u2192 Axis01.MotorCurrent",
+      "Direction": "positive",
+      "LowValue": 5.125485591882443,
+      "HighValue": 5.960741294636937,
+      "Passed": true
+    },
+    {
+      "Pair": "Thermal inertia",
+      "Direction": "delayed",
+      "LowValue": 0,
+      "HighValue": 0,
+      "Passed": true
+    }
+  ]
+}

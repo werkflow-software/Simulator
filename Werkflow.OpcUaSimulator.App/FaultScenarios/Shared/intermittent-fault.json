@@ -1,0 +1,99 @@
+{
+  "scenarioId": "intermittent-fault",
+  "scenarioVersion": "1.0",
+  "displayName": "Intermittent Fault",
+  "description": "Intermittierende mechanische Lastspitzen simulieren sporadische Fehler ohne dauerhafte Degradation.",
+  "machineProfileIds": [
+    "laser-processing-machine-300",
+    "bending-hydraulic-machine-300"
+  ],
+  "category": "intermittent",
+  "severity": "medium",
+  "defaultDuration": "00:05:00",
+  "minimumDuration": "00:00:30",
+  "maximumDuration": "00:30:00",
+  "defaultIntensity": 1.0,
+  "minimumIntensity": 0.25,
+  "maximumIntensity": 1.5,
+  "phases": [
+    { "phase": "initiating", "durationFraction": 0.10 },
+    { "phase": "developing", "durationFraction": 0.20 },
+    { "phase": "degraded", "durationFraction": 0.25 },
+    { "phase": "critical", "durationFraction": 0.25 },
+    { "phase": "faulted", "durationFraction": 0.20 }
+  ],
+  "effects": [
+    {
+      "effectId": "mechanical-load-pulse",
+      "targetType": "hiddenState",
+      "targetId": "MechanicalLoad",
+      "effectType": "intermittentPulse",
+      "startPhase": "initiating",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.65,
+      "ratePerSimulationMinute": 0.0,
+      "delay": "00:00:10",
+      "inertia": 1.0,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.8,
+      "pulseIntervalSeconds": 12,
+      "pulseDurationSeconds": 2.5,
+      "isEnabled": true
+    },
+    {
+      "effectId": "press-load-pulse-bending",
+      "targetType": "hiddenState",
+      "targetId": "PressLoad",
+      "effectType": "intermittentPulse",
+      "startPhase": "developing",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.5,
+      "ratePerSimulationMinute": 0.0,
+      "delay": "00:00:15",
+      "inertia": 1.0,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.7,
+      "pulseIntervalSeconds": 15,
+      "pulseDurationSeconds": 3,
+      "isEnabled": true
+    }
+  ],
+  "thresholdRules": [
+    {
+      "ruleId": "intermittent-vibration-spike",
+      "sourceType": "signal",
+      "sourceId": "Axis01.VibrationRms",
+      "comparison": "greaterThanOrEqual",
+      "thresholdValue": 5.0,
+      "minimumDuration": "00:00:05",
+      "faultCode": "INTERMITTENT_MECH_FAULT",
+      "faultMessage": "Intermittierender mechanischer Fehler – Vibrationsspitze",
+      "setErrorActive": true,
+      "setMachineStateError": true,
+      "stopProduction": true,
+      "keepServerOnline": true,
+      "autoRecover": true,
+      "isEnabled": true,
+      "disabledInControlRun": true
+    }
+  ],
+  "recovery": {
+    "recoveryType": "oscillationDecay",
+    "duration": "00:01:30",
+    "rate": 0.35,
+    "targetNormalState": 0.0,
+    "keepMachineFaultedUntilRecovered": false,
+    "clearErrorAtRecoveryStart": true,
+    "clearErrorAtRecoveryEnd": true,
+    "resumeProductionAfterRecovery": true,
+    "minimumStableDuration": "00:00:15"
+  },
+  "canRunInParallel": true,
+  "mutuallyExclusiveScenarioIds": [],
+  "isEnabled": true,
+  "tags": ["intermittent", "pulse", "mechanical", "shared"],
+  "supportsNonFaultingControlRun": false,
+  "priority": 5
+}

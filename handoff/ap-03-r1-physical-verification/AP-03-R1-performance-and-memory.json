@@ -1,0 +1,174 @@
+{
+  "singleMachineMemory": [
+    {
+      "TimestampUtc": "2026-08-06T12:05:49.5451363Z",
+      "WorkingSetMb": 374.14453125,
+      "PrivateMemoryMb": 305.0234375,
+      "GcHeapMb": 231.53836059570312,
+      "Gen0Collections": 152,
+      "Gen1Collections": 72,
+      "Gen2Collections": 15,
+      "ActiveEngines": 1,
+      "ActivePublishers": 1,
+      "RegisteredNodes": 309
+    },
+    {
+      "TimestampUtc": "2026-08-06T12:05:50.5517674Z",
+      "WorkingSetMb": 377.515625,
+      "PrivateMemoryMb": 305.6796875,
+      "GcHeapMb": 230.54681396484375,
+      "Gen0Collections": 153,
+      "Gen1Collections": 73,
+      "Gen2Collections": 15,
+      "ActiveEngines": 1,
+      "ActivePublishers": 1,
+      "RegisteredNodes": 309
+    },
+    {
+      "TimestampUtc": "2026-08-06T12:06:05.6754684Z",
+      "WorkingSetMb": 379.54296875,
+      "PrivateMemoryMb": 306.73828125,
+      "GcHeapMb": 233.3958969116211,
+      "Gen0Collections": 160,
+      "Gen1Collections": 74,
+      "Gen2Collections": 15,
+      "ActiveEngines": 1,
+      "ActivePublishers": 1,
+      "RegisteredNodes": 309
+    },
+    {
+      "TimestampUtc": "2026-08-06T12:06:20.8277215Z",
+      "WorkingSetMb": 377.5078125,
+      "PrivateMemoryMb": 303.88671875,
+      "GcHeapMb": 221.01805877685547,
+      "Gen0Collections": 169,
+      "Gen1Collections": 76,
+      "Gen2Collections": 16,
+      "ActiveEngines": 1,
+      "ActivePublishers": 1,
+      "RegisteredNodes": 309
+    },
+    {
+      "TimestampUtc": "2026-08-06T12:06:35.9406176Z",
+      "WorkingSetMb": 376.59765625,
+      "PrivateMemoryMb": 303.0859375,
+      "GcHeapMb": 222.95362091064453,
+      "Gen0Collections": 176,
+      "Gen1Collections": 78,
+      "Gen2Collections": 16,
+      "ActiveEngines": 1,
+      "ActivePublishers": 1,
+      "RegisteredNodes": 309
+    },
+    {
+      "TimestampUtc": "2026-08-06T12:06:51.0437743Z",
+      "WorkingSetMb": 376.16796875,
+      "PrivateMemoryMb": 302.33984375,
+      "GcHeapMb": 222.708984375,
+      "Gen0Collections": 182,
+      "Gen1Collections": 78,
+      "Gen2Collections": 16,
+      "ActiveEngines": 1,
+      "ActivePublishers": 1,
+      "RegisteredNodes": 309
+    },
+    {
+      "TimestampUtc": "2026-08-06T12:07:06.1475533Z",
+      "WorkingSetMb": 402.28125,
+      "PrivateMemoryMb": 328.3515625,
+      "GcHeapMb": 227.22528839111328,
+      "Gen0Collections": 231,
+      "Gen1Collections": 102,
+      "Gen2Collections": 21,
+      "ActiveEngines": 1,
+      "ActivePublishers": 1,
+      "RegisteredNodes": 309
+    }
+  ],
+  "dualMachineMemory": [
+    {
+      "TimestampUtc": "2026-08-06T12:07:22.2417235Z",
+      "WorkingSetMb": 425.76953125,
+      "PrivateMemoryMb": 350.78125,
+      "GcHeapMb": 269.77933502197266,
+      "Gen0Collections": 271,
+      "Gen1Collections": 123,
+      "Gen2Collections": 25,
+      "ActiveEngines": 2,
+      "ActivePublishers": 2,
+      "RegisteredNodes": 616
+    },
+    {
+      "TimestampUtc": "2026-08-06T12:07:23.259937Z",
+      "WorkingSetMb": 425.72265625,
+      "PrivateMemoryMb": 350.72265625,
+      "GcHeapMb": 275.57750701904297,
+      "Gen0Collections": 271,
+      "Gen1Collections": 123,
+      "Gen2Collections": 25,
+      "ActiveEngines": 2,
+      "ActivePublishers": 2,
+      "RegisteredNodes": 616
+    },
+    {
+      "TimestampUtc": "2026-08-06T12:07:38.4129991Z",
+      "WorkingSetMb": 420.75390625,
+      "PrivateMemoryMb": 345.7109375,
+      "GcHeapMb": 271.7953872680664,
+      "Gen0Collections": 280,
+      "Gen1Collections": 124,
+      "Gen2Collections": 25,
+      "ActiveEngines": 2,
+      "ActivePublishers": 2,
+      "RegisteredNodes": 616
+    },
+    {
+      "TimestampUtc": "2026-08-06T12:07:53.566999Z",
+      "WorkingSetMb": 420.06640625,
+      "PrivateMemoryMb": 345.265625,
+      "GcHeapMb": 276.22398376464844,
+      "Gen0Collections": 288,
+      "Gen1Collections": 125,
+      "Gen2Collections": 25,
+      "ActiveEngines": 2,
+      "ActivePublishers": 2,
+      "RegisteredNodes": 616
+    },
+    {
+      "TimestampUtc": "2026-08-06T12:08:08.7108228Z",
+      "WorkingSetMb": 419.18359375,
+      "PrivateMemoryMb": 344.34765625,
+      "GcHeapMb": 271.40362548828125,
+      "Gen0Collections": 297,
+      "Gen1Collections": 126,
+      "Gen2Collections": 25,
+      "ActiveEngines": 2,
+      "ActivePublishers": 2,
+      "RegisteredNodes": 616
+    },
+    {
+      "TimestampUtc": "2026-08-06T12:08:23.8468143Z",
+      "WorkingSetMb": 419.55859375,
+      "PrivateMemoryMb": 344.65625,
+      "GcHeapMb": 274.8429870605469,
+      "Gen0Collections": 305,
+      "Gen1Collections": 126,
+      "Gen2Collections": 25,
+      "ActiveEngines": 2,
+      "ActivePublishers": 2,
+      "RegisteredNodes": 616
+    },
+    {
+      "TimestampUtc": "2026-08-06T12:08:38.9915421Z",
+      "WorkingSetMb": 419.14453125,
+      "PrivateMemoryMb": 344.24609375,
+      "GcHeapMb": 278.6542205810547,
+      "Gen0Collections": 313,
+      "Gen1Collections": 127,
+      "Gen2Collections": 25,
+      "ActiveEngines": 2,
+      "ActivePublishers": 2,
+      "RegisteredNodes": 616
+    }
+  ]
+}

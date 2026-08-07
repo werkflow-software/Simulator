@@ -1,0 +1,47 @@
+using System.Collections.Generic;
+using Werkflow.OpcUaSimulator.Core.Models;
+
+namespace Werkflow.OpcUaSimulator.Core.Defaults;
+
+public static class DefaultMachines
+{
+	public static List<MachineConfiguration> Create()
+	{
+		return new List<MachineConfiguration>
+		{
+			CreateMachine(1, 4840, "Schnell", "Schnelle Produktion mit geringer Störanfälligkeit", 1000, 0.3, 0.3, 5000, 30000, 5000, 30000, 2.0, MachineState.Idle),
+			CreateMachine(2, 4841, "Normal", "Normale Produktion mit seltenen Warnungen", 3500, 0.5, 0.5, 8000, 45000, 8000, 45000, 1.0, MachineState.Idle),
+			CreateMachine(3, 4842, "Langsam", "Langsame, stabile Produktion", 8000, 0.4, 0.3, 10000, 60000, 10000, 60000, 0.5, MachineState.Idle),
+			CreateMachine(4, 4843, "Störanfällig", "Leicht erhöhte Störwahrscheinlichkeit, global auf 25 % begrenzt", 2500, 1.0, 1.0, 10000, 90000, 10000, 90000, 1.0, MachineState.Idle)
+		};
+	}
+
+	private static MachineConfiguration CreateMachine(int index, int port, string profile, string description, int productionIntervalMs, double errorProb, double disconnectProb, int minError, int maxError, int minOffline, int maxOffline, double speedFactor, MachineState baseState, bool startInError = false)
+	{
+		MachineConfiguration machineConfiguration = new MachineConfiguration
+		{
+			Name = $"Maschine {index}",
+			Description = description,
+			Host = "localhost",
+			Port = port,
+			NamespaceUri = $"urn:werkflow:simulator:machine{index}",
+			ProductionIntervalMs = productionIntervalMs,
+			ErrorProbabilityPercent = errorProb,
+			DisconnectProbabilityPercent = disconnectProb,
+			MinErrorDurationMs = minError,
+			MaxErrorDurationMs = maxError,
+			MinOfflineDurationMs = minOffline,
+			MaxOfflineDurationMs = maxOffline,
+			ProductionSpeedFactor = speedFactor,
+			BaseState = baseState,
+			StartInErrorState = startInError,
+			Nodes = NodeMappingPresets.GetDefaultForMachine(index)
+		};
+		if ((uint)(index - 1) <= 1u)
+		{
+			machineConfiguration.PhysicalProfileId = ((index == 1) ? "laser-processing-machine-300" : "bending-hydraulic-machine-300");
+		}
+		machineConfiguration.UpdateEndpointFromHostPort();
+		return machineConfiguration;
+	}
+}

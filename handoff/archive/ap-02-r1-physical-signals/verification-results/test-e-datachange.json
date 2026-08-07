@@ -1,0 +1,86 @@
+[
+  {
+    "NodePath": "Process.SpindleSpeed",
+    "DataType": "Double",
+    "InitialValue": "2998,73",
+    "LaterValue": "2998,73",
+    "InitialSourceTimestamp": "2026-08-05T17:35:58.8585165Z",
+    "LaterSourceTimestamp": "2026-08-05T17:35:58.8585165Z",
+    "TypeMatches": true,
+    "SubscriptionReceived": true,
+    "SourceTimestampUpdated": false,
+    "CounterMonotonic": true
+  },
+  {
+    "NodePath": "Production.OeeAvailability",
+    "DataType": "Float",
+    "InitialValue": "94,85777",
+    "LaterValue": "94,85777",
+    "InitialSourceTimestamp": "2026-08-05T17:45:59.4166576Z",
+    "LaterSourceTimestamp": "2026-08-05T17:45:59.4166576Z",
+    "TypeMatches": true,
+    "SubscriptionReceived": true,
+    "SourceTimestampUpdated": false,
+    "CounterMonotonic": true
+  },
+  {
+    "NodePath": "Production.QueueLength",
+    "DataType": "Int32",
+    "InitialValue": "0",
+    "LaterValue": "0",
+    "InitialSourceTimestamp": "2026-08-05T17:35:58.8339379Z",
+    "LaterSourceTimestamp": "2026-08-05T17:35:58.8339379Z",
+    "TypeMatches": true,
+    "SubscriptionReceived": true,
+    "SourceTimestampUpdated": false,
+    "CounterMonotonic": true
+  },
+  {
+    "NodePath": "Production.CycleCounter",
+    "DataType": "Int64",
+    "InitialValue": "702",
+    "LaterValue": "702",
+    "InitialSourceTimestamp": "2026-08-05T17:46:12.0812047Z",
+    "LaterSourceTimestamp": "2026-08-05T17:46:12.0812047Z",
+    "TypeMatches": true,
+    "SubscriptionReceived": true,
+    "SourceTimestampUpdated": false,
+    "CounterMonotonic": true
+  },
+  {
+    "NodePath": "Production.AutomaticMode",
+    "DataType": "Boolean",
+    "InitialValue": "True",
+    "LaterValue": "True",
+    "InitialSourceTimestamp": "2026-08-05T17:35:58.8337803Z",
+    "LaterSourceTimestamp": "2026-08-05T17:35:58.8337803Z",
+    "TypeMatches": true,
+    "SubscriptionReceived": true,
+    "SourceTimestampUpdated": false,
+    "CounterMonotonic": true
+  },
+  {
+    "NodePath": "Production.ActiveProgram",
+    "DataType": "String",
+    "InitialValue": "PRG-12045",
+    "LaterValue": "PRG-12045",
+    "InitialSourceTimestamp": "2026-08-05T17:35:58.833753Z",
+    "LaterSourceTimestamp": "2026-08-05T17:35:58.833753Z",
+    "TypeMatches": true,
+    "SubscriptionReceived": true,
+    "SourceTimestampUpdated": false,
+    "CounterMonotonic": true
+  },
+  {
+    "NodePath": "Production.LastCycleStartUtc",
+    "DataType": "DateTime",
+    "InitialValue": "05.08.2026 16:35:57",
+    "LaterValue": "05.08.2026 16:35:57",
+    "InitialSourceTimestamp": "2026-08-05T17:35:58.8338459Z",
+    "LaterSourceTimestamp": "2026-08-05T17:35:58.8338459Z",
+    "TypeMatches": true,
+    "SubscriptionReceived": true,
+    "SourceTimestampUpdated": false,
+    "CounterMonotonic": true
+  }
+]

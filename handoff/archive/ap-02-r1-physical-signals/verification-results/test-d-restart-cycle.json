@@ -1,0 +1,95 @@
+{
+  "StartedAtUtc": "2026-08-05T17:58:30.5191904Z",
+  "EndedAtUtc": "2026-08-05T17:59:05.9755936Z",
+  "Duration": "00:00:35.4564032",
+  "Options": {
+    "MachineCount": 1,
+    "PublishDuration": "00:00:30",
+    "Seed": 42,
+    "TestPauseResume": false,
+    "TestDataChange": false,
+    "TestStopRestartCycles": 3
+  },
+  "Endpoints": [
+    "opc.tcp://localhost:4850"
+  ],
+  "MachineNames": [
+    "Maschine 1"
+  ],
+  "SignalCountPerMachine": [
+    308
+  ],
+  "RegisteredNodesPerMachine": [
+    308
+  ],
+  "UpdatesPerSecondPerMachine": [
+    83.14848543144048
+  ],
+  "AveragePublishDurationMsPerMachine": [
+    0.0008309417040358516
+  ],
+  "MaxPublishDurationMsPerMachine": [
+    0.0998
+  ],
+  "FailedUpdatesPerMachine": [
+    0
+  ],
+  "SkippedIdenticalPerMachine": [
+    6576
+  ],
+  "ActiveServers": 1,
+  "ActivePublishers": 1,
+  "MemoryStartMb": 268.3828125,
+  "MemoryEndMb": 197.69140625,
+  "Machine1StoppedSuccessfully": false,
+  "Machine2StillUpdatingWhileMachine1Stopped": false,
+  "Machine2UpdatesWhileMachine1Stopped": 0,
+  "Machine1RestartNodeCount": 0,
+  "Machine1RestartSameNodeCount": false,
+  "PublisherCountAfterMachine1Restart": 0,
+  "ValuesStableDuringPause": false,
+  "ServerReachableDuringPause": false,
+  "PublishersDuringPause": 0,
+  "PublisherCountAfterResume": 0,
+  "NoDuplicatePublishersAfterResume": false,
+  "StopRestartCycles": [
+    {
+      "Cycle": 1,
+      "NodesBeforeStop": 308,
+      "RegistryCleared": true,
+      "ServerStopped": true,
+      "NodesAfterRestart": 308,
+      "SameNodeCount": true,
+      "PublisherCount": 1,
+      "SinglePublisher": true,
+      "PublishersBeforeStop": 1,
+      "PortAvailable": true
+    },
+    {
+      "Cycle": 2,
+      "NodesBeforeStop": 308,
+      "RegistryCleared": true,
+      "ServerStopped": true,
+      "NodesAfterRestart": 308,
+      "SameNodeCount": true,
+      "PublisherCount": 1,
+      "SinglePublisher": true,
+      "PublishersBeforeStop": 1,
+      "PortAvailable": true
+    },
+    {
+      "Cycle": 3,
+      "NodesBeforeStop": 308,
+      "RegistryCleared": true,
+      "ServerStopped": true,
+      "NodesAfterRestart": 308,
+      "SameNodeCount": true,
+      "PublisherCount": 1,
+      "SinglePublisher": true,
+      "PublishersBeforeStop": 1,
+      "PortAvailable": true
+    }
+  ],
+  "DataChangeResults": [],
+  "Exceptions": []
+}

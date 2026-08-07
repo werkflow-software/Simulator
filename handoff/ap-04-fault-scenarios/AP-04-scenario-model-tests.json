@@ -1,0 +1,689 @@
+{
+  "VerificationRunId": "ap4-20260806200140-1933baa2a2c14238a8a51",
+  "StartedAtUtc": "2026-08-06T20:01:40.2939902Z",
+  "EndedAtUtc": "2026-08-06T20:01:43.0768474Z",
+  "Seed": 42,
+  "AcceleratedTimeFactor": 12,
+  "Results": [
+    {
+      "ScenarioId": "hydraulic-leak",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "BaselineHiddenStates": {
+        "HydraulicEfficiency": 0.88,
+        "PressLoad": 0.5
+      },
+      "AfterHiddenStates": {
+        "HydraulicEfficiency": 0.5646752680944735,
+        "PressLoad": 0.5490196400830749
+      },
+      "Deltas": {
+        "HydraulicEfficiency": -0.31532473190552646,
+        "PressLoad": 0.04901964008307491
+      },
+      "DirectionChecks": [
+        {
+          "HiddenStateId": "HydraulicEfficiency",
+          "ExpectedDirection": "Decrease",
+          "MeasuredDelta": -0.6353247319055264,
+          "MinimumDelta": 0.0001,
+          "Passed": true
+        },
+        {
+          "HiddenStateId": "PressLoad",
+          "ExpectedDirection": "Decrease",
+          "MeasuredDelta": -0.43552010503900085,
+          "MinimumDelta": 0.0001,
+          "Passed": true
+        }
+      ],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "oil-aging",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "BaselineHiddenStates": {
+        "OilCondition": 0.85,
+        "PumpEfficiency": 0.9
+      },
+      "AfterHiddenStates": {
+        "OilCondition": 0.1357911368418869,
+        "PumpEfficiency": 0.7949999999999999
+      },
+      "Deltas": {
+        "OilCondition": -0.714208863158113,
+        "PumpEfficiency": -0.1050000000000001
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "tool-deflection",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "BaselineHiddenStates": {
+        "ToolDeflection": 0.18,
+        "MaterialSpringback": 0.3
+      },
+      "AfterHiddenStates": {
+        "ToolDeflection": 1.1404320940302362,
+        "MaterialSpringback": 1.2
+      },
+      "Deltas": {
+        "ToolDeflection": 0.9604320940302362,
+        "MaterialSpringback": 0.8999999999999999
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "valve-delay",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "BaselineHiddenStates": {
+        "ValveResponse": 0.9,
+        "PressLoad": 0.5
+      },
+      "AfterHiddenStates": {
+        "ValveResponse": 1.1220828594415229,
+        "PressLoad": 1.0196612525642674
+      },
+      "Deltas": {
+        "ValveResponse": 0.22208285944152284,
+        "PressLoad": 0.5196612525642674
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "bearing-degradation",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "MechanicalLoad": 0.45,
+        "ThermalLoad": 0.4
+      },
+      "AfterHiddenStates": {
+        "MechanicalLoad": 1.2,
+        "ThermalLoad": 1.2
+      },
+      "Deltas": {
+        "MechanicalLoad": 0.75,
+        "ThermalLoad": 0.7999999999999999
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "focus-drift",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "AxisAlignment": 0.9,
+        "MechanicalLoad": 0.45
+      },
+      "AfterHiddenStates": {
+        "AxisAlignment": 0.4202661288710824,
+        "MechanicalLoad": 1.2
+      },
+      "Deltas": {
+        "AxisAlignment": -0.47973387112891763,
+        "MechanicalLoad": 0.75
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "imbalance",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "MechanicalLoad": 0.45
+      },
+      "AfterHiddenStates": {
+        "MechanicalLoad": 1.2
+      },
+      "Deltas": {
+        "MechanicalLoad": 0.75
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "lubricant-shortage",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "LubricationQuality": 0.85,
+        "Friction": 0.28
+      },
+      "AfterHiddenStates": {
+        "LubricationQuality": 0.2435715915157566,
+        "Friction": 0.8601728586689841
+      },
+      "Deltas": {
+        "LubricationQuality": -0.6064284084842434,
+        "Friction": 0.580172858668984
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "optics-contamination",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "OpticalCondition": 0.93,
+        "ProcessDemand": 0.55
+      },
+      "AfterHiddenStates": {
+        "OpticalCondition": 0.32859180577203684,
+        "ProcessDemand": 0.89625
+      },
+      "Deltas": {
+        "OpticalCondition": -0.6014081942279632,
+        "ProcessDemand": 0.34624999999999995
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "stiff-linear-guide",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "Friction": 0.28,
+        "MechanicalLoad": 0.45
+      },
+      "AfterHiddenStates": {
+        "Friction": 0.6831795584852329,
+        "MechanicalLoad": 1.2
+      },
+      "Deltas": {
+        "Friction": 0.4031795584852329,
+        "MechanicalLoad": 0.75
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "coolant-loss",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "CoolingEfficiency": 0.92,
+        "AmbientInfluence": 0.22
+      },
+      "AfterHiddenStates": {
+        "CoolingEfficiency": 0.050116903490739384,
+        "AmbientInfluence": 0.6389695221519469
+      },
+      "Deltas": {
+        "CoolingEfficiency": -0.8698830965092607,
+        "AmbientInfluence": 0.41896952215194694
+      },
+      "DirectionChecks": [
+        {
+          "HiddenStateId": "CoolingEfficiency",
+          "ExpectedDirection": "Decrease",
+          "MeasuredDelta": -0.8698830965092607,
+          "MinimumDelta": 0.005,
+          "Passed": true
+        }
+      ],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "coolant-loss",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "BaselineHiddenStates": {
+        "AmbientInfluence": 0.22
+      },
+      "AfterHiddenStates": {
+        "AmbientInfluence": 0.6389695221519469
+      },
+      "Deltas": {
+        "AmbientInfluence": 0.41896952215194694
+      },
+      "DirectionChecks": [
+        {
+          "HiddenStateId": "AmbientInfluence",
+          "ExpectedDirection": "Increase",
+          "MeasuredDelta": 0.41896952215194694,
+          "MinimumDelta": 0.0001,
+          "Passed": true
+        }
+      ],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "fan-degradation",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "AmbientInfluence": 0.22
+      },
+      "AfterHiddenStates": {
+        "AmbientInfluence": 0.716853917212695
+      },
+      "Deltas": {
+        "AmbientInfluence": 0.496853917212695
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "fan-degradation",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "BaselineHiddenStates": {
+        "AmbientInfluence": 0.22,
+        "StructuralThermalLoad": 0.35
+      },
+      "AfterHiddenStates": {
+        "AmbientInfluence": 0.716853917212695,
+        "StructuralThermalLoad": 1.2
+      },
+      "Deltas": {
+        "AmbientInfluence": 0.496853917212695,
+        "StructuralThermalLoad": 0.85
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "filter-contamination",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "CoolingEfficiency": 0.92,
+        "AmbientInfluence": 0.22
+      },
+      "AfterHiddenStates": {
+        "CoolingEfficiency": 0.10618923296189144,
+        "AmbientInfluence": 0.5565253893638866
+      },
+      "Deltas": {
+        "CoolingEfficiency": -0.8138107670381086,
+        "AmbientInfluence": 0.33652538936388665
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "filter-contamination",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "BaselineHiddenStates": {
+        "AmbientInfluence": 0.22
+      },
+      "AfterHiddenStates": {
+        "AmbientInfluence": 0.5565253893638866
+      },
+      "Deltas": {
+        "AmbientInfluence": 0.33652538936388665
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "intermittent-fault",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "MechanicalLoad": 0.45
+      },
+      "AfterHiddenStates": {
+        "MechanicalLoad": 1.2
+      },
+      "Deltas": {
+        "MechanicalLoad": 0.75
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "intermittent-fault",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "BaselineHiddenStates": {
+        "PressLoad": 0.5
+      },
+      "AfterHiddenStates": {
+        "PressLoad": 1.1725495305131812
+      },
+      "Deltas": {
+        "PressLoad": 0.6725495305131812
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "laser-overheating-axis-drive",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "MechanicalLoad": 0.45,
+        "ThermalLoad": 0.4
+      },
+      "AfterHiddenStates": {
+        "MechanicalLoad": 1.2,
+        "ThermalLoad": 1.2
+      },
+      "Deltas": {
+        "MechanicalLoad": 0.75,
+        "ThermalLoad": 0.7999999999999999
+      },
+      "DirectionChecks": [
+        {
+          "HiddenStateId": "MechanicalLoad",
+          "ExpectedDirection": "Increase",
+          "MeasuredDelta": 0.75,
+          "MinimumDelta": 0.01,
+          "Passed": true
+        },
+        {
+          "HiddenStateId": "ThermalLoad",
+          "ExpectedDirection": "Increase",
+          "MeasuredDelta": 0.7999999999999999,
+          "MinimumDelta": 0.005,
+          "Passed": true
+        }
+      ],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "material-resistance-increased",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "MaterialResistance": 0.5
+      },
+      "AfterHiddenStates": {
+        "MaterialResistance": 1.0316379144443648
+      },
+      "Deltas": {
+        "MaterialResistance": 0.5316379144443648
+      },
+      "DirectionChecks": [
+        {
+          "HiddenStateId": "MaterialResistance",
+          "ExpectedDirection": "Increase",
+          "MeasuredDelta": 0.5316379144443648,
+          "MinimumDelta": 0.005,
+          "Passed": true
+        }
+      ],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "material-resistance-increased",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "BaselineHiddenStates": {
+        "MaterialSpringback": 0.3
+      },
+      "AfterHiddenStates": {
+        "MaterialSpringback": 1.2
+      },
+      "Deltas": {
+        "MaterialSpringback": 0.8999999999999999
+      },
+      "DirectionChecks": [
+        {
+          "HiddenStateId": "MaterialSpringback",
+          "ExpectedDirection": "Increase",
+          "MeasuredDelta": 0.8999999999999999,
+          "MinimumDelta": 0.005,
+          "Passed": true
+        }
+      ],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "power-instability",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "ElectricalStability": 0.95
+      },
+      "AfterHiddenStates": {
+        "ElectricalStability": 0.9439263340963506
+      },
+      "Deltas": {
+        "ElectricalStability": -0.006073665903649328
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "power-instability",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "BaselineHiddenStates": {
+        "ElectricalStability": 0.95
+      },
+      "AfterHiddenStates": {
+        "ElectricalStability": 0.9438502405829993
+      },
+      "Deltas": {
+        "ElectricalStability": -0.006149759417000689
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "pump-wear",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "Friction": 0.28
+      },
+      "AfterHiddenStates": {
+        "Friction": 0.4758592929364608
+      },
+      "Deltas": {
+        "Friction": 0.19585929293646076
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "pump-wear",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "BaselineHiddenStates": {
+        "PumpEfficiency": 0.9
+      },
+      "AfterHiddenStates": {
+        "PumpEfficiency": 0.6497239879667739
+      },
+      "Deltas": {
+        "PumpEfficiency": -0.25027601203322614
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "sensor-drift",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "ElectricalStability": 0.95
+      },
+      "AfterHiddenStates": {
+        "ElectricalStability": 0.96618534704679
+      },
+      "Deltas": {
+        "ElectricalStability": 0.01618534704679009
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "sensor-drift",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "BaselineHiddenStates": {
+        "ElectricalStability": 0.95
+      },
+      "AfterHiddenStates": {
+        "ElectricalStability": 0.9663117449887599
+      },
+      "Deltas": {
+        "ElectricalStability": 0.01631174498875998
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "tool-wear",
+      "ProfileId": "laser-processing-machine-300",
+      "BaselineHiddenStates": {
+        "ToolCondition": 0.88
+      },
+      "AfterHiddenStates": {
+        "ToolCondition": 0.32762766012990413
+      },
+      "Deltas": {
+        "ToolCondition": -0.5523723398700959
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "tool-wear",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "BaselineHiddenStates": {
+        "MechanicalWear": 0.2
+      },
+      "AfterHiddenStates": {
+        "MechanicalWear": 0.6847472074342045
+      },
+      "Deltas": {
+        "MechanicalWear": 0.48474720743420446
+      },
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "communication-drop",
+      "ProfileId": "technical-learning-machine-300",
+      "BaselineHiddenStates": {},
+      "AfterHiddenStates": {},
+      "Deltas": {},
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "ScenarioId": "signal-freeze",
+      "ProfileId": "technical-learning-machine-300",
+      "BaselineHiddenStates": {},
+      "AfterHiddenStates": {},
+      "Deltas": {},
+      "DirectionChecks": [],
+      "ActiveScenarioCount": 1,
+      "Phase": "Faulted",
+      "EngineTicks": 96,
+      "Passed": true,
+      "Error": null
+    }
+  ],
+  "Passed": true,
+  "FailedCriteria": []
+}

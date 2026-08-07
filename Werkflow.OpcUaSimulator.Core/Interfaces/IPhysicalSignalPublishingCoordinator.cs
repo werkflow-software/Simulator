@@ -1,0 +1,35 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Werkflow.OpcUaSimulator.Core.Models;
+using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
+
+namespace Werkflow.OpcUaSimulator.Core.Interfaces;
+
+public interface IPhysicalSignalPublishingCoordinator
+{
+	void PrepareMachine(MachineConfiguration machine, int simulationSeed);
+
+	Task StartForMachineAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken));
+
+	Task StopForMachineAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken));
+
+	Task StopAllAsync(CancellationToken cancellationToken = default(CancellationToken));
+
+	Task PauseAllAsync(CancellationToken cancellationToken = default(CancellationToken));
+
+	Task ResumeAllAsync(CancellationToken cancellationToken = default(CancellationToken));
+
+	PhysicalMachineSession? GetSession(Guid machineId);
+
+	IReadOnlyList<PhysicalMachineSession> GetSessions();
+
+	Task<bool> SetManualValueAsync(Guid machineId, string signalId, object value, CancellationToken cancellationToken = default(CancellationToken));
+
+	void EnableManualOverride(Guid machineId, bool enabled);
+
+	bool TrySetGenerationMode(Guid machineId, SignalGenerationMode mode);
+
+	SignalGenerationMode GetGenerationMode(Guid machineId);
+}

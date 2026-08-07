@@ -1,0 +1,95 @@
+{
+  "scenarioId": "material-resistance-increased",
+  "scenarioVersion": "1.0",
+  "displayName": "Increased Material Resistance",
+  "description": "Erhöhter Materialwiderstand belastet Prozess und Antriebe, verlängert Zykluszeiten und reduziert Qualität.",
+  "machineProfileIds": [
+    "laser-processing-machine-300",
+    "bending-hydraulic-machine-300"
+  ],
+  "category": "process",
+  "severity": "medium",
+  "defaultDuration": "00:05:00",
+  "minimumDuration": "00:00:30",
+  "maximumDuration": "00:30:00",
+  "defaultIntensity": 1.0,
+  "minimumIntensity": 0.25,
+  "maximumIntensity": 1.5,
+  "phases": [
+    { "phase": "initiating", "durationFraction": 0.10 },
+    { "phase": "developing", "durationFraction": 0.20 },
+    { "phase": "degraded", "durationFraction": 0.25 },
+    { "phase": "critical", "durationFraction": 0.25 },
+    { "phase": "faulted", "durationFraction": 0.20 }
+  ],
+  "effects": [
+    {
+      "effectId": "material-resistance-rise",
+      "targetType": "hiddenState",
+      "targetId": "MaterialResistance",
+      "effectType": "additiveDrift",
+      "startPhase": "initiating",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.4,
+      "ratePerSimulationMinute": 0.05,
+      "delay": "00:00:00",
+      "inertia": 1.0,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.8,
+      "isEnabled": true
+    },
+    {
+      "effectId": "material-springback-rise",
+      "targetType": "hiddenState",
+      "targetId": "MaterialSpringback",
+      "effectType": "additiveDrift",
+      "startPhase": "developing",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.25,
+      "ratePerSimulationMinute": 0.035,
+      "delay": "00:00:20",
+      "inertia": 1.1,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.55,
+      "isEnabled": true
+    }
+  ],
+  "thresholdRules": [
+    {
+      "ruleId": "quality-index-low",
+      "sourceType": "signal",
+      "sourceId": "Process.QualityIndex",
+      "comparison": "lessThanOrEqual",
+      "thresholdValue": 92.0,
+      "minimumDuration": "00:00:30",
+      "faultCode": "PROCESS_MATERIAL_RESISTANCE",
+      "faultMessage": "Materialwiderstand erhöht – Prozessqualität unter Grenzwert",
+      "setErrorActive": true,
+      "setMachineStateError": true,
+      "stopProduction": true,
+      "keepServerOnline": true,
+      "autoRecover": false,
+      "isEnabled": true,
+      "disabledInControlRun": true
+    }
+  ],
+  "recovery": {
+    "recoveryType": "exponential",
+    "duration": "00:03:00",
+    "rate": 0.15,
+    "targetNormalState": 0.0,
+    "keepMachineFaultedUntilRecovered": true,
+    "clearErrorAtRecoveryStart": false,
+    "clearErrorAtRecoveryEnd": true,
+    "resumeProductionAfterRecovery": true,
+    "minimumStableDuration": "00:00:30"
+  },
+  "canRunInParallel": true,
+  "mutuallyExclusiveScenarioIds": [],
+  "isEnabled": true,
+  "tags": ["process", "material", "resistance", "shared"],
+  "supportsNonFaultingControlRun": true,
+  "priority": 8
+}

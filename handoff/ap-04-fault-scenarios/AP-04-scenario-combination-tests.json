@@ -1,0 +1,16 @@
+{
+  "VerificationRunId": "ap4-20260806200140-1933baa2a2c14238a8a51",
+  "StartedAtUtc": "2026-08-06T20:01:43.1084166Z",
+  "EndedAtUtc": "2026-08-06T20:01:43.2176737Z",
+  "Seed": 42,
+  "AcceleratedTimeFactor": 12,
+  "ActiveScenarioCount": 2,
+  "BothScenariosActive": true,
+  "CoolantLossTargetDelta": -0.8710565875637241,
+  "MaterialResistanceTargetDelta": 0.5345667384483157,
+  "CoolingEfficiencyDecreased": true,
+  "MaterialResistanceIncreased": true,
+  "ResetClearsActiveScenarios": true,
+  "Passed": true,
+  "FailedCriteria": []
+}

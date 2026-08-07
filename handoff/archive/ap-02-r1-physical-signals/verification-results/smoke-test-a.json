@@ -1,0 +1,144 @@
+{
+  "StartedAtUtc": "2026-08-05T18:54:53.0564813Z",
+  "EndedAtUtc": "2026-08-05T18:55:42.7246418Z",
+  "Duration": "00:00:49.6681605",
+  "Options": {
+    "MachineCount": 1,
+    "PublishDuration": "00:00:30",
+    "Seed": 42,
+    "TestPauseResume": true,
+    "TestDataChange": true,
+    "TestMachineIsolation": false,
+    "TestStopRestartCycles": 0
+  },
+  "Endpoints": [
+    "opc.tcp://localhost:14850"
+  ],
+  "MachineNames": [
+    "Maschine 1"
+  ],
+  "SignalCountPerMachine": [
+    308
+  ],
+  "RegisteredNodesPerMachine": [
+    308
+  ],
+  "UpdatesPerSecondPerMachine": [
+    101.57824711796621
+  ],
+  "AveragePublishDurationMsPerMachine": [
+    0.0006607757166947491
+  ],
+  "MaxPublishDurationMsPerMachine": [
+    0.057
+  ],
+  "FailedUpdatesPerMachine": [
+    0
+  ],
+  "SkippedIdenticalPerMachine": [
+    6254
+  ],
+  "ActiveServers": 1,
+  "ActivePublishers": 1,
+  "MemoryStartMb": 179.0625,
+  "MemoryEndMb": 196.0625,
+  "Machine1StoppedSuccessfully": false,
+  "Machine2StillUpdatingWhileMachine1Stopped": false,
+  "Machine2UpdatesWhileMachine1Stopped": 0,
+  "Machine1RestartNodeCount": 0,
+  "Machine1RestartSameNodeCount": false,
+  "PublisherCountAfterMachine1Restart": 0,
+  "ValuesStableDuringPause": true,
+  "ServerReachableDuringPause": true,
+  "PublishersDuringPause": 1,
+  "PublisherCountAfterResume": 1,
+  "NoDuplicatePublishersAfterResume": true,
+  "StopRestartCycles": [],
+  "DataChangeResults": [
+    {
+      "NodePath": "Process.SpindleSpeed",
+      "DataType": "Double",
+      "InitialValue": "3000,74",
+      "LaterValue": "3000,74",
+      "InitialSourceTimestamp": "2026-08-05T18:55:33.7898705Z",
+      "LaterSourceTimestamp": "2026-08-05T18:55:33.7898705Z",
+      "TypeMatches": true,
+      "SubscriptionReceived": true,
+      "SourceTimestampUpdated": false,
+      "CounterMonotonic": true
+    },
+    {
+      "NodePath": "Production.OeeAvailability",
+      "DataType": "Float",
+      "InitialValue": "94,88296",
+      "LaterValue": "94,88296",
+      "InitialSourceTimestamp": "2026-08-05T18:55:23.8376965Z",
+      "LaterSourceTimestamp": "2026-08-05T18:55:23.8376965Z",
+      "TypeMatches": true,
+      "SubscriptionReceived": true,
+      "SourceTimestampUpdated": false,
+      "CounterMonotonic": true
+    },
+    {
+      "NodePath": "Production.QueueLength",
+      "DataType": "Int32",
+      "InitialValue": "0",
+      "LaterValue": "0",
+      "InitialSourceTimestamp": "2026-08-05T18:54:53.7994833Z",
+      "LaterSourceTimestamp": "2026-08-05T18:54:53.7994833Z",
+      "TypeMatches": true,
+      "SubscriptionReceived": true,
+      "SourceTimestampUpdated": false,
+      "CounterMonotonic": true
+    },
+    {
+      "NodePath": "Production.CycleCounter",
+      "DataType": "Int64",
+      "InitialValue": "159",
+      "LaterValue": "159",
+      "InitialSourceTimestamp": "2026-08-05T18:55:37.1393652Z",
+      "LaterSourceTimestamp": "2026-08-05T18:55:37.1393652Z",
+      "TypeMatches": true,
+      "SubscriptionReceived": true,
+      "SourceTimestampUpdated": false,
+      "CounterMonotonic": true
+    },
+    {
+      "NodePath": "Production.AutomaticMode",
+      "DataType": "Boolean",
+      "InitialValue": "True",
+      "LaterValue": "True",
+      "InitialSourceTimestamp": "2026-08-05T18:54:53.7993113Z",
+      "LaterSourceTimestamp": "2026-08-05T18:54:53.7993113Z",
+      "TypeMatches": true,
+      "SubscriptionReceived": true,
+      "SourceTimestampUpdated": false,
+      "CounterMonotonic": true
+    },
+    {
+      "NodePath": "Production.ActiveProgram",
+      "DataType": "String",
+      "InitialValue": "PRG-12045",
+      "LaterValue": "PRG-12045",
+      "InitialSourceTimestamp": "2026-08-05T18:54:53.79929Z",
+      "LaterSourceTimestamp": "2026-08-05T18:54:53.79929Z",
+      "TypeMatches": true,
+      "SubscriptionReceived": true,
+      "SourceTimestampUpdated": false,
+      "CounterMonotonic": true
+    },
+    {
+      "NodePath": "Production.LastCycleStartUtc",
+      "DataType": "DateTime",
+      "InitialValue": "05.08.2026 17:54:53",
+      "LaterValue": "05.08.2026 17:54:53",
+      "InitialSourceTimestamp": "2026-08-05T18:54:53.7993985Z",
+      "LaterSourceTimestamp": "2026-08-05T18:54:53.7993985Z",
+      "TypeMatches": true,
+      "SubscriptionReceived": true,
+      "SourceTimestampUpdated": false,
+      "CounterMonotonic": true
+    }
+  ],
+  "Exceptions": []
+}

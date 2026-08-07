@@ -1,0 +1,10 @@
+﻿.vs/
+**/bin/
+**/obj/
+publish/
+_recovery/
+_zip_extract_*/
+*.user
+*.suo
+TestResults/
+RecoveryBackup/

@@ -1,0 +1,94 @@
+{
+  "scenarioId": "tool-deflection",
+  "scenarioVersion": "1.0",
+  "displayName": "Tool Deflection",
+  "description": "Werkzeugdurchbiegung unter Presskraft verändert Biegegenauigkeit und Federkraftverhalten.",
+  "machineProfileIds": [
+    "bending-hydraulic-machine-300"
+  ],
+  "category": "tooling",
+  "severity": "high",
+  "defaultDuration": "00:05:00",
+  "minimumDuration": "00:00:30",
+  "maximumDuration": "00:30:00",
+  "defaultIntensity": 1.0,
+  "minimumIntensity": 0.25,
+  "maximumIntensity": 1.5,
+  "phases": [
+    { "phase": "initiating", "durationFraction": 0.10 },
+    { "phase": "developing", "durationFraction": 0.20 },
+    { "phase": "degraded", "durationFraction": 0.25 },
+    { "phase": "critical", "durationFraction": 0.25 },
+    { "phase": "faulted", "durationFraction": 0.20 }
+  ],
+  "effects": [
+    {
+      "effectId": "tool-deflection-rise",
+      "targetType": "hiddenState",
+      "targetId": "ToolDeflection",
+      "effectType": "additiveDrift",
+      "startPhase": "initiating",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.38,
+      "ratePerSimulationMinute": 0.05,
+      "delay": "00:00:00",
+      "inertia": 1.1,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.75,
+      "isEnabled": true
+    },
+    {
+      "effectId": "material-springback-shift",
+      "targetType": "hiddenState",
+      "targetId": "MaterialSpringback",
+      "effectType": "targetShift",
+      "startPhase": "developing",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.2,
+      "ratePerSimulationMinute": 0.03,
+      "delay": "00:00:25",
+      "inertia": 1.4,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.5,
+      "isEnabled": true
+    }
+  ],
+  "thresholdRules": [
+    {
+      "ruleId": "bend-angle-deviation",
+      "sourceType": "signal",
+      "sourceId": "Quality.AngleDeviation",
+      "comparison": "greaterThanOrEqual",
+      "thresholdValue": 0.35,
+      "minimumDuration": "00:00:20",
+      "faultCode": "TOOLING_DEFLECTION",
+      "faultMessage": "Werkzeugdurchbiegung – Winkelabweichung über Toleranz",
+      "setErrorActive": true,
+      "setMachineStateError": true,
+      "stopProduction": true,
+      "keepServerOnline": true,
+      "autoRecover": false,
+      "isEnabled": true,
+      "disabledInControlRun": true
+    }
+  ],
+  "recovery": {
+    "recoveryType": "linear",
+    "duration": "00:03:30",
+    "rate": 0.14,
+    "targetNormalState": 0.0,
+    "keepMachineFaultedUntilRecovered": true,
+    "clearErrorAtRecoveryStart": false,
+    "clearErrorAtRecoveryEnd": true,
+    "resumeProductionAfterRecovery": true,
+    "minimumStableDuration": "00:00:30"
+  },
+  "canRunInParallel": true,
+  "mutuallyExclusiveScenarioIds": [],
+  "isEnabled": true,
+  "tags": ["tooling", "deflection", "bending"],
+  "supportsNonFaultingControlRun": false,
+  "priority": 7
+}

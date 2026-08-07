@@ -1,0 +1,134 @@
+{
+  "StartedAtUtc": "2026-08-06T15:44:27.1204978Z",
+  "EndedAtUtc": "2026-08-06T15:44:27.9027213Z",
+  "Seed": 42,
+  "Passed": false,
+  "Laser": {
+    "ProfileId": "laser-processing-machine-300",
+    "PhaseChanges": 59,
+    "DistinctPhases": 8,
+    "JobChanges": 7,
+    "CurrentPhase": "Processing",
+    "JobName": "JOB-002",
+    "PartName": "PART-B"
+  },
+  "Bending": {
+    "ProfileId": "bending-hydraulic-machine-300",
+    "PhaseChanges": 59,
+    "DistinctPhases": 8,
+    "JobChanges": 7,
+    "CurrentPhase": "Processing",
+    "JobName": "JOB-002",
+    "PartName": "PART-B"
+  },
+  "DependencyChecks": [
+    {
+      "Pair": "PressLoad \u2192 Hydraulic.SupplyPressure",
+      "Direction": "positive",
+      "LowValue": 188.440656780197,
+      "HighValue": 189.81149458545028,
+      "Strength": 1.3708378052532737,
+      "LagSeconds": 0,
+      "Passed": false
+    },
+    {
+      "Pair": "PressLoad \u2192 Bending.PressForce",
+      "Direction": "positive",
+      "LowValue": 78.31301042985837,
+      "HighValue": 81.498109943048,
+      "Strength": 3.185099513189627,
+      "LagSeconds": 0,
+      "Passed": false
+    },
+    {
+      "Pair": "MechanicalLoad \u2192 Axis01.MotorCurrent",
+      "Direction": "positive",
+      "LowValue": 4.835155232552834,
+      "HighValue": 5.216276510124285,
+      "Strength": 0.38112127757145053,
+      "LagSeconds": 0,
+      "Passed": true
+    },
+    {
+      "Pair": "MechanicalLoad \u2192 Axis01.Load",
+      "Direction": "positive",
+      "LowValue": 25.701576670189862,
+      "HighValue": 30.819058014268464,
+      "Strength": 5.117481344078602,
+      "LagSeconds": 0,
+      "Passed": true
+    },
+    {
+      "Pair": "Friction \u2192 Axis01.Speed",
+      "Direction": "negative",
+      "LowValue": 938.6193394748236,
+      "HighValue": 946.3568571550879,
+      "Strength": 7.737517680264318,
+      "LagSeconds": 0,
+      "Passed": true
+    },
+    {
+      "Pair": "Friction \u2192 Axis01.MotorCurrent",
+      "Direction": "positive",
+      "LowValue": 5.096261411707997,
+      "HighValue": 5.15435853871294,
+      "Strength": 0.058097127004943516,
+      "LagSeconds": 0,
+      "Passed": false
+    },
+    {
+      "Pair": "ProcessDemand \u2192 Process.PowerDemand",
+      "Direction": "positive",
+      "LowValue": 0.9388754391541925,
+      "HighValue": 2.4218232533502606,
+      "Strength": 1.4829478141960681,
+      "LagSeconds": 0,
+      "Passed": true
+    },
+    {
+      "Pair": "CoolingEfficiency \u2192 Cooling.PrimaryCircuit.Temperature",
+      "Direction": "negative",
+      "LowValue": 17.4680217060996,
+      "HighValue": 17.469152752940285,
+      "Strength": 0.0011310468406868779,
+      "LagSeconds": 0,
+      "Passed": false
+    },
+    {
+      "Pair": "PumpEfficiency \u2192 Hydraulic.PumpSpeed",
+      "Direction": "positive",
+      "LowValue": 1268.866902219818,
+      "HighValue": 1233.7133176228372,
+      "Strength": -35.15358459698086,
+      "LagSeconds": 0,
+      "Passed": false
+    },
+    {
+      "Pair": "MaterialResistance \u2192 Process.FeedRate",
+      "Direction": "negative",
+      "LowValue": 2127.835998530817,
+      "HighValue": 2222.1745114046216,
+      "Strength": 94.33851287380458,
+      "LagSeconds": 0,
+      "Passed": true
+    },
+    {
+      "Pair": "ThermalLoad \u2192 Axis01.MotorTemperature",
+      "Direction": "delayed",
+      "LowValue": 0,
+      "HighValue": 0,
+      "Strength": 0,
+      "LagSeconds": 20,
+      "Passed": true
+    },
+    {
+      "Pair": "Process.QualityIndex variation",
+      "Direction": "non-saturated",
+      "LowValue": 95.71130451634477,
+      "HighValue": 96.39187132181426,
+      "Strength": 0.6805668054694962,
+      "LagSeconds": 0,
+      "Passed": true
+    }
+  ]
+}

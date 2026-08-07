@@ -1,0 +1,161 @@
+{
+  "totalUpdates": 161462,
+  "machines": [
+    {
+      "MachineName": "Maschine 1",
+      "TotalPublishedUpdates": 79155,
+      "AveragePublishDurationMs": 0.0003712677657757085,
+      "MaxPublishDurationMs": 0.1575,
+      "FailedUpdates": 0
+    },
+    {
+      "MachineName": "Maschine 2",
+      "TotalPublishedUpdates": 82307,
+      "AveragePublishDurationMs": 0.00034944658412987126,
+      "MaxPublishDurationMs": 0.1474,
+      "FailedUpdates": 0
+    }
+  ],
+  "dataChanges": [
+    {
+      "MachineName": "Maschine 1",
+      "NodePath": "Axis01.Speed",
+      "InitialValue": "945,0302670036176",
+      "LaterValue": "945,536278580672",
+      "InitialSourceTimestamp": "2026-08-06T15:43:28.0048545Z",
+      "LaterSourceTimestamp": "2026-08-06T15:43:31.1708105Z",
+      "SourceTimestampUpdated": true,
+      "ValueChanged": true
+    },
+    {
+      "MachineName": "Maschine 1",
+      "NodePath": "Axis01.MotorCurrent",
+      "InitialValue": "5,4142024236162305",
+      "LaterValue": "5,56059421381475",
+      "InitialSourceTimestamp": "2026-08-06T15:43:31.6072769Z",
+      "LaterSourceTimestamp": "2026-08-06T15:43:34.6088841Z",
+      "SourceTimestampUpdated": true,
+      "ValueChanged": true
+    },
+    {
+      "MachineName": "Maschine 1",
+      "NodePath": "Axis01.MotorTemperature",
+      "InitialValue": "52,87990331757599",
+      "LaterValue": "52,87990331757599",
+      "InitialSourceTimestamp": "2026-08-06T15:43:34.6089233Z",
+      "LaterSourceTimestamp": "2026-08-06T15:43:34.6089233Z",
+      "SourceTimestampUpdated": false,
+      "ValueChanged": false
+    },
+    {
+      "MachineName": "Maschine 1",
+      "NodePath": "Process.PowerDemand",
+      "InitialValue": "3,213804807567089",
+      "LaterValue": "3,1693860395696465",
+      "InitialSourceTimestamp": "2026-08-06T15:43:37.3507838Z",
+      "LaterSourceTimestamp": "2026-08-06T15:43:40.7006644Z",
+      "SourceTimestampUpdated": true,
+      "ValueChanged": true
+    },
+    {
+      "MachineName": "Maschine 1",
+      "NodePath": "Cooling.PrimaryCircuit.Temperature",
+      "InitialValue": "17,399814998899245",
+      "LaterValue": "17,399814998899245",
+      "InitialSourceTimestamp": "2026-08-06T15:43:34.6091688Z",
+      "LaterSourceTimestamp": "2026-08-06T15:43:34.6091688Z",
+      "SourceTimestampUpdated": false,
+      "ValueChanged": false
+    },
+    {
+      "MachineName": "Maschine 1",
+      "NodePath": "Process.QualityIndex",
+      "InitialValue": "95,93913",
+      "LaterValue": "95,891",
+      "InitialSourceTimestamp": "2026-08-06T15:43:41.0725259Z",
+      "LaterSourceTimestamp": "2026-08-06T15:43:46.1297486Z",
+      "SourceTimestampUpdated": true,
+      "ValueChanged": true
+    },
+    {
+      "MachineName": "Maschine 1",
+      "NodePath": "Production.CycleCounter",
+      "InitialValue": "120",
+      "LaterValue": "120",
+      "InitialSourceTimestamp": "2026-08-06T15:38:43.6628286Z",
+      "LaterSourceTimestamp": "2026-08-06T15:38:43.6628286Z",
+      "SourceTimestampUpdated": false,
+      "ValueChanged": false
+    },
+    {
+      "MachineName": "Maschine 2",
+      "NodePath": "Axis01.Speed",
+      "InitialValue": "344,6115796807972",
+      "LaterValue": "351,4704303146673",
+      "InitialSourceTimestamp": "2026-08-06T15:43:55.6890023Z",
+      "LaterSourceTimestamp": "2026-08-06T15:43:58.859118Z",
+      "SourceTimestampUpdated": true,
+      "ValueChanged": true
+    },
+    {
+      "MachineName": "Maschine 2",
+      "NodePath": "Axis01.MotorCurrent",
+      "InitialValue": "6,529443083764994",
+      "LaterValue": "6,512329123544077",
+      "InitialSourceTimestamp": "2026-08-06T15:43:58.796447Z",
+      "LaterSourceTimestamp": "2026-08-06T15:44:01.7855389Z",
+      "SourceTimestampUpdated": true,
+      "ValueChanged": true
+    },
+    {
+      "MachineName": "Maschine 2",
+      "NodePath": "Axis01.MotorTemperature",
+      "InitialValue": "46,219646085984465",
+      "LaterValue": "47,95142658546451",
+      "InitialSourceTimestamp": "2026-08-06T15:43:54.7577056Z",
+      "LaterSourceTimestamp": "2026-08-06T15:44:04.7911566Z",
+      "SourceTimestampUpdated": true,
+      "ValueChanged": true
+    },
+    {
+      "MachineName": "Maschine 2",
+      "NodePath": "Bending.PressForce",
+      "InitialValue": "78,0693036615891",
+      "LaterValue": "83,75137222351105",
+      "InitialSourceTimestamp": "2026-08-06T15:44:04.9141813Z",
+      "LaterSourceTimestamp": "2026-08-06T15:44:07.603134Z",
+      "SourceTimestampUpdated": true,
+      "ValueChanged": true
+    },
+    {
+      "MachineName": "Maschine 2",
+      "NodePath": "Hydraulic.SupplyPressure",
+      "InitialValue": "163,37870227636188",
+      "LaterValue": "186,3228431964523",
+      "InitialSourceTimestamp": "2026-08-06T15:44:07.6032324Z",
+      "LaterSourceTimestamp": "2026-08-06T15:44:10.4132749Z",
+      "SourceTimestampUpdated": true,
+      "ValueChanged": true
+    },
+    {
+      "MachineName": "Maschine 2",
+      "NodePath": "Quality.ProcessQualityIndex",
+      "InitialValue": "96,16612243689259",
+      "LaterValue": "96,01925194978007",
+      "InitialSourceTimestamp": "2026-08-06T15:44:06.3514078Z",
+      "LaterSourceTimestamp": "2026-08-06T15:44:11.4102906Z",
+      "SourceTimestampUpdated": true,
+      "ValueChanged": true
+    },
+    {
+      "MachineName": "Maschine 2",
+      "NodePath": "Production.CycleCounter",
+      "InitialValue": "14831,45554609182",
+      "LaterValue": "1700,8431688651813",
+      "InitialSourceTimestamp": "2026-08-06T15:44:13.4647256Z",
+      "LaterSourceTimestamp": "2026-08-06T15:44:16.6376948Z",
+      "SourceTimestampUpdated": true,
+      "ValueChanged": true
+    }
+  ]
+}
