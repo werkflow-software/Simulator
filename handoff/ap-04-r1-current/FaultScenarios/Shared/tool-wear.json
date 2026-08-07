@@ -1,0 +1,95 @@
+{
+  "scenarioId": "tool-wear",
+  "scenarioVersion": "1.0",
+  "displayName": "Tool Wear",
+  "description": "Progressiver Werkzeugverschleiß reduziert Werkzeugzustand und Prozessstabilität über Hidden States.",
+  "machineProfileIds": [
+    "laser-processing-machine-300",
+    "bending-hydraulic-machine-300"
+  ],
+  "category": "tooling",
+  "severity": "medium",
+  "defaultDuration": "00:05:00",
+  "minimumDuration": "00:00:30",
+  "maximumDuration": "00:30:00",
+  "defaultIntensity": 1.0,
+  "minimumIntensity": 0.25,
+  "maximumIntensity": 1.5,
+  "phases": [
+    { "phase": "initiating", "durationFraction": 0.10 },
+    { "phase": "developing", "durationFraction": 0.20 },
+    { "phase": "degraded", "durationFraction": 0.25 },
+    { "phase": "critical", "durationFraction": 0.25 },
+    { "phase": "faulted", "durationFraction": 0.20 }
+  ],
+  "effects": [
+    {
+      "effectId": "tool-condition-degrade",
+      "targetType": "hiddenState",
+      "targetId": "ToolCondition",
+      "effectType": "efficiencyLoss",
+      "startPhase": "initiating",
+      "endPhase": "faulted",
+      "direction": "decrease",
+      "magnitude": 0.42,
+      "ratePerSimulationMinute": 0.045,
+      "delay": "00:00:00",
+      "inertia": 1.5,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.75,
+      "isEnabled": true
+    },
+    {
+      "effectId": "mechanical-wear-bending",
+      "targetType": "hiddenState",
+      "targetId": "MechanicalWear",
+      "effectType": "additiveDrift",
+      "startPhase": "developing",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.2,
+      "ratePerSimulationMinute": 0.03,
+      "delay": "00:00:25",
+      "inertia": 1.2,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.5,
+      "isEnabled": true
+    }
+  ],
+  "thresholdRules": [
+    {
+      "ruleId": "tool-wear-index-high",
+      "sourceType": "signal",
+      "sourceId": "Process.ToolWearIndex",
+      "comparison": "greaterThanOrEqual",
+      "thresholdValue": 65.0,
+      "minimumDuration": "00:00:30",
+      "faultCode": "TOOLING_WEAR_LIMIT",
+      "faultMessage": "Werkzeugverschleißgrenze erreicht",
+      "setErrorActive": true,
+      "setMachineStateError": true,
+      "stopProduction": true,
+      "keepServerOnline": true,
+      "autoRecover": false,
+      "isEnabled": true,
+      "disabledInControlRun": true
+    }
+  ],
+  "recovery": {
+    "recoveryType": "manualHold",
+    "duration": "00:05:00",
+    "rate": 0.1,
+    "targetNormalState": 0.0,
+    "keepMachineFaultedUntilRecovered": true,
+    "clearErrorAtRecoveryStart": false,
+    "clearErrorAtRecoveryEnd": true,
+    "resumeProductionAfterRecovery": false,
+    "minimumStableDuration": "00:01:00"
+  },
+  "canRunInParallel": true,
+  "mutuallyExclusiveScenarioIds": [],
+  "isEnabled": true,
+  "tags": ["tooling", "wear", "shared"],
+  "supportsNonFaultingControlRun": false,
+  "priority": 7
+}

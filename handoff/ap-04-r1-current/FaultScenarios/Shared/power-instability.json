@@ -1,0 +1,97 @@
+{
+  "scenarioId": "power-instability",
+  "scenarioVersion": "1.0",
+  "displayName": "Power Instability",
+  "description": "Netz- und Leistungsschwankungen reduzieren die elektrische Stabilität und beeinträchtigen Antriebe und Prozess.",
+  "machineProfileIds": [
+    "laser-processing-machine-300",
+    "bending-hydraulic-machine-300"
+  ],
+  "category": "electrical",
+  "severity": "high",
+  "defaultDuration": "00:05:00",
+  "minimumDuration": "00:00:30",
+  "maximumDuration": "00:30:00",
+  "defaultIntensity": 1.0,
+  "minimumIntensity": 0.25,
+  "maximumIntensity": 1.5,
+  "phases": [
+    { "phase": "initiating", "durationFraction": 0.10 },
+    { "phase": "developing", "durationFraction": 0.20 },
+    { "phase": "degraded", "durationFraction": 0.25 },
+    { "phase": "critical", "durationFraction": 0.25 },
+    { "phase": "faulted", "durationFraction": 0.20 }
+  ],
+  "effects": [
+    {
+      "effectId": "electrical-stability-loss",
+      "targetType": "hiddenState",
+      "targetId": "ElectricalStability",
+      "effectType": "efficiencyLoss",
+      "startPhase": "initiating",
+      "endPhase": "faulted",
+      "direction": "decrease",
+      "magnitude": 0.38,
+      "ratePerSimulationMinute": 0.06,
+      "delay": "00:00:00",
+      "inertia": 0.9,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.75,
+      "isEnabled": true
+    },
+    {
+      "effectId": "mains-voltage-noise",
+      "targetType": "hiddenState",
+      "targetId": "ElectricalStability",
+      "effectType": "oscillation",
+      "startPhase": "developing",
+      "endPhase": "faulted",
+      "direction": "oscillate",
+      "magnitude": 0.25,
+      "ratePerSimulationMinute": 0.0,
+      "delay": "00:00:15",
+      "inertia": 1.0,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.5,
+      "oscillationFrequencyHz": 0.8,
+      "isEnabled": true
+    }
+  ],
+  "thresholdRules": [
+    {
+      "ruleId": "mains-voltage-out-of-range",
+      "sourceType": "signal",
+      "sourceId": "Electrical.MainsVoltage",
+      "comparison": "outsideRange",
+      "thresholdValue": 388.0,
+      "thresholdValueSecondary": 412.0,
+      "minimumDuration": "00:00:15",
+      "faultCode": "ELECTRICAL_INSTABILITY",
+      "faultMessage": "Netzspannung außerhalb des zulässigen Bereichs",
+      "setErrorActive": true,
+      "setMachineStateError": true,
+      "stopProduction": true,
+      "keepServerOnline": true,
+      "autoRecover": false,
+      "isEnabled": true,
+      "disabledInControlRun": true
+    }
+  ],
+  "recovery": {
+    "recoveryType": "exponential",
+    "duration": "00:02:00",
+    "rate": 0.25,
+    "targetNormalState": 0.0,
+    "keepMachineFaultedUntilRecovered": true,
+    "clearErrorAtRecoveryStart": false,
+    "clearErrorAtRecoveryEnd": true,
+    "resumeProductionAfterRecovery": true,
+    "minimumStableDuration": "00:00:20"
+  },
+  "canRunInParallel": true,
+  "mutuallyExclusiveScenarioIds": [],
+  "isEnabled": true,
+  "tags": ["electrical", "power", "instability", "shared"],
+  "supportsNonFaultingControlRun": true,
+  "priority": 5
+}

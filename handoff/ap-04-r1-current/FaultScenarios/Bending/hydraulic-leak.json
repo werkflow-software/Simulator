@@ -1,0 +1,94 @@
+{
+  "scenarioId": "hydraulic-leak",
+  "scenarioVersion": "1.0",
+  "displayName": "Hydraulic Leak",
+  "description": "Hydraulikleck reduziert Hydraulikeffizienz und Presskraft, Vordruck sinkt unter den Mindestwert.",
+  "machineProfileIds": [
+    "bending-hydraulic-machine-300"
+  ],
+  "category": "hydraulic",
+  "severity": "critical",
+  "defaultDuration": "00:05:00",
+  "minimumDuration": "00:00:30",
+  "maximumDuration": "00:30:00",
+  "defaultIntensity": 1.0,
+  "minimumIntensity": 0.25,
+  "maximumIntensity": 1.5,
+  "phases": [
+    { "phase": "initiating", "durationFraction": 0.10 },
+    { "phase": "developing", "durationFraction": 0.20 },
+    { "phase": "degraded", "durationFraction": 0.25 },
+    { "phase": "critical", "durationFraction": 0.25 },
+    { "phase": "faulted", "durationFraction": 0.20 }
+  ],
+  "effects": [
+    {
+      "effectId": "hydraulic-efficiency-loss",
+      "targetType": "hiddenState",
+      "targetId": "HydraulicEfficiency",
+      "effectType": "efficiencyLoss",
+      "startPhase": "initiating",
+      "endPhase": "faulted",
+      "direction": "decrease",
+      "magnitude": 0.55,
+      "ratePerSimulationMinute": 0.08,
+      "delay": "00:00:00",
+      "inertia": 1.0,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.9,
+      "isEnabled": true
+    },
+    {
+      "effectId": "press-load-drop",
+      "targetType": "hiddenState",
+      "targetId": "PressLoad",
+      "effectType": "multiplicativeDrift",
+      "startPhase": "developing",
+      "endPhase": "faulted",
+      "direction": "decrease",
+      "magnitude": 0.3,
+      "ratePerSimulationMinute": 0.06,
+      "delay": "00:00:20",
+      "inertia": 1.2,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.65,
+      "isEnabled": true
+    }
+  ],
+  "thresholdRules": [
+    {
+      "ruleId": "supply-pressure-low",
+      "sourceType": "signal",
+      "sourceId": "Hydraulic.SupplyPressure",
+      "comparison": "lessThan",
+      "thresholdValue": 120.0,
+      "minimumDuration": "00:00:15",
+      "faultCode": "HYDRAULIC_LEAK",
+      "faultMessage": "Hydraulikleck – Vordruck unter Mindestgrenze",
+      "setErrorActive": true,
+      "setMachineStateError": true,
+      "stopProduction": true,
+      "keepServerOnline": true,
+      "autoRecover": false,
+      "isEnabled": true,
+      "disabledInControlRun": true
+    }
+  ],
+  "recovery": {
+    "recoveryType": "pressureRecovery",
+    "duration": "00:04:00",
+    "rate": 0.12,
+    "targetNormalState": 0.0,
+    "keepMachineFaultedUntilRecovered": true,
+    "clearErrorAtRecoveryStart": false,
+    "clearErrorAtRecoveryEnd": true,
+    "resumeProductionAfterRecovery": true,
+    "minimumStableDuration": "00:00:45"
+  },
+  "canRunInParallel": true,
+  "mutuallyExclusiveScenarioIds": ["oil-aging"],
+  "isEnabled": true,
+  "tags": ["hydraulic", "leak", "pressure", "bending"],
+  "supportsNonFaultingControlRun": false,
+  "priority": 4
+}

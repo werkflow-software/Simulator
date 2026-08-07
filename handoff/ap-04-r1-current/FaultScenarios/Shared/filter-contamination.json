@@ -1,0 +1,95 @@
+{
+  "scenarioId": "filter-contamination",
+  "scenarioVersion": "1.0",
+  "displayName": "Filter Contamination",
+  "description": "Verschmutzter Kühl- oder Hydraulikfilter beeinträchtigt Kühlhidden States und erhöht Differenzdruck im Kreislauf.",
+  "machineProfileIds": [
+    "laser-processing-machine-300",
+    "bending-hydraulic-machine-300"
+  ],
+  "category": "cooling",
+  "severity": "medium",
+  "defaultDuration": "00:05:00",
+  "minimumDuration": "00:00:30",
+  "maximumDuration": "00:30:00",
+  "defaultIntensity": 1.0,
+  "minimumIntensity": 0.25,
+  "maximumIntensity": 1.5,
+  "phases": [
+    { "phase": "initiating", "durationFraction": 0.10 },
+    { "phase": "developing", "durationFraction": 0.20 },
+    { "phase": "degraded", "durationFraction": 0.25 },
+    { "phase": "critical", "durationFraction": 0.25 },
+    { "phase": "faulted", "durationFraction": 0.20 }
+  ],
+  "effects": [
+    {
+      "effectId": "cooling-efficiency-filter",
+      "targetType": "hiddenState",
+      "targetId": "CoolingEfficiency",
+      "effectType": "multiplicativeDrift",
+      "startPhase": "initiating",
+      "endPhase": "faulted",
+      "direction": "decrease",
+      "magnitude": 0.3,
+      "ratePerSimulationMinute": 0.05,
+      "delay": "00:00:00",
+      "inertia": 1.4,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.7,
+      "isEnabled": true
+    },
+    {
+      "effectId": "ambient-cooling-impact",
+      "targetType": "hiddenState",
+      "targetId": "AmbientInfluence",
+      "effectType": "additiveDrift",
+      "startPhase": "developing",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.15,
+      "ratePerSimulationMinute": 0.025,
+      "delay": "00:00:30",
+      "inertia": 1.0,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.4,
+      "isEnabled": true
+    }
+  ],
+  "thresholdRules": [
+    {
+      "ruleId": "filter-dp-high",
+      "sourceType": "signal",
+      "sourceId": "Cooling.FilterDifferentialPressure",
+      "comparison": "greaterThanOrEqual",
+      "thresholdValue": 1.2,
+      "minimumDuration": "00:00:25",
+      "faultCode": "COOLING_FILTER_BLOCKED",
+      "faultMessage": "Filter verschmutzt – Differenzdruck zu hoch",
+      "setErrorActive": true,
+      "setMachineStateError": true,
+      "stopProduction": true,
+      "keepServerOnline": true,
+      "autoRecover": false,
+      "isEnabled": true,
+      "disabledInControlRun": true
+    }
+  ],
+  "recovery": {
+    "recoveryType": "linear",
+    "duration": "00:03:00",
+    "rate": 0.18,
+    "targetNormalState": 0.0,
+    "keepMachineFaultedUntilRecovered": true,
+    "clearErrorAtRecoveryStart": false,
+    "clearErrorAtRecoveryEnd": true,
+    "resumeProductionAfterRecovery": true,
+    "minimumStableDuration": "00:00:30"
+  },
+  "canRunInParallel": true,
+  "mutuallyExclusiveScenarioIds": ["coolant-loss"],
+  "isEnabled": true,
+  "tags": ["cooling", "filter", "contamination", "shared"],
+  "supportsNonFaultingControlRun": false,
+  "priority": 5
+}

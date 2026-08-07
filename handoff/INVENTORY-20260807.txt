@@ -1,0 +1,20 @@
+﻿Handoff inventory 2026-08-07T10:20:25.6562559+02:00
+[FILE] _run-cleanup.ps1 bytes=8258
+[DIR] ap-02-physical-signals files=1 bytes=4451
+[DIR] ap-02-r2-datachange files=2 bytes=56158
+[DIR] ap-03-r1-physical-verification files=5 bytes=218163
+[DIR] ap-03-r2-calibration files=6 bytes=222746
+[FILE] ap-03-r3-final-calibration.zip bytes=99342
+[FILE] ap-03-r4-final-closure.zip bytes=161945
+[DIR] ap-04-fault-scenarios files=10 bytes=259423
+[FILE] ap-04-fault-scenarios.zip bytes=26149
+[DIR] ap-04-r1-e2e-evidence-and-scenario-catalog-closure files=25 bytes=94916
+[FILE] ap-04-r1-e2e-evidence-and-scenario-catalog-closure.zip bytes=40037
+[DIR] archive files=33 bytes=2245007
+[FILE] fix-tests-app.ps1 bytes=1583
+[FILE] fix-tests-dupes.ps1 bytes=868
+[FILE] fix-tests-whitelist.ps1 bytes=1650
+[FILE] fix-viewmodels.ps1 bytes=408
+[FILE] recovery-01-restore.ps1 bytes=11861
+[DIR] recovery-01-simulator-repository-restoration files=1 bytes=11270
+[FILE] recovery-01-simulator-repository-restoration.zip bytes=4820

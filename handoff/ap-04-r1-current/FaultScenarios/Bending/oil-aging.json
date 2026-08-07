@@ -1,0 +1,94 @@
+{
+  "scenarioId": "oil-aging",
+  "scenarioVersion": "1.0",
+  "displayName": "Hydraulic Oil Aging",
+  "description": "Alterung des Hydrauliköls verschlechtert Ölzustand und Pumpeneffizienz, Druckaufbau wird träge.",
+  "machineProfileIds": [
+    "bending-hydraulic-machine-300"
+  ],
+  "category": "hydraulic",
+  "severity": "medium",
+  "defaultDuration": "00:05:00",
+  "minimumDuration": "00:00:30",
+  "maximumDuration": "00:30:00",
+  "defaultIntensity": 1.0,
+  "minimumIntensity": 0.25,
+  "maximumIntensity": 1.5,
+  "phases": [
+    { "phase": "initiating", "durationFraction": 0.10 },
+    { "phase": "developing", "durationFraction": 0.20 },
+    { "phase": "degraded", "durationFraction": 0.25 },
+    { "phase": "critical", "durationFraction": 0.25 },
+    { "phase": "faulted", "durationFraction": 0.20 }
+  ],
+  "effects": [
+    {
+      "effectId": "oil-condition-degrade",
+      "targetType": "hiddenState",
+      "targetId": "OilCondition",
+      "effectType": "efficiencyLoss",
+      "startPhase": "initiating",
+      "endPhase": "faulted",
+      "direction": "decrease",
+      "magnitude": 0.42,
+      "ratePerSimulationMinute": 0.04,
+      "delay": "00:00:00",
+      "inertia": 1.8,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.8,
+      "isEnabled": true
+    },
+    {
+      "effectId": "pump-efficiency-from-oil",
+      "targetType": "hiddenState",
+      "targetId": "PumpEfficiency",
+      "effectType": "multiplicativeDrift",
+      "startPhase": "developing",
+      "endPhase": "faulted",
+      "direction": "decrease",
+      "magnitude": 0.28,
+      "ratePerSimulationMinute": 0.035,
+      "delay": "00:01:00",
+      "inertia": 1.3,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.6,
+      "isEnabled": true
+    }
+  ],
+  "thresholdRules": [
+    {
+      "ruleId": "oil-temp-high",
+      "sourceType": "signal",
+      "sourceId": "Hydraulic.OilTemperature",
+      "comparison": "greaterThanOrEqual",
+      "thresholdValue": 62.0,
+      "minimumDuration": "00:00:30",
+      "faultCode": "HYDRAULIC_OIL_AGING",
+      "faultMessage": "Hydrauliköl alteriert – Öltemperatur kritisch",
+      "setErrorActive": true,
+      "setMachineStateError": true,
+      "stopProduction": true,
+      "keepServerOnline": true,
+      "autoRecover": false,
+      "isEnabled": true,
+      "disabledInControlRun": true
+    }
+  ],
+  "recovery": {
+    "recoveryType": "pressureRecovery",
+    "duration": "00:05:00",
+    "rate": 0.1,
+    "targetNormalState": 0.0,
+    "keepMachineFaultedUntilRecovered": true,
+    "clearErrorAtRecoveryStart": false,
+    "clearErrorAtRecoveryEnd": true,
+    "resumeProductionAfterRecovery": false,
+    "minimumStableDuration": "00:01:00"
+  },
+  "canRunInParallel": true,
+  "mutuallyExclusiveScenarioIds": ["hydraulic-leak"],
+  "isEnabled": true,
+  "tags": ["hydraulic", "oil", "aging", "bending"],
+  "supportsNonFaultingControlRun": false,
+  "priority": 4
+}

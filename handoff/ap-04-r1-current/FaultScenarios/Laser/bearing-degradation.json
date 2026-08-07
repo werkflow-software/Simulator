@@ -1,0 +1,111 @@
+{
+  "scenarioId": "bearing-degradation",
+  "scenarioVersion": "1.0",
+  "displayName": "Bearing Degradation",
+  "description": "Lagerverschleiß erzeugt erhöhte Vibrationen über mechanische und thermische Lastzustände.",
+  "machineProfileIds": [
+    "laser-processing-machine-300"
+  ],
+  "category": "mechanical",
+  "severity": "high",
+  "defaultDuration": "00:05:00",
+  "minimumDuration": "00:00:30",
+  "maximumDuration": "00:30:00",
+  "defaultIntensity": 1.0,
+  "minimumIntensity": 0.25,
+  "maximumIntensity": 1.5,
+  "phases": [
+    { "phase": "initiating", "durationFraction": 0.10 },
+    { "phase": "developing", "durationFraction": 0.20 },
+    { "phase": "degraded", "durationFraction": 0.25 },
+    { "phase": "critical", "durationFraction": 0.25 },
+    { "phase": "faulted", "durationFraction": 0.20 }
+  ],
+  "effects": [
+    {
+      "effectId": "bearing-mechanical-load",
+      "targetType": "hiddenState",
+      "targetId": "MechanicalLoad",
+      "effectType": "additiveDrift",
+      "startPhase": "initiating",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.3,
+      "ratePerSimulationMinute": 0.06,
+      "delay": "00:00:00",
+      "inertia": 1.1,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.8,
+      "isEnabled": true
+    },
+    {
+      "effectId": "bearing-thermal-load",
+      "targetType": "hiddenState",
+      "targetId": "ThermalLoad",
+      "effectType": "multiplicativeDrift",
+      "startPhase": "developing",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.25,
+      "ratePerSimulationMinute": 0.04,
+      "delay": "00:00:45",
+      "inertia": 1.6,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.65,
+      "isEnabled": true
+    },
+    {
+      "effectId": "vibration-noise",
+      "targetType": "hiddenState",
+      "targetId": "MechanicalLoad",
+      "effectType": "noiseIncrease",
+      "startPhase": "degraded",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.6,
+      "ratePerSimulationMinute": 0.0,
+      "delay": "00:00:00",
+      "inertia": 1.0,
+      "minimumEffect": 0.0,
+      "maximumEffect": 1.0,
+      "noiseModifier": 1.8,
+      "isEnabled": true
+    }
+  ],
+  "thresholdRules": [
+    {
+      "ruleId": "vibration-rms-high",
+      "sourceType": "signal",
+      "sourceId": "Axis01.VibrationRms",
+      "comparison": "greaterThanOrEqual",
+      "thresholdValue": 4.5,
+      "minimumDuration": "00:00:20",
+      "faultCode": "MECH_BEARING_VIBRATION",
+      "faultMessage": "Lagerschaden – Vibration RMS über Grenzwert",
+      "setErrorActive": true,
+      "setMachineStateError": true,
+      "stopProduction": true,
+      "keepServerOnline": true,
+      "autoRecover": false,
+      "isEnabled": true,
+      "disabledInControlRun": true
+    }
+  ],
+  "recovery": {
+    "recoveryType": "oscillationDecay",
+    "duration": "00:04:00",
+    "rate": 0.12,
+    "targetNormalState": 0.0,
+    "keepMachineFaultedUntilRecovered": true,
+    "clearErrorAtRecoveryStart": false,
+    "clearErrorAtRecoveryEnd": true,
+    "resumeProductionAfterRecovery": true,
+    "minimumStableDuration": "00:00:40"
+  },
+  "canRunInParallel": true,
+  "mutuallyExclusiveScenarioIds": [],
+  "isEnabled": true,
+  "tags": ["mechanical", "bearing", "vibration", "laser"],
+  "supportsNonFaultingControlRun": false,
+  "priority": 6
+}

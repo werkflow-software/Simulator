@@ -1,7 +1,7 @@
 {
-  "StartedAtUtc": "2026-08-07T08:46:48.7997711Z",
-  "EndedAtUtc": "2026-08-07T08:47:38.3776086Z",
-  "Duration": "00:00:49.5778375",
+  "StartedAtUtc": "2026-08-07T08:13:38.8645541Z",
+  "EndedAtUtc": "2026-08-07T08:14:29.2926065Z",
+  "Duration": "00:00:50.4280524",
   "Options": {
     "MachineCount": 1,
     "PublishDuration": "00:00:30",
@@ -24,24 +24,24 @@
     308
   ],
   "UpdatesPerSecondPerMachine": [
-    96.008282826576
+    80.31400698013759
   ],
   "AveragePublishDurationMsPerMachine": [
-    0.00046714716728124593
+    0.0003772113436866858
   ],
   "MaxPublishDurationMsPerMachine": [
-    0.1678
+    0.0883
   ],
   "FailedUpdatesPerMachine": [
     0
   ],
   "SkippedIdenticalPerMachine": [
-    6307
+    6257
   ],
   "ActiveServers": 1,
   "ActivePublishers": 1,
-  "MemoryStartMb": 304.73828125,
-  "MemoryEndMb": 208.6640625,
+  "MemoryStartMb": 105.12890625,
+  "MemoryEndMb": 188.1796875,
   "Machine1StoppedSuccessfully": false,
   "Machine2StillUpdatingWhileMachine1Stopped": false,
   "Machine2UpdatesWhileMachine1Stopped": 0,
@@ -58,10 +58,10 @@
     {
       "NodePath": "Process.SpindleSpeed",
       "DataType": "Double",
-      "InitialValue": "3000,87",
-      "LaterValue": "3000,87",
-      "InitialSourceTimestamp": "2026-08-07T08:47:30.1608657Z",
-      "LaterSourceTimestamp": "2026-08-07T08:47:30.1608657Z",
+      "InitialValue": "2999,95",
+      "LaterValue": "2999,95",
+      "InitialSourceTimestamp": "2026-08-07T08:14:18.9257473Z",
+      "LaterSourceTimestamp": "2026-08-07T08:14:18.9257473Z",
       "TypeMatches": true,
       "SubscriptionReceived": true,
       "SourceTimestampUpdated": false,
@@ -70,10 +70,10 @@
     {
       "NodePath": "Production.OeeAvailability",
       "DataType": "Float",
-      "InitialValue": "94,9824",
-      "LaterValue": "94,9824",
-      "InitialSourceTimestamp": "2026-08-07T08:47:23.1343296Z",
-      "LaterSourceTimestamp": "2026-08-07T08:47:23.1343296Z",
+      "InitialValue": "95,01122",
+      "LaterValue": "95,01122",
+      "InitialSourceTimestamp": "2026-08-07T08:14:14.1642977Z",
+      "LaterSourceTimestamp": "2026-08-07T08:14:14.1642977Z",
       "TypeMatches": true,
       "SubscriptionReceived": true,
       "SourceTimestampUpdated": false,
@@ -84,8 +84,8 @@
       "DataType": "Int32",
       "InitialValue": "0",
       "LaterValue": "0",
-      "InitialSourceTimestamp": "2026-08-07T08:47:23.1343722Z",
-      "LaterSourceTimestamp": "2026-08-07T08:47:23.1343722Z",
+      "InitialSourceTimestamp": "2026-08-07T08:14:14.1643306Z",
+      "LaterSourceTimestamp": "2026-08-07T08:14:14.1643306Z",
       "TypeMatches": true,
       "SubscriptionReceived": true,
       "SourceTimestampUpdated": false,
@@ -96,8 +96,8 @@
       "DataType": "Int64",
       "InitialValue": "159",
       "LaterValue": "159",
-      "InitialSourceTimestamp": "2026-08-07T08:47:32.521221Z",
-      "LaterSourceTimestamp": "2026-08-07T08:47:32.521221Z",
+      "InitialSourceTimestamp": "2026-08-07T08:14:23.5997439Z",
+      "LaterSourceTimestamp": "2026-08-07T08:14:23.5997439Z",
       "TypeMatches": true,
       "SubscriptionReceived": true,
       "SourceTimestampUpdated": false,
@@ -108,8 +108,8 @@
       "DataType": "Boolean",
       "InitialValue": "True",
       "LaterValue": "True",
-      "InitialSourceTimestamp": "2026-08-07T08:47:23.134413Z",
-      "LaterSourceTimestamp": "2026-08-07T08:47:23.134413Z",
+      "InitialSourceTimestamp": "2026-08-07T08:14:14.1643729Z",
+      "LaterSourceTimestamp": "2026-08-07T08:14:14.1643729Z",
       "TypeMatches": true,
       "SubscriptionReceived": true,
       "SourceTimestampUpdated": false,
@@ -120,8 +120,8 @@
       "DataType": "String",
       "InitialValue": "PRG-12045",
       "LaterValue": "PRG-12045",
-      "InitialSourceTimestamp": "2026-08-07T08:47:23.1342451Z",
-      "LaterSourceTimestamp": "2026-08-07T08:47:23.1342451Z",
+      "InitialSourceTimestamp": "2026-08-07T08:14:14.1642723Z",
+      "LaterSourceTimestamp": "2026-08-07T08:14:14.1642723Z",
       "TypeMatches": true,
       "SubscriptionReceived": true,
       "SourceTimestampUpdated": false,
@@ -130,10 +130,10 @@
     {
       "NodePath": "Production.LastCycleStartUtc",
       "DataType": "DateTime",
-      "InitialValue": "07.08.2026 07:46:48",
-      "LaterValue": "07.08.2026 07:46:48",
-      "InitialSourceTimestamp": "2026-08-07T08:47:23.1354604Z",
-      "LaterSourceTimestamp": "2026-08-07T08:47:23.1354604Z",
+      "InitialValue": "07.08.2026 07:13:38",
+      "LaterValue": "07.08.2026 07:13:38",
+      "InitialSourceTimestamp": "2026-08-07T08:14:14.1651301Z",
+      "LaterSourceTimestamp": "2026-08-07T08:14:14.1651301Z",
       "TypeMatches": true,
       "SubscriptionReceived": true,
       "SourceTimestampUpdated": false,

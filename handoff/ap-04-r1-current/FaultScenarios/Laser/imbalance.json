@@ -1,0 +1,95 @@
+{
+  "scenarioId": "imbalance",
+  "scenarioVersion": "1.0",
+  "displayName": "Rotor Imbalance",
+  "description": "Unwucht an rotierenden Komponenten erzeugt oszillierende mechanische Last mit steigender Amplitude.",
+  "machineProfileIds": [
+    "laser-processing-machine-300"
+  ],
+  "category": "mechanical",
+  "severity": "medium",
+  "defaultDuration": "00:05:00",
+  "minimumDuration": "00:00:30",
+  "maximumDuration": "00:30:00",
+  "defaultIntensity": 1.0,
+  "minimumIntensity": 0.25,
+  "maximumIntensity": 1.5,
+  "phases": [
+    { "phase": "initiating", "durationFraction": 0.10 },
+    { "phase": "developing", "durationFraction": 0.20 },
+    { "phase": "degraded", "durationFraction": 0.25 },
+    { "phase": "critical", "durationFraction": 0.25 },
+    { "phase": "faulted", "durationFraction": 0.20 }
+  ],
+  "effects": [
+    {
+      "effectId": "imbalance-oscillation",
+      "targetType": "hiddenState",
+      "targetId": "MechanicalLoad",
+      "effectType": "oscillation",
+      "startPhase": "initiating",
+      "endPhase": "faulted",
+      "direction": "oscillate",
+      "magnitude": 0.55,
+      "ratePerSimulationMinute": 0.0,
+      "delay": "00:00:10",
+      "inertia": 1.0,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.75,
+      "oscillationFrequencyHz": 2.4,
+      "isEnabled": true
+    },
+    {
+      "effectId": "imbalance-drift",
+      "targetType": "hiddenState",
+      "targetId": "MechanicalLoad",
+      "effectType": "additiveDrift",
+      "startPhase": "developing",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.15,
+      "ratePerSimulationMinute": 0.03,
+      "delay": "00:00:00",
+      "inertia": 1.2,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.5,
+      "isEnabled": true
+    }
+  ],
+  "thresholdRules": [
+    {
+      "ruleId": "mechanical-vibration-imbalance",
+      "sourceType": "signal",
+      "sourceId": "Mechanical.VibrationRms",
+      "comparison": "greaterThanOrEqual",
+      "thresholdValue": 3.8,
+      "minimumDuration": "00:00:15",
+      "faultCode": "MECH_IMBALANCE",
+      "faultMessage": "Unwucht erkannt – mechanische Schwingung kritisch",
+      "setErrorActive": true,
+      "setMachineStateError": true,
+      "stopProduction": true,
+      "keepServerOnline": true,
+      "autoRecover": false,
+      "isEnabled": true,
+      "disabledInControlRun": true
+    }
+  ],
+  "recovery": {
+    "recoveryType": "oscillationDecay",
+    "duration": "00:03:00",
+    "rate": 0.2,
+    "targetNormalState": 0.0,
+    "keepMachineFaultedUntilRecovered": true,
+    "clearErrorAtRecoveryStart": false,
+    "clearErrorAtRecoveryEnd": true,
+    "resumeProductionAfterRecovery": true,
+    "minimumStableDuration": "00:00:30"
+  },
+  "canRunInParallel": true,
+  "mutuallyExclusiveScenarioIds": [],
+  "isEnabled": true,
+  "tags": ["mechanical", "imbalance", "oscillation", "laser"],
+  "supportsNonFaultingControlRun": false,
+  "priority": 6
+}

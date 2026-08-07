@@ -13,7 +13,8 @@ namespace Werkflow.OpcUaSimulator.Tests;
 internal sealed record FaultScenarioTestStack(
     PhysicalSignalPublishingCoordinator Coordinator,
     IFaultScenarioService FaultScenarioService,
-    PhysicalRuntimeCoordinator RuntimeCoordinator);
+    PhysicalRuntimeCoordinator RuntimeCoordinator,
+    TestFaultScenarioSimulationBridge? Bridge = null);
 
 internal static class PhysicalTestServiceFactory
 {
@@ -33,7 +34,7 @@ internal static class PhysicalTestServiceFactory
     public static PhysicalSignalPublishingCoordinator CreateCoordinator(ILogService log) =>
         CreateFaultScenarioService(log).Coordinator;
 
-    public static FaultScenarioTestStack CreateFaultScenarioService(ILogService log)
+    public static FaultScenarioTestStack CreateFaultScenarioService(ILogService log, TestFaultScenarioSimulationBridge? bridge = null)
     {
         var faultEffectCalculator = new FaultEffectCalculator();
         var faultRecoveryEngine = new FaultRecoveryEngine();
@@ -42,14 +43,16 @@ internal static class PhysicalTestServiceFactory
             new HiddenProcessStateEngine(),
             new SignalCalculationEngine(),
             new PhysicalModelValidator(),
-            faultScenarioEngine);
+            faultScenarioEngine,
+            bridge);
 
         var runtimeCoordinator = new PhysicalRuntimeCoordinator(engine);
         var faultScenarioService = new FaultScenarioService(
             new JsonFaultScenarioRepository(ResolveFaultScenariosDirectory()),
             new FaultScenarioValidator(),
             new FaultScenarioRuntimeFactory(),
-            faultRecoveryEngine);
+            faultRecoveryEngine,
+            bridge);
 
         var coordinator = new PhysicalSignalPublishingCoordinator(
             new PhysicalMachineSessionFactory(
@@ -62,7 +65,13 @@ internal static class PhysicalTestServiceFactory
             log,
             faultScenarioService);
 
-        return new FaultScenarioTestStack(coordinator, faultScenarioService, runtimeCoordinator);
+        return new FaultScenarioTestStack(coordinator, faultScenarioService, runtimeCoordinator, bridge);
+    }
+
+    public static FaultScenarioTestStack CreateFaultScenarioServiceWithServer(ILogService log, IMachineServerService serverService)
+    {
+        var bridge = new TestFaultScenarioSimulationBridge(serverService);
+        return CreateFaultScenarioService(log, bridge);
     }
 
     public static PhysicalSimulationEngine CreateEngine() =>

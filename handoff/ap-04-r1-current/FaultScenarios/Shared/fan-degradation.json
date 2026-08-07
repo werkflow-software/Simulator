@@ -1,0 +1,95 @@
+{
+  "scenarioId": "fan-degradation",
+  "scenarioVersion": "1.0",
+  "displayName": "Fan Degradation",
+  "description": "Abnehmende Lüfterleistung erhöht Umgebungseinfluss und strukturelle thermische Last im Maschinensystem.",
+  "machineProfileIds": [
+    "laser-processing-machine-300",
+    "bending-hydraulic-machine-300"
+  ],
+  "category": "cooling",
+  "severity": "medium",
+  "defaultDuration": "00:05:00",
+  "minimumDuration": "00:00:30",
+  "maximumDuration": "00:30:00",
+  "defaultIntensity": 1.0,
+  "minimumIntensity": 0.25,
+  "maximumIntensity": 1.5,
+  "phases": [
+    { "phase": "initiating", "durationFraction": 0.10 },
+    { "phase": "developing", "durationFraction": 0.20 },
+    { "phase": "degraded", "durationFraction": 0.25 },
+    { "phase": "critical", "durationFraction": 0.25 },
+    { "phase": "faulted", "durationFraction": 0.20 }
+  ],
+  "effects": [
+    {
+      "effectId": "ambient-influence-rise",
+      "targetType": "hiddenState",
+      "targetId": "AmbientInfluence",
+      "effectType": "additiveDrift",
+      "startPhase": "initiating",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.28,
+      "ratePerSimulationMinute": 0.04,
+      "delay": "00:00:00",
+      "inertia": 1.2,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.6,
+      "isEnabled": true
+    },
+    {
+      "effectId": "structural-thermal-load",
+      "targetType": "hiddenState",
+      "targetId": "StructuralThermalLoad",
+      "effectType": "multiplicativeDrift",
+      "startPhase": "developing",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.22,
+      "ratePerSimulationMinute": 0.035,
+      "delay": "00:00:40",
+      "inertia": 1.6,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.55,
+      "isEnabled": true
+    }
+  ],
+  "thresholdRules": [
+    {
+      "ruleId": "cabinet-temp-high",
+      "sourceType": "signal",
+      "sourceId": "Thermal.CabinetTemperature",
+      "comparison": "greaterThanOrEqual",
+      "thresholdValue": 48.0,
+      "minimumDuration": "00:00:25",
+      "faultCode": "COOLING_FAN_DEGRADED",
+      "faultMessage": "Lüfterleistung unzureichend – Schalttemperatur kritisch",
+      "setErrorActive": true,
+      "setMachineStateError": true,
+      "stopProduction": true,
+      "keepServerOnline": true,
+      "autoRecover": false,
+      "isEnabled": true,
+      "disabledInControlRun": true
+    }
+  ],
+  "recovery": {
+    "recoveryType": "thermalCooldown",
+    "duration": "00:03:00",
+    "rate": 0.17,
+    "targetNormalState": 0.0,
+    "keepMachineFaultedUntilRecovered": true,
+    "clearErrorAtRecoveryStart": false,
+    "clearErrorAtRecoveryEnd": true,
+    "resumeProductionAfterRecovery": true,
+    "minimumStableDuration": "00:00:30"
+  },
+  "canRunInParallel": true,
+  "mutuallyExclusiveScenarioIds": [],
+  "isEnabled": true,
+  "tags": ["cooling", "fan", "thermal", "shared"],
+  "supportsNonFaultingControlRun": true,
+  "priority": 5
+}

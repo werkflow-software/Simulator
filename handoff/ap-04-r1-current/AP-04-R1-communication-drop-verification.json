@@ -1,0 +1,61 @@
+{
+  "VerificationRunId": "ap4r1-20260807084001-07e24990823e408fac95c4a",
+  "StartedAtUtc": "2026-08-07T08:40:02.8845174Z",
+  "EndedAtUtc": "2026-08-07T08:40:05.1625019Z",
+  "BeforeDrop": [
+    {
+      "MachineId": "e248a708-455b-414a-905e-7fc6b1bb9945",
+      "ProfileId": "laser-processing-machine-300",
+      "Reachable": true
+    },
+    {
+      "MachineId": "447bbfb5-a21b-45f0-97ed-1371f1ea1520",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "Reachable": true
+    },
+    {
+      "MachineId": "bc31790f-1373-4d05-b876-2cba010a429d",
+      "ProfileId": "technical-learning-machine-300",
+      "Reachable": true
+    }
+  ],
+  "DuringDrop": [
+    {
+      "MachineId": "e248a708-455b-414a-905e-7fc6b1bb9945",
+      "ProfileId": "laser-processing-machine-300",
+      "Reachable": true
+    },
+    {
+      "MachineId": "447bbfb5-a21b-45f0-97ed-1371f1ea1520",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "Reachable": true
+    },
+    {
+      "MachineId": "bc31790f-1373-4d05-b876-2cba010a429d",
+      "ProfileId": "technical-learning-machine-300",
+      "Reachable": false
+    }
+  ],
+  "AfterDrop": [
+    {
+      "MachineId": "e248a708-455b-414a-905e-7fc6b1bb9945",
+      "ProfileId": "laser-processing-machine-300",
+      "Reachable": true
+    },
+    {
+      "MachineId": "447bbfb5-a21b-45f0-97ed-1371f1ea1520",
+      "ProfileId": "bending-hydraulic-machine-300",
+      "Reachable": true
+    },
+    {
+      "MachineId": "bc31790f-1373-4d05-b876-2cba010a429d",
+      "ProfileId": "technical-learning-machine-300",
+      "Reachable": true
+    }
+  ],
+  "TargetUnreachableDuringDrop": true,
+  "OthersReachableDuringDrop": true,
+  "AllReachableAfter": true,
+  "Passed": true,
+  "FailedCriteria": []
+}

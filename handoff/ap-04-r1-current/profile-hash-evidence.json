@@ -1,0 +1,11 @@
+{
+  "GeneratedAtUtc": "2026-08-07T08:42:07Z",
+  "VerificationRunId": "ap4r1-20260807084001-07e24990823e408fac95c4a",
+  "LaserProfilePath": "Werkflow.OpcUaSimulator.App/MachineProfiles/LaserProcessingMachine300.json",
+  "LaserProfileSha256": "344c73153e1ad3bd2127864182c26961792f1fb47b291d7e97ae3982fe4c8583",
+  "BendingProfilePath": "Werkflow.OpcUaSimulator.App/MachineProfiles/BendingHydraulicMachine300.json",
+  "BendingProfileSha256": "78a7dbccef9b943117b93c0a59bb27611011edaee52137084cf4dd9ef2ccc071",
+  "ScenarioManifestHash": "df7f03dee8da52c25fcf980aa7b855749facefd5aa102e8e14af007a89e5fcab",
+  "ScenarioFileCount": 22,
+  "ScenarioIdCount": 22
+}

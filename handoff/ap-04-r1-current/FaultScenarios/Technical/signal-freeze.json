@@ -1,0 +1,78 @@
+{
+  "scenarioId": "signal-freeze",
+  "scenarioVersion": "1.0",
+  "displayName": "Signal Freeze",
+  "description": "Signal einfrieren am Achsmotorstrom während andere Signale weiter aktualisiert werden.",
+  "machineProfileIds": [
+    "technical-learning-machine-300"
+  ],
+  "category": "sensor",
+  "severity": "medium",
+  "defaultDuration": "00:05:00",
+  "minimumDuration": "00:00:30",
+  "maximumDuration": "00:30:00",
+  "defaultIntensity": 1.0,
+  "minimumIntensity": 0.25,
+  "maximumIntensity": 1.5,
+  "phases": [
+    { "phase": "initiating", "durationFraction": 0.10 },
+    { "phase": "developing", "durationFraction": 0.20 },
+    { "phase": "degraded", "durationFraction": 0.25 },
+    { "phase": "critical", "durationFraction": 0.25 },
+    { "phase": "faulted", "durationFraction": 0.20 }
+  ],
+  "effects": [
+    {
+      "effectId": "motor-current-freeze",
+      "targetType": "signalQuality",
+      "targetId": "Axis01.MotorCurrent",
+      "effectType": "signalFreeze",
+      "startPhase": "developing",
+      "endPhase": "faulted",
+      "direction": "stabilize",
+      "magnitude": 1.0,
+      "ratePerSimulationMinute": 0.0,
+      "delay": "00:00:15",
+      "inertia": 1.0,
+      "minimumEffect": 0.0,
+      "maximumEffect": 1.0,
+      "isEnabled": true
+    }
+  ],
+  "thresholdRules": [
+    {
+      "ruleId": "sensor-health-low",
+      "sourceType": "signal",
+      "sourceId": "Quality.SensorHealthIndex",
+      "comparison": "lessThanOrEqual",
+      "thresholdValue": 85.0,
+      "minimumDuration": "00:00:20",
+      "faultCode": "SENSOR_SIGNAL_FREEZE",
+      "faultMessage": "Signal eingefroren – Sensorintegrität beeinträchtigt",
+      "setErrorActive": true,
+      "setMachineStateError": true,
+      "stopProduction": true,
+      "keepServerOnline": true,
+      "autoRecover": false,
+      "isEnabled": true,
+      "disabledInControlRun": true
+    }
+  ],
+  "recovery": {
+    "recoveryType": "linear",
+    "duration": "00:01:30",
+    "rate": 0.35,
+    "targetNormalState": 0.0,
+    "keepMachineFaultedUntilRecovered": true,
+    "clearErrorAtRecoveryStart": true,
+    "clearErrorAtRecoveryEnd": true,
+    "resumeProductionAfterRecovery": true,
+    "minimumStableDuration": "00:00:15"
+  },
+  "canRunInParallel": true,
+  "mutuallyExclusiveScenarioIds": ["communication-drop"],
+  "isEnabled": true,
+  "tags": ["sensor", "freeze", "signal", "technical"],
+  "supportsNonFaultingControlRun": false,
+  "priority": 9
+}

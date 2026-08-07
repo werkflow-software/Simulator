@@ -530,7 +530,7 @@ public static class PhysicalAp4VerificationHarness
                 AutoScenarioEndEnabled = false
             }, cancellationToken).ConfigureAwait(false);
 
-            RunTicks(stack, session, 96);
+            RunTicks(stack, session, profileId.Contains("bending", StringComparison.OrdinalIgnoreCase) ? 250 : 96);
             result.AfterHiddenStates = CaptureTrackedStates(session, definition);
             result.Deltas = result.BaselineHiddenStates
                 .ToDictionary(
@@ -736,6 +736,7 @@ public static class PhysicalAp4VerificationHarness
         scenarioId switch
         {
             "laser-overheating-axis-drive" or "intermittent-fault" => ProcessPhase.Processing,
+            "hydraulic-leak" or "oil-aging" or "tool-deflection" or "valve-delay" or "pump-wear" => ProcessPhase.Processing,
             _ => ProcessPhase.Idle
         };
 
@@ -1042,7 +1043,28 @@ public static class PhysicalAp4VerificationHarness
         new("coolant-loss", LaserProcessingMachine300ProfileFactory.ProfileId, "CoolingEfficiency", Ap4ExpectedDirection.Decrease, 0.005),
         new("coolant-loss", BendingHydraulicMachine300ProfileFactory.ProfileId, "AmbientInfluence", Ap4ExpectedDirection.Increase, 0.0001),
         new("material-resistance-increased", LaserProcessingMachine300ProfileFactory.ProfileId, "MaterialResistance", Ap4ExpectedDirection.Increase, 0.005),
-        new("material-resistance-increased", BendingHydraulicMachine300ProfileFactory.ProfileId, "MaterialSpringback", Ap4ExpectedDirection.Increase, 0.005)
+        new("material-resistance-increased", BendingHydraulicMachine300ProfileFactory.ProfileId, "MaterialSpringback", Ap4ExpectedDirection.Increase, 0.005),
+        new("oil-aging", BendingHydraulicMachine300ProfileFactory.ProfileId, "OilCondition", Ap4ExpectedDirection.Decrease, 0.0001),
+        new("oil-aging", BendingHydraulicMachine300ProfileFactory.ProfileId, "PumpEfficiency", Ap4ExpectedDirection.Decrease, 0.0001),
+        new("tool-deflection", BendingHydraulicMachine300ProfileFactory.ProfileId, "ToolDeflection", Ap4ExpectedDirection.Increase, 0.0001),
+        new("valve-delay", BendingHydraulicMachine300ProfileFactory.ProfileId, "PressLoad", Ap4ExpectedDirection.Increase, 0.0001),
+        new("bearing-degradation", LaserProcessingMachine300ProfileFactory.ProfileId, "MechanicalLoad", Ap4ExpectedDirection.Increase, 0.0001),
+        new("bearing-degradation", LaserProcessingMachine300ProfileFactory.ProfileId, "ThermalLoad", Ap4ExpectedDirection.Increase, 0.0001),
+        new("focus-drift", LaserProcessingMachine300ProfileFactory.ProfileId, "AxisAlignment", Ap4ExpectedDirection.Decrease, 0.0001),
+        new("imbalance", LaserProcessingMachine300ProfileFactory.ProfileId, "MechanicalLoad", Ap4ExpectedDirection.Increase, 0.0001),
+        new("lubricant-shortage", LaserProcessingMachine300ProfileFactory.ProfileId, "LubricationQuality", Ap4ExpectedDirection.Decrease, 0.0001),
+        new("optics-contamination", LaserProcessingMachine300ProfileFactory.ProfileId, "OpticalCondition", Ap4ExpectedDirection.Decrease, 0.0001),
+        new("stiff-linear-guide", LaserProcessingMachine300ProfileFactory.ProfileId, "Friction", Ap4ExpectedDirection.Increase, 0.0001),
+        new("fan-degradation", LaserProcessingMachine300ProfileFactory.ProfileId, "AmbientInfluence", Ap4ExpectedDirection.Increase, 0.0001),
+        new("filter-contamination", LaserProcessingMachine300ProfileFactory.ProfileId, "CoolingEfficiency", Ap4ExpectedDirection.Decrease, 0.0001),
+        new("intermittent-fault", LaserProcessingMachine300ProfileFactory.ProfileId, "MechanicalLoad", Ap4ExpectedDirection.Increase, 0.0001),
+        new("intermittent-fault", BendingHydraulicMachine300ProfileFactory.ProfileId, "PressLoad", Ap4ExpectedDirection.Increase, 0.0001),
+        new("power-instability", LaserProcessingMachine300ProfileFactory.ProfileId, "ElectricalStability", Ap4ExpectedDirection.Decrease, 0.0001),
+        new("pump-wear", BendingHydraulicMachine300ProfileFactory.ProfileId, "PumpEfficiency", Ap4ExpectedDirection.Decrease, 0.0001),
+        new("tool-wear", LaserProcessingMachine300ProfileFactory.ProfileId, "ToolCondition", Ap4ExpectedDirection.Decrease, 0.0001),
+        new("sensor-drift", LaserProcessingMachine300ProfileFactory.ProfileId, "ElectricalStability", Ap4ExpectedDirection.Stable, 0.5),
+        new("communication-drop", TechnicalLearningMachine300ProfileFactory.ProfileId, "ElectricalStability", Ap4ExpectedDirection.Stable, 0.5),
+        new("signal-freeze", TechnicalLearningMachine300ProfileFactory.ProfileId, "ElectricalStability", Ap4ExpectedDirection.Stable, 0.5)
     ];
 
     private sealed record Ap4DirectionExpectation(
