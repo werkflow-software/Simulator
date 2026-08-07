@@ -1,0 +1,78 @@
+{
+  "scenarioId": "communication-drop",
+  "scenarioVersion": "1.0",
+  "displayName": "Communication Drop",
+  "description": "OPC-UA-Verbindungsabbruch simuliert Kommunikationsausfall zur Maschine während laufender Produktion.",
+  "machineProfileIds": [
+    "technical-learning-machine-300"
+  ],
+  "category": "communication",
+  "severity": "critical",
+  "defaultDuration": "00:05:00",
+  "minimumDuration": "00:00:30",
+  "maximumDuration": "00:30:00",
+  "defaultIntensity": 1.0,
+  "minimumIntensity": 0.25,
+  "maximumIntensity": 1.5,
+  "phases": [
+    { "phase": "initiating", "durationFraction": 0.10 },
+    { "phase": "developing", "durationFraction": 0.20 },
+    { "phase": "degraded", "durationFraction": 0.25 },
+    { "phase": "critical", "durationFraction": 0.25 },
+    { "phase": "faulted", "durationFraction": 0.20 }
+  ],
+  "effects": [
+    {
+      "effectId": "connection-drop",
+      "targetType": "machineConnection",
+      "targetId": "MachineConnection",
+      "effectType": "connectionDrop",
+      "startPhase": "critical",
+      "endPhase": "faulted",
+      "direction": "decrease",
+      "magnitude": 1.0,
+      "ratePerSimulationMinute": 0.0,
+      "delay": "00:02:00",
+      "inertia": 1.0,
+      "minimumEffect": 0.0,
+      "maximumEffect": 1.0,
+      "isEnabled": true
+    }
+  ],
+  "thresholdRules": [
+    {
+      "ruleId": "network-latency-high",
+      "sourceType": "signal",
+      "sourceId": "Diagnostic.NetworkLatency",
+      "comparison": "greaterThanOrEqual",
+      "thresholdValue": 25.0,
+      "minimumDuration": "00:00:10",
+      "faultCode": "COMM_CONNECTION_DROP",
+      "faultMessage": "Kommunikationsverbindung unterbrochen",
+      "setErrorActive": true,
+      "setMachineStateError": true,
+      "stopProduction": true,
+      "keepServerOnline": false,
+      "autoRecover": false,
+      "isEnabled": true,
+      "disabledInControlRun": true
+    }
+  ],
+  "recovery": {
+    "recoveryType": "manualHold",
+    "duration": "00:01:00",
+    "rate": 0.5,
+    "targetNormalState": 0.0,
+    "keepMachineFaultedUntilRecovered": true,
+    "clearErrorAtRecoveryStart": true,
+    "clearErrorAtRecoveryEnd": true,
+    "resumeProductionAfterRecovery": true,
+    "minimumStableDuration": "00:00:15"
+  },
+  "canRunInParallel": false,
+  "mutuallyExclusiveScenarioIds": ["signal-freeze"],
+  "isEnabled": true,
+  "tags": ["communication", "connection", "opcua", "technical"],
+  "supportsNonFaultingControlRun": false,
+  "priority": 2
+}

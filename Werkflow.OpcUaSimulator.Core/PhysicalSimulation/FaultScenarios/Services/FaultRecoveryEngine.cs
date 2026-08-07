@@ -14,6 +14,7 @@ public sealed class FaultRecoveryEngine : IFaultRecoveryEngine
 		instance.CurrentPhase = FaultScenarioPhase.Recovering;
 		instance.RecoveryElapsedTime = TimeSpan.Zero;
 		instance.RecoveryProgress = 0.0;
+		instance.RecoveryStartedAtUtc ??= DateTimeOffset.UtcNow;
 	}
 
 	public void TickRecovery(FaultScenarioInstance instance, PhysicalMachineProfile profile, PhysicalMachineRuntime runtime, PhysicalSimulationContext context, TimeSpan deltaTime)

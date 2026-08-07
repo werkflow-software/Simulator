@@ -12,7 +12,7 @@ public static class PhysicalProfileDependencyBuilder
 		return new _003C_003Ez__ReadOnlyArray<HiddenProcessStateDefinition>(new HiddenProcessStateDefinition[12]
 		{
 			H("MechanicalLoad", 0.2, 0.8, 0.45, 0.4, 0.05, 0.02),
-			H("ThermalLoad", 0.15, 0.75, 0.4, 2.0, 0.01, 0.015),
+			H("ThermalLoad", 0.15, 0.75, 0.4, 2.0, 0.01, 0.015, 2.0),
 			H("CoolingEfficiency", 0.7, 1.0, 0.92, 1.5, 0.005, 0.01),
 			H("Friction", 0.1, 0.6, 0.28, 0.8, 0.02, 0.02),
 			H("ProcessDemand", 0.2, 0.9, 0.55, 0.5, 0.03, 0.02),
@@ -132,7 +132,7 @@ public static class PhysicalProfileDependencyBuilder
 		list.Add(Sd($"sd-{++num}", "ThermalLoad", "Thermal.SpindleMotorTemp", DependencyType.DelayedLinear, 28.0, 32.0, TimeSpan.FromSeconds(25.0), null, null));
 		list.Add(Sd($"sd-{++num}", "ThermalLoad", "Thermal.CabinetTemperature", DependencyType.DelayedLinear, 6.0, 30.0, TimeSpan.FromSeconds(45.0), null, null));
 		list.Add(Sd($"sd-{++num}", "CoolingEfficiency", "Cooling.PrimaryCircuit.Temperature", DependencyType.InverseLinear, 7.0, 30.0, null, null, null));
-		list.Add(Sd($"sd-{++num}", "AmbientInfluence", "Cooling.PrimaryCircuit.Temperature", DependencyType.Linear, 0.6, 0.0, null, null, null));
+		list.Add(Sd($"sd-{++num}", "AmbientInfluence", "Cooling.PrimaryCircuit.Temperature", DependencyType.Linear, 4.0, 22.0, null, null, null));
 		list.Add(Sd($"sd-{++num}", "CoolingEfficiency", "Cooling.PrimaryCircuit.Pressure", DependencyType.Threshold, 1.5, 4.0, null, null, null, 0.6));
 		list.Add(Sd($"sd-{++num}", "CoolingEfficiency", "Cooling.PrimaryCircuit.Flow", DependencyType.Hysteresis, 8.0, 15.0, null, null, null, 0.7));
 		list.Add(Sd($"sd-{++num}", "OpticalCondition", "Process.FocusPosition", DependencyType.Linear, 0.15, 0.0, null, null, null));
@@ -157,6 +157,7 @@ public static class PhysicalProfileDependencyBuilder
 		List<SignalDependencyDefinition> list = new List<SignalDependencyDefinition>();
 		int num = 0;
 		list.Add(Sd($"sd-{++num}", "PressLoad", "Hydraulic.SupplyPressure", DependencyType.Linear, 16.0, 120.0, null, null, null));
+		list.Add(Sd($"sd-{++num}", "HydraulicEfficiency", "Hydraulic.SupplyPressure", DependencyType.Linear, 95.0, 0.0, null, null, null));
 		list.Add(Sd($"sd-{++num}", "PumpEfficiency", "Hydraulic.SupplyPressure", DependencyType.Linear, 18.0, 172.0, null, null, null));
 		list.Add(Sd($"sd-{++num}", "OilCondition", "Hydraulic.SupplyPressure", DependencyType.Linear, 6.0, 4.0, null, null, null));
 		list.Add(Sd($"sd-{++num}", "ValveResponse", "Hydraulic.SupplyPressure", DependencyType.Linear, 4.0, 1.0, null, null, null));
@@ -254,7 +255,7 @@ public static class PhysicalProfileDependencyBuilder
 		}
 	}
 
-	private static HiddenProcessStateDefinition H(string id, double nMin, double nMax, double nominal, double inertia, double drift, double noise)
+	private static HiddenProcessStateDefinition H(string id, double nMin, double nMax, double nominal, double inertia, double drift, double noise, double hardMaximum = 1.2)
 	{
 		return new HiddenProcessStateDefinition
 		{
@@ -264,7 +265,7 @@ public static class PhysicalProfileDependencyBuilder
 			NormalMaximum = nMax,
 			NominalValue = nominal,
 			HardMinimum = 0.0,
-			HardMaximum = 1.2,
+			HardMaximum = hardMaximum,
 			InitialValue = nominal,
 			ResponseInertia = inertia,
 			NaturalDrift = drift,

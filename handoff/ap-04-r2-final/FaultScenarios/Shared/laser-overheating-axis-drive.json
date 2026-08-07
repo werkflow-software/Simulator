@@ -1,0 +1,110 @@
+{
+  "scenarioId": "laser-overheating-axis-drive",
+  "scenarioVersion": "1.0",
+  "displayName": "Laser Overheating Axis Drive",
+  "description": "Thermische Überlastung der Achsantriebe durch erhöhte mechanische und thermische Last. Motorstrom und Motortemperatur steigen progressiv bis zum Achsfehler.",
+  "machineProfileIds": [
+    "laser-processing-machine-300"
+  ],
+  "category": "thermal",
+  "severity": "high",
+  "defaultDuration": "00:05:00",
+  "minimumDuration": "00:00:30",
+  "maximumDuration": "00:30:00",
+  "defaultIntensity": 1.0,
+  "minimumIntensity": 0.25,
+  "maximumIntensity": 1.5,
+  "phases": [
+    { "phase": "initiating", "durationFraction": 0.10 },
+    { "phase": "developing", "durationFraction": 0.20 },
+    { "phase": "degraded", "durationFraction": 0.25 },
+    { "phase": "critical", "durationFraction": 0.25 },
+    { "phase": "faulted", "durationFraction": 0.20 }
+  ],
+  "effects": [
+    {
+      "effectId": "mechanical-load-rise",
+      "targetType": "hiddenState",
+      "targetId": "MechanicalLoad",
+      "effectType": "additiveDrift",
+      "startPhase": "initiating",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.35,
+      "ratePerSimulationMinute": 0.08,
+      "delay": "00:00:00",
+      "inertia": 1.2,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.85,
+      "isEnabled": true
+    },
+    {
+      "effectId": "thermal-load-fast-rise",
+      "targetType": "hiddenState",
+      "targetId": "ThermalLoad",
+      "effectType": "rateChange",
+      "startPhase": "developing",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.5,
+      "ratePerSimulationMinute": 0.18,
+      "delay": "00:00:15",
+      "inertia": 0.8,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.9,
+      "isEnabled": true
+    },
+    {
+      "effectId": "motor-current-thermal-coupling",
+      "targetType": "hiddenState",
+      "targetId": "MechanicalLoad",
+      "effectType": "multiplicativeDrift",
+      "startPhase": "degraded",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.25,
+      "ratePerSimulationMinute": 0.12,
+      "delay": "00:00:30",
+      "inertia": 1.0,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.6,
+      "isEnabled": true
+    }
+  ],
+  "thresholdRules": [
+    {
+      "ruleId": "axis01-motor-temp-overheat",
+      "sourceType": "signal",
+      "sourceId": "Axis01.MotorTemperature",
+      "comparison": "greaterThanOrEqual",
+      "thresholdValue": 70.0,
+      "minimumDuration": "00:00:15",
+      "faultCode": "THERMAL_AXIS_OVERHEAT",
+      "faultMessage": "Achsmotor Temperaturgrenzwert überschritten (Axis01 >= 70°C)",
+      "setErrorActive": true,
+      "setMachineStateError": true,
+      "stopProduction": true,
+      "keepServerOnline": true,
+      "autoRecover": false,
+      "isEnabled": true,
+      "disabledInControlRun": true
+    }
+  ],
+  "recovery": {
+    "recoveryType": "thermalCooldown",
+    "duration": "00:04:00",
+    "rate": 0.12,
+    "targetNormalState": 0.0,
+    "keepMachineFaultedUntilRecovered": true,
+    "clearErrorAtRecoveryStart": false,
+    "clearErrorAtRecoveryEnd": true,
+    "resumeProductionAfterRecovery": true,
+    "minimumStableDuration": "00:00:45"
+  },
+  "canRunInParallel": true,
+  "mutuallyExclusiveScenarioIds": [],
+  "isEnabled": true,
+  "tags": ["thermal", "axis", "overheating", "laser", "shared"],
+  "supportsNonFaultingControlRun": true,
+  "priority": 3
+}

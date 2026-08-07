@@ -70,6 +70,7 @@ public sealed class PhysicalSimulationEngine : IPhysicalSimulationEngine
 		_hiddenEngine.Tick(session.Profile, session.Runtime, session.Simulation, random, deltaTime2);
 		_faultScenarioEngine?.Tick(session, deltaTime, _faultBridge);
 		_signalEngine.CalculateSignals(session.Profile, session.Runtime, session.Simulation, random, deltaTime2);
+		_faultScenarioEngine?.EvaluateThresholdsAfterSignals(session, _faultBridge);
 		_faultScenarioEngine?.ApplySignalOverrides(session);
 		_validator.ValidateTick(session);
 		stopwatch.Stop();

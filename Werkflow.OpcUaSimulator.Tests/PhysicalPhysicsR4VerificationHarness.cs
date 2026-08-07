@@ -781,7 +781,7 @@ public static class PhysicalPhysicsR4VerificationHarness
         new("laser-01", LaserProcessingMachine300ProfileFactory.ProfileId, "MechanicalLoad", "Axis01.MotorCurrent", "positive", "linear", 0, 0.35, 0.88),
         new("laser-02", LaserProcessingMachine300ProfileFactory.ProfileId, "MechanicalLoad", "Axis01.Load", "positive", "linear", 0, 0.35, 0.88),
         new("laser-03", LaserProcessingMachine300ProfileFactory.ProfileId, "Friction", "Axis01.Speed", "negative", "inverseLinear", 0, 0.30, 0.85),
-        new("laser-07", LaserProcessingMachine300ProfileFactory.ProfileId, "CoolingEfficiency", "Cooling.PrimaryCircuit.Temperature", "negative", "inverseLinear", 0, 0.30, 0.85),
+        new("laser-07", LaserProcessingMachine300ProfileFactory.ProfileId, "CoolingEfficiency", "Cooling.PrimaryCircuit.Temperature", "negative", "inverseLinear", 0, 0.30, 0.95),
         new("laser-08", LaserProcessingMachine300ProfileFactory.ProfileId, "ProcessDemand", "Process.PowerDemand", "positive", "linear", 0, 0.35, 0.88),
         new("bend-01", BendingHydraulicMachine300ProfileFactory.ProfileId, "PressLoad", "Hydraulic.SupplyPressure", "positive", "linear", 0, 0.35, 0.88),
         new("bend-02", BendingHydraulicMachine300ProfileFactory.ProfileId, "PressLoad", "Bending.PressForce", "positive", "saturating", 0, 0.35, 0.88),

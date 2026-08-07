@@ -67,5 +67,21 @@ public sealed class FaultScenarioInstance
 
 	public DateTimeOffset? ThresholdConditionStartedAt { get; set; }
 
+	public TimeSpan? ThresholdConditionStartedSimulationTime { get; set; }
+
+	public DateTimeOffset? ThresholdFirstReachedAtUtc { get; set; }
+
+	public DateTimeOffset? ThresholdConfirmedAtUtc { get; set; }
+
+	public DateTimeOffset? MachineFaultedAtUtc { get; set; }
+
+	public DateTimeOffset? RecoveryStartedAtUtc { get; set; }
+
+	public DateTimeOffset? RecoveryCompletedAtUtc { get; set; }
+
+	public double? ThresholdValueAtFirstReached { get; set; }
+
+	public double? ThresholdValueAtConfirmed { get; set; }
+
 	public string? ActiveThresholdRuleId { get; set; }
 }

@@ -16,4 +16,8 @@ public sealed class FaultScenarioMachineContext
 	public string? HighestPriorityFaultMessage { get; set; }
 
 	public int HighestPriority { get; set; } = int.MaxValue;
+
+	public DateTimeOffset? LastRecoveryCompletedAtUtc { get; set; }
+
+	public string? LastCompletedScenarioId { get; set; }
 }

@@ -1,0 +1,282 @@
+{
+  "GeneratedAtUtc": "2026-08-07T13:43:25.4201056Z",
+  "FileCount": 22,
+  "ScenarioIdCount": 22,
+  "DuplicateScenarioIds": [],
+  "ManifestHash": "9c08bae3a2df4ffb2adeedefd24d6f928e76f4a238fb6f919f5a0ace5a68d677",
+  "Entries": [
+    {
+      "RelativePath": "Bending/hydraulic-leak.json",
+      "Sha256": "3c092050fad421d1f84ab8cc9a1726e614fc4e834c2bb5e7a5e751ae1eaa269b",
+      "ScenarioId": "hydraulic-leak",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "bending-hydraulic-machine-300"
+      ],
+      "Category": "hydraulic",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Bending/oil-aging.json",
+      "Sha256": "ecf72ee8ab111a631021fc401f989c1960c96520a81f08af9523f1ffe2084bbd",
+      "ScenarioId": "oil-aging",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "bending-hydraulic-machine-300"
+      ],
+      "Category": "hydraulic",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Bending/tool-deflection.json",
+      "Sha256": "ab26da31bfa85cff47f3c63f9957e5c66b58892395d213afa437e89ebd84c6d6",
+      "ScenarioId": "tool-deflection",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "bending-hydraulic-machine-300"
+      ],
+      "Category": "tooling",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Bending/valve-delay.json",
+      "Sha256": "45622d96dd1e20dc571435cb8cfff7da3ce89adaaf3afb6ee30744d4e83703c0",
+      "ScenarioId": "valve-delay",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "bending-hydraulic-machine-300"
+      ],
+      "Category": "hydraulic",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Laser/bearing-degradation.json",
+      "Sha256": "163516638e458cc89f8a4325f25b9263a7093add0ea166c7b0e0d83c708d6e47",
+      "ScenarioId": "bearing-degradation",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300"
+      ],
+      "Category": "mechanical",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Laser/focus-drift.json",
+      "Sha256": "3995c4ce81074413785b12432866b3ad152b7c5fbe5160109c07d9a75362a567",
+      "ScenarioId": "focus-drift",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300"
+      ],
+      "Category": "optical",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Laser/imbalance.json",
+      "Sha256": "560bc6684cde00d8de2d29a1db03a6045991e8dd9474d751c98fb11edce13065",
+      "ScenarioId": "imbalance",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300"
+      ],
+      "Category": "mechanical",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Laser/lubricant-shortage.json",
+      "Sha256": "d11cae317280f44070b36ee3f440bd5ace6e16be1a785b0ec10526c787c293f0",
+      "ScenarioId": "lubricant-shortage",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300"
+      ],
+      "Category": "mechanical",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Laser/optics-contamination.json",
+      "Sha256": "0557181effba30140b82a4e18b4f9dbb599c5bb2c7c085dc955c79ac7e7bd438",
+      "ScenarioId": "optics-contamination",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300"
+      ],
+      "Category": "optical",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Laser/stiff-linear-guide.json",
+      "Sha256": "8930672317aef1301e9c2ffba33d6510256ab604d4ffed28d58a3957f0fd6e07",
+      "ScenarioId": "stiff-linear-guide",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300"
+      ],
+      "Category": "mechanical",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Shared/coolant-loss.json",
+      "Sha256": "4a245c086111af12144d019843ad3803e94c582bf3ef148abb61c53bd6ff0804",
+      "ScenarioId": "coolant-loss",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300",
+        "bending-hydraulic-machine-300"
+      ],
+      "Category": "cooling",
+      "Enabled": true,
+      "SupportsControlRun": true
+    },
+    {
+      "RelativePath": "Shared/fan-degradation.json",
+      "Sha256": "9030664d5cf29c2fb626d8fe0d657defecc076c0b7f2ee0e9e2729700d8e5777",
+      "ScenarioId": "fan-degradation",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300",
+        "bending-hydraulic-machine-300"
+      ],
+      "Category": "cooling",
+      "Enabled": true,
+      "SupportsControlRun": true
+    },
+    {
+      "RelativePath": "Shared/filter-contamination.json",
+      "Sha256": "1c6a7f34a8a168ea9218e4b9df5e39a6994b6b78599732f0d611acb2ef7e4e77",
+      "ScenarioId": "filter-contamination",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300",
+        "bending-hydraulic-machine-300"
+      ],
+      "Category": "cooling",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Shared/intermittent-fault.json",
+      "Sha256": "c7297075b62ef105142293e11a564a8f39a97c23056a5ec7197e515ec692cddc",
+      "ScenarioId": "intermittent-fault",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300",
+        "bending-hydraulic-machine-300"
+      ],
+      "Category": "intermittent",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Shared/laser-overheating-axis-drive.json",
+      "Sha256": "b35af82527f2ee4ff35f746f35de21f2f1e0a707b12d81cbceab9ed882bd60b4",
+      "ScenarioId": "laser-overheating-axis-drive",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300"
+      ],
+      "Category": "thermal",
+      "Enabled": true,
+      "SupportsControlRun": true
+    },
+    {
+      "RelativePath": "Shared/material-resistance-increased.json",
+      "Sha256": "b6bc4dcf658de34119032e69bb87bd079324d43a1d628bcc20e38dd34f6eb752",
+      "ScenarioId": "material-resistance-increased",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300",
+        "bending-hydraulic-machine-300"
+      ],
+      "Category": "process",
+      "Enabled": true,
+      "SupportsControlRun": true
+    },
+    {
+      "RelativePath": "Shared/power-instability.json",
+      "Sha256": "f7708533f31a00e360db6873dc4ce65d1f17ef2164ad29caf173b69814844eaf",
+      "ScenarioId": "power-instability",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300",
+        "bending-hydraulic-machine-300"
+      ],
+      "Category": "electrical",
+      "Enabled": true,
+      "SupportsControlRun": true
+    },
+    {
+      "RelativePath": "Shared/pump-wear.json",
+      "Sha256": "dba20592aadb7b880d855765ef29e7afc992dde31318efe79765525a28c72a2d",
+      "ScenarioId": "pump-wear",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300",
+        "bending-hydraulic-machine-300"
+      ],
+      "Category": "hydraulic",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Shared/sensor-drift.json",
+      "Sha256": "b96fc231f30603c41c338ccbc3ab0d5591b79b35ca6a943416bc6079e4e79454",
+      "ScenarioId": "sensor-drift",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300",
+        "bending-hydraulic-machine-300"
+      ],
+      "Category": "sensor",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Shared/tool-wear.json",
+      "Sha256": "43599706e173dad21f4a23489e2437c3f39215d639fbd2dbf404c820004e1f55",
+      "ScenarioId": "tool-wear",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "laser-processing-machine-300",
+        "bending-hydraulic-machine-300"
+      ],
+      "Category": "tooling",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Technical/communication-drop.json",
+      "Sha256": "d8e7c924cd9c38e1eff751b31e63fa07b6819a5c395b4d8929a057b20cdadb47",
+      "ScenarioId": "communication-drop",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "technical-learning-machine-300"
+      ],
+      "Category": "communication",
+      "Enabled": true,
+      "SupportsControlRun": false
+    },
+    {
+      "RelativePath": "Technical/signal-freeze.json",
+      "Sha256": "a3e29f02138c0af7af874b27ee1fc8be4f988fc8c80349913980e1dc84c8261d",
+      "ScenarioId": "signal-freeze",
+      "ScenarioVersion": "1.0",
+      "MachineProfileIds": [
+        "technical-learning-machine-300"
+      ],
+      "Category": "sensor",
+      "Enabled": true,
+      "SupportsControlRun": false
+    }
+  ]
+}

@@ -90,8 +90,11 @@ public sealed class SignalCalculationEngine : ISignalCalculationEngine
 				context.Metrics.HarmlessOutliersTriggered++;
 			}
 			value.TargetValue = dependencyTarget;
-			value.ActiveInfluences.Clear();
-			value.ActiveInfluences.AddRange(list2);
+			lock (value.ActiveInfluences)
+			{
+				value.ActiveInfluences.Clear();
+				value.ActiveInfluences.AddRange(list2);
+			}
 			value.PreviousValue = value.CurrentValue;
 			double inertiaSeconds = Math.Max(0.05, item.ResponseInertia);
 			double num4 = InertiaHelper.Approach(value.CurrentValue, dependencyTarget, inertiaSeconds, deltaTime.TotalSeconds);
@@ -174,6 +177,14 @@ public sealed class SignalCalculationEngine : ISignalCalculationEngine
 		if (dep.SourceStateId.Equals("PressLoad", StringComparison.OrdinalIgnoreCase) && signal.SignalId.Equals("Hydraulic.SupplyPressure", StringComparison.OrdinalIgnoreCase))
 		{
 			return Math.Clamp(num / 90.0, 0.08, 0.14);
+		}
+		if (dep.SourceStateId.Equals("HydraulicEfficiency", StringComparison.OrdinalIgnoreCase) && signal.SignalId.Equals("Hydraulic.SupplyPressure", StringComparison.OrdinalIgnoreCase))
+		{
+			return Math.Clamp(num / 50.0, 0.65, 0.85);
+		}
+		if (dep.SourceStateId.Equals("CoolingEfficiency", StringComparison.OrdinalIgnoreCase) && signal.SignalId.Contains("Cooling.PrimaryCircuit", StringComparison.OrdinalIgnoreCase))
+		{
+			return Math.Clamp(num / 10.0, 0.55, 0.8);
 		}
 		if (dep.SourceStateId.Equals("Friction", StringComparison.OrdinalIgnoreCase) && signal.SignalId.Contains("MotorCurrent", StringComparison.OrdinalIgnoreCase))
 		{

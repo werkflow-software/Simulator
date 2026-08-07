@@ -7,5 +7,7 @@ public interface IFaultScenarioEngine
 {
 	void Tick(PhysicalMachineSession session, TimeSpan deltaTime, IFaultScenarioSimulationBridge? bridge);
 
+	void EvaluateThresholdsAfterSignals(PhysicalMachineSession session, IFaultScenarioSimulationBridge? bridge);
+
 	void ApplySignalOverrides(PhysicalMachineSession session);
 }

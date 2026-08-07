@@ -39,7 +39,6 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 				item.ScenarioElapsedTime += timeSpan2;
 				AdvancePhase(item);
 				ApplyEffects(item, session, timeSpan2);
-				EvaluateThresholds(item, session, bridge);
 				CheckScenarioEnd(item);
 			}
 			if (item.LifecycleState == FaultScenarioLifecycleState.Recovering)
@@ -70,6 +69,29 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 				{
 					value3.CurrentValue = value;
 				}
+			}
+		}
+	}
+
+	public void EvaluateThresholdsAfterSignals(PhysicalMachineSession session, IFaultScenarioSimulationBridge? bridge)
+	{
+		FaultScenarioMachineContext faultScenarios = session.Simulation.FaultScenarios;
+		if (faultScenarios.ActiveInstances.Count == 0)
+		{
+			return;
+		}
+
+		foreach (FaultScenarioInstance item in faultScenarios.ActiveInstances.Values.ToList())
+		{
+			if (item.LifecycleState == FaultScenarioLifecycleState.Paused)
+			{
+				continue;
+			}
+
+			FaultScenarioLifecycleState lifecycleState = item.LifecycleState;
+			if (((uint)(lifecycleState - 1) <= 1u || lifecycleState == FaultScenarioLifecycleState.Faulted) ? true : false)
+			{
+				EvaluateThresholds(item, session, bridge);
 			}
 		}
 	}
@@ -153,6 +175,7 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 				if (instance.ActiveThresholdRuleId == item.RuleId)
 				{
 					instance.ThresholdConditionStartedAt = null;
+					instance.ThresholdConditionStartedSimulationTime = null;
 					instance.ActiveThresholdRuleId = null;
 				}
 				continue;
@@ -161,11 +184,19 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 			{
 				instance.ActiveThresholdRuleId = item.RuleId;
 				instance.ThresholdConditionStartedAt = DateTimeOffset.UtcNow;
+				instance.ThresholdConditionStartedSimulationTime = instance.ScenarioElapsedTime;
+				if (instance.ThresholdFirstReachedAtUtc == null)
+				{
+					instance.ThresholdFirstReachedAtUtc = DateTimeOffset.UtcNow;
+					instance.ThresholdValueAtFirstReached = value;
+				}
 			}
-			if (!instance.ThresholdConditionStartedAt.HasValue || !(DateTimeOffset.UtcNow - instance.ThresholdConditionStartedAt.Value >= item.MinimumDuration))
+			if (!instance.ThresholdConditionStartedSimulationTime.HasValue
+				|| instance.ScenarioElapsedTime - instance.ThresholdConditionStartedSimulationTime.Value < item.MinimumDuration)
 			{
 				continue;
 			}
+			instance.ThresholdValueAtConfirmed = value;
 			TriggerThresholdFault(instance, item, session, bridge);
 			break;
 		}
@@ -214,6 +245,8 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 	private void TriggerThresholdFault(FaultScenarioInstance instance, FaultThresholdRule rule, PhysicalMachineSession session, IFaultScenarioSimulationBridge? bridge)
 	{
 		instance.ThresholdFaultTriggered = true;
+		instance.ThresholdConfirmedAtUtc = DateTimeOffset.UtcNow;
+		instance.MachineFaultedAtUtc = DateTimeOffset.UtcNow;
 		instance.ActiveFaultCode = rule.FaultCode;
 		instance.CurrentPhase = FaultScenarioPhase.Faulted;
 		instance.LifecycleState = FaultScenarioLifecycleState.Faulted;
@@ -235,8 +268,11 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 
 	private void CompleteInstance(FaultScenarioInstance instance, PhysicalMachineSession session, IFaultScenarioSimulationBridge? bridge, bool clearFault)
 	{
+		instance.RecoveryCompletedAtUtc = DateTimeOffset.UtcNow;
 		instance.LifecycleState = FaultScenarioLifecycleState.Completed;
 		instance.CurrentPhase = FaultScenarioPhase.Completed;
+		session.Simulation.FaultScenarios.LastRecoveryCompletedAtUtc = instance.RecoveryCompletedAtUtc;
+		session.Simulation.FaultScenarios.LastCompletedScenarioId = instance.ScenarioId;
 		if (clearFault && instance.ActiveFaultCode != null && bridge != null)
 		{
 			session.Simulation.FaultScenarios.ActiveFaultCodes.Remove(instance.ActiveFaultCode);
