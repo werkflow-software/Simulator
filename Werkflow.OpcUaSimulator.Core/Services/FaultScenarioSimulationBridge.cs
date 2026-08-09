@@ -11,9 +11,9 @@ namespace Werkflow.OpcUaSimulator.Core.Services;
 
 public sealed class FaultScenarioSimulationBridge : IFaultScenarioSimulationBridge
 {
-	private readonly ISimulationEngine _simulationEngine;
+	private readonly Lazy<ISimulationEngine> _simulationEngine;
 
-	private readonly IMachineServerService _machineServerService;
+	private readonly Lazy<IMachineServerService> _machineServerService;
 
 	private readonly IConfigurationService _configurationService;
 
@@ -21,7 +21,7 @@ public sealed class FaultScenarioSimulationBridge : IFaultScenarioSimulationBrid
 
 	private readonly Dictionary<Guid, Dictionary<string, int>> _faultPriorities = new Dictionary<Guid, Dictionary<string, int>>();
 
-	public FaultScenarioSimulationBridge(ISimulationEngine simulationEngine, IMachineServerService machineServerService, IConfigurationService configurationService)
+	public FaultScenarioSimulationBridge(Lazy<ISimulationEngine> simulationEngine, Lazy<IMachineServerService> machineServerService, IConfigurationService configurationService)
 	{
 		_simulationEngine = simulationEngine;
 		_machineServerService = machineServerService;
@@ -38,11 +38,11 @@ public sealed class FaultScenarioSimulationBridge : IFaultScenarioSimulationBrid
 			KeyValuePair<string, int> keyValuePair = dictionary.OrderBy((KeyValuePair<string, int> kv) => kv.Value).First();
 			if (keyValuePair.Key.Equals(faultCode, StringComparison.OrdinalIgnoreCase) || priority <= keyValuePair.Value)
 			{
-				_simulationEngine.TriggerErrorAsync(machineId, message).GetAwaiter().GetResult();
+				_simulationEngine.Value.TriggerErrorAsync(machineId, message).GetAwaiter().GetResult();
 			}
 			if (stopProduction)
 			{
-				_simulationEngine.PauseProductionAsync(machineId).GetAwaiter().GetResult();
+				_simulationEngine.Value.PauseProductionAsync(machineId).GetAwaiter().GetResult();
 			}
 		}
 	}
@@ -59,35 +59,35 @@ public sealed class FaultScenarioSimulationBridge : IFaultScenarioSimulationBrid
 			if (value.Count == 0)
 			{
 				_faultPriorities.Remove(machineId);
-				_simulationEngine.ClearErrorAsync(machineId).GetAwaiter().GetResult();
+				_simulationEngine.Value.ClearErrorAsync(machineId).GetAwaiter().GetResult();
 				return;
 			}
 			KeyValuePair<string, int> keyValuePair = value.OrderBy((KeyValuePair<string, int> kv) => kv.Value).First();
-			MachineRuntimeState runtimeState = _simulationEngine.GetRuntimeState(machineId);
+			MachineRuntimeState runtimeState = _simulationEngine.Value.GetRuntimeState(machineId);
 			if (runtimeState != null && runtimeState.ErrorActive)
 			{
-				_simulationEngine.TriggerErrorAsync(machineId, "Aktiver Fehler: " + keyValuePair.Key).GetAwaiter().GetResult();
+				_simulationEngine.Value.TriggerErrorAsync(machineId, "Aktiver Fehler: " + keyValuePair.Key).GetAwaiter().GetResult();
 			}
 		}
 	}
 
 	public async Task StopServerAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken))
 	{
-		await _simulationEngine.StopMachineServerAsync(machineId, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+		await _simulationEngine.Value.StopMachineServerAsync(machineId, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
 	}
 
 	public async Task StartServerAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken))
 	{
-		await _simulationEngine.StartMachineServerAsync(machineId, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+		await _simulationEngine.Value.StartMachineServerAsync(machineId, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
 	}
 
 	public void StopProduction(Guid machineId)
 	{
-		_simulationEngine.PauseProductionAsync(machineId).GetAwaiter().GetResult();
+		_simulationEngine.Value.PauseProductionAsync(machineId).GetAwaiter().GetResult();
 	}
 
 	public void ResumeProduction(Guid machineId)
 	{
-		_simulationEngine.StartProductionAsync(machineId).GetAwaiter().GetResult();
+		_simulationEngine.Value.StartProductionAsync(machineId).GetAwaiter().GetResult();
 	}
 }

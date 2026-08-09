@@ -1,6 +1,7 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,10 +28,51 @@ public class App : Application
 
 	private bool _contentLoaded;
 
-	protected override async void OnStartup(StartupEventArgs e)
+	protected override void OnStartup(StartupEventArgs e)
 	{
 		base.OnStartup(e);
-		_host = Host.CreateDefaultBuilder().ConfigureLogging(delegate(ILoggingBuilder builder)
+		try
+		{
+			_host = CreateHost();
+			MainWindow mainWindow = _host.Services.GetRequiredService<MainWindow>();
+			MainWindow = mainWindow;
+			ShutdownMode = ShutdownMode.OnMainWindowClose;
+			mainWindow.Show();
+			mainWindow.Activate();
+			mainWindow.Focus();
+			_ = CompleteStartupAsync();
+		}
+		catch (Exception ex)
+		{
+			MessageBox.Show(ex.ToString(), "Werkflow OPC UA Simulator – Startup-Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+			Shutdown(-1);
+		}
+	}
+
+	private async Task CompleteStartupAsync()
+	{
+		try
+		{
+			await _host!.StartAsync();
+			IConfigurationService configurationService = _host.Services.GetRequiredService<IConfigurationService>();
+			await configurationService.InitializeAsync();
+			IFaultScenarioService faultScenarioService = _host.Services.GetRequiredService<IFaultScenarioService>();
+			await faultScenarioService.InitializeAsync();
+
+			_host.Services.GetRequiredService<OverviewViewModel>().Refresh();
+			_host.Services.GetRequiredService<FaultScenariosViewModel>().Refresh();
+			_host.Services.GetRequiredService<PhysicalSignalsViewModel>().ReloadMachines();
+		}
+		catch (Exception ex)
+		{
+			MessageBox.Show(ex.ToString(), "Werkflow OPC UA Simulator – Startup-Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+			Shutdown(-1);
+		}
+	}
+
+	private IHost CreateHost()
+	{
+		return Host.CreateDefaultBuilder().ConfigureLogging(delegate(ILoggingBuilder builder)
 		{
 			builder.AddDebug();
 		}).ConfigureServices(delegate(IServiceCollection services)
@@ -44,6 +86,8 @@ public class App : Application
 			services.AddSingleton((Func<IServiceProvider, IMachineServerService>)((IServiceProvider sp) => sp.GetRequiredService<MachineServerService>()));
 			services.AddSingleton((Func<IServiceProvider, IMachineValuePublisher>)((IServiceProvider sp) => sp.GetRequiredService<MachineServerService>()));
 			services.AddSingleton<ISimulationEngine, SimulationEngine>();
+			services.AddSingleton(sp => new Lazy<ISimulationEngine>(() => sp.GetRequiredService<ISimulationEngine>()));
+			services.AddSingleton(sp => new Lazy<IMachineServerService>(() => sp.GetRequiredService<IMachineServerService>()));
 			services.AddSingleton<IScenarioService, ScenarioService>();
 			services.AddSingleton<IDialogService, DialogService>();
 			services.AddSingleton<IPhysicalMachineProfileValidator, PhysicalMachineProfileValidator>();
@@ -82,13 +126,6 @@ public class App : Application
 			services.AddSingleton<MainWindow>();
 		})
 			.Build();
-		await _host.StartAsync();
-		IConfigurationService configurationService = _host.Services.GetRequiredService<IConfigurationService>();
-		await configurationService.InitializeAsync();
-		IFaultScenarioService faultScenarioService = _host.Services.GetRequiredService<IFaultScenarioService>();
-		await faultScenarioService.InitializeAsync();
-		MainWindow mainWindow = _host.Services.GetRequiredService<MainWindow>();
-		mainWindow.Show();
 	}
 
 	protected override async void OnExit(ExitEventArgs e)

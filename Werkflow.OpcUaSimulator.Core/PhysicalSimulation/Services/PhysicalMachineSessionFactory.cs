@@ -77,8 +77,9 @@ public sealed class PhysicalMachineSessionFactory : IPhysicalMachineSessionFacto
 		{
 			try
 			{
-				PhysicalMachineProfile result = _loader.LoadFromFileAsync(filePath).GetAwaiter().GetResult();
-				RegisterProfile(result);
+				string json = File.ReadAllText(filePath);
+				PhysicalMachineProfile profile = _loader.Deserialize(json, filePath);
+				RegisterProfile(profile);
 			}
 			catch
 			{

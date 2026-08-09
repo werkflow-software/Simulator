@@ -50,7 +50,11 @@ public sealed class FaultScenarioService : IFaultScenarioService
 
 	public IReadOnlyList<FaultScenarioDefinition> GetCatalog()
 	{
-		EnsureInitialized();
+		if (!_initialized)
+		{
+			return Array.Empty<FaultScenarioDefinition>();
+		}
+
 		return (from s in _repository.GetAll()
 			where s.IsEnabled
 			select s).ToList();
@@ -63,6 +67,11 @@ public sealed class FaultScenarioService : IFaultScenarioService
 
 	public IReadOnlyList<FaultScenarioRuntimeInfo> GetActiveScenarios(Guid machineId)
 	{
+		if (!_initialized)
+		{
+			return Array.Empty<FaultScenarioRuntimeInfo>();
+		}
+
 		lock (_sync)
 		{
 			if (!_sessions.TryGetValue(machineId, out PhysicalMachineSession value))

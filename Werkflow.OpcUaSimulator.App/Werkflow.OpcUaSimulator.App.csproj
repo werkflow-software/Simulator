@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -30,9 +30,20 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>FaultScenarios\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
-    <EmbeddedResource Include="views\*.baml" />
-    <EmbeddedResource Include="styles\*.baml" />
-    <EmbeddedResource Include="mainwindow.baml" />
-    <EmbeddedResource Include="app.baml" />
   </ItemGroup>
+  <Target Name="PackWpfBamlResources" AfterTargets="_GenerateCompileResourceInputs" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <WpfGResourcesPath>$(IntermediateOutputPath)$(MSBuildProjectName).g.resources</WpfGResourcesPath>
+      <PackWpfBamlProject>$(MSBuildThisFileDirectory)..\tools\PackWpfBaml\PackWpfBaml.csproj</PackWpfBamlProject>
+    </PropertyGroup>
+    <Exec Command="dotnet run --project &quot;$(PackWpfBamlProject)&quot; -- &quot;$(WpfGResourcesPath)&quot; &quot;$(MSBuildProjectDirectory)&quot;" />
+    <ItemGroup>
+      <EmbeddedResource Include="$(WpfGResourcesPath)">
+        <LogicalName>$(AssemblyName).g.resources</LogicalName>
+      </EmbeddedResource>
+      <_CoreCompileResourceInputs Include="$(WpfGResourcesPath)">
+        <LogicalName>$(AssemblyName).g.resources</LogicalName>
+      </_CoreCompileResourceInputs>
+    </ItemGroup>
+  </Target>
 </Project>

@@ -307,6 +307,18 @@ public class FaultScenariosViewModel : ObservableObject
 
 	public void Refresh()
 	{
+		Machines.Clear();
+		foreach (MachineConfiguration item in _configurationService.Configuration.Machines.Where((MachineConfiguration m) => m.IsActive && !string.IsNullOrWhiteSpace(m.PhysicalProfileId)))
+		{
+			Machines.Add(item);
+		}
+		if (SelectedMachine == null || !Machines.Any((MachineConfiguration m) => m.Id == SelectedMachine.Id))
+		{
+			SelectedMachine = Machines.FirstOrDefault();
+		}
+
+		LoadScenarios();
+
 		if (SelectedMachine == null)
 		{
 			return;
