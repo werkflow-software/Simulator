@@ -120,7 +120,7 @@ Release build: **0 Fehler**, 33 Warnungen.
 
 ## 17. Commit-ID
 
-(wird nach Git-Commit ergänzt)
+`7d2af195ac58883ea89737e6e0068f610bdf3bae`
 
 ## 18. Tag
 
@@ -128,7 +128,7 @@ Release build: **0 Fehler**, 33 Warnungen.
 
 ## 19. Tag-Zielcommit
 
-(wird nach Tag gesetzt)
+`opcua-simulator-fault-scenarios-ap4-final` → `7d2af195ac58883ea89737e6e0068f610bdf3bae`
 
 ## 20. Finaler Git-Status
 
