@@ -1,0 +1,3 @@
+Werkflow.OpcUaSimulator.Tests/Ap4R3EvidenceValidator.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp4R3VerificationHarness.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp4R3EvidenceTests.cs

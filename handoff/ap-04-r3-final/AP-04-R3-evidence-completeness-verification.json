@@ -1,0 +1,4059 @@
+{
+  "VerificationRunId": "ap4r3-20260809210206-014c6ff6636f478aaa229b5",
+  "StartedAtUtc": "2026-08-09T21:02:06.8091404Z",
+  "EndedAtUtc": "2026-08-09T21:02:08.7957089Z",
+  "LaserRecovery": {
+    "ScenarioId": "laser-overheating-axis-drive",
+    "ProfileId": "laser-processing-machine-300",
+    "Seed": 42,
+    "TimeFactor": 8,
+    "ExpectProductionResume": true,
+    "SampleCount": 68,
+    "ScenarioStartedAtUtc": "2026-08-09T21:02:06.8905694Z",
+    "ThresholdFirstReachedAtUtc": "2026-08-09T21:02:07.1192669Z",
+    "ThresholdConfirmedAtUtc": "2026-08-09T21:02:07.1214786Z",
+    "MachineFaultedAtUtc": "2026-08-09T21:02:07.1214901Z",
+    "RecoveryStartedAtUtc": "2026-08-09T21:02:07.1248785Z",
+    "RecoveryCompletedAtUtc": "2026-08-09T21:02:07.1438346Z",
+    "Timeline": [
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.9044032Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Initiating",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.861381199005426,
+          "Axis01.MotorTemperature": 31.148399524669973,
+          "Axis01.Speed": 948.520982592739,
+          "Axis01.VibrationRms": 1.7423959453205908
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.9094327Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Developing",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.667854059010052,
+          "Axis01.MotorTemperature": 31.142089347386165,
+          "Axis01.Speed": 950.174529890965,
+          "Axis01.VibrationRms": 1.7519715293084417
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.914126Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Degraded",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.114924256550359,
+          "Axis01.MotorTemperature": 35.11258474275817,
+          "Axis01.Speed": 946.4479964515898,
+          "Axis01.VibrationRms": 1.7399751602099678
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.9191955Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Critical",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.798207589775818,
+          "Axis01.MotorTemperature": 35.17898636080294,
+          "Axis01.Speed": 947.9591577237359,
+          "Axis01.VibrationRms": 1.75574169008869
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.924011Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.226770844692373,
+          "Axis01.MotorTemperature": 39.18003593343204,
+          "Axis01.Speed": 945.3668283788145,
+          "Axis01.VibrationRms": 1.7367903796385182
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.9290607Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.160536433484212,
+          "Axis01.MotorTemperature": 39.17245613310739,
+          "Axis01.Speed": 948.1650712172495,
+          "Axis01.VibrationRms": 1.7552337636257958
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.9344034Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.02461153884106,
+          "Axis01.MotorTemperature": 41.20539428543717,
+          "Axis01.Speed": 947.6521079083194,
+          "Axis01.VibrationRms": 1.7486078720883773
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.945233Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.9546896757059375,
+          "Axis01.MotorTemperature": 41.17824576320587,
+          "Axis01.Speed": 945.611063761114,
+          "Axis01.VibrationRms": 1.7509482062946202
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.9504837Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.048934747694621,
+          "Axis01.MotorTemperature": 41.22961085065005,
+          "Axis01.Speed": 947.3131132589086,
+          "Axis01.VibrationRms": 1.7508962026159733
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.9557767Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.89552188897716,
+          "Axis01.MotorTemperature": 41.136166231594174,
+          "Axis01.Speed": 945.4753172184066,
+          "Axis01.VibrationRms": 1.7562409224033049
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.9606282Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.286465446308725,
+          "Axis01.MotorTemperature": 41.08774876082583,
+          "Axis01.Speed": 946.7178240843134,
+          "Axis01.VibrationRms": 1.7538145479540281
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.9653531Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.077677316113379,
+          "Axis01.MotorTemperature": 41.130546129477686,
+          "Axis01.Speed": 947.6500446933362,
+          "Axis01.VibrationRms": 1.7517298006553623
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.9701641Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.973284124003537,
+          "Axis01.MotorTemperature": 43.10763899856054,
+          "Axis01.Speed": 946.7192579106567,
+          "Axis01.VibrationRms": 1.7537699053835647
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.97475Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.710374787769732,
+          "Axis01.MotorTemperature": 43.223773199820634,
+          "Axis01.Speed": 947.2845757799199,
+          "Axis01.VibrationRms": 1.7581880817473041
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.9796269Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.213652028414061,
+          "Axis01.MotorTemperature": 42.132548834716445,
+          "Axis01.Speed": 947.2322457423098,
+          "Axis01.VibrationRms": 1.7477723143858663
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.9848474Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.141053100656994,
+          "Axis01.MotorTemperature": 42.179717407621645,
+          "Axis01.Speed": 946.4459142232819,
+          "Axis01.VibrationRms": 1.7379632763949344
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.9897334Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.64804547875123,
+          "Axis01.MotorTemperature": 37.153448138759465,
+          "Axis01.Speed": 947.07425264031,
+          "Axis01.VibrationRms": 1.7535384795847198
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.9944042Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.623320512643201,
+          "Axis01.MotorTemperature": 37.175014837423426,
+          "Axis01.Speed": 949.6575546254506,
+          "Axis01.VibrationRms": 1.7490075826887153
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:06.9998291Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.453457275882719,
+          "Axis01.MotorTemperature": 37.196944804056734,
+          "Axis01.Speed": 948.9506440722438,
+          "Axis01.VibrationRms": 1.7414718647137426
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0044Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.583187957591231,
+          "Axis01.MotorTemperature": 37.238669036933345,
+          "Axis01.Speed": 949.7028238828993,
+          "Axis01.VibrationRms": 1.7469435559647215
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0090958Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.729781180486473,
+          "Axis01.MotorTemperature": 37.23927041884854,
+          "Axis01.Speed": 949.9225083801034,
+          "Axis01.VibrationRms": 1.7367790507116825
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0156972Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.57242135839295,
+          "Axis01.MotorTemperature": 37.145558026093056,
+          "Axis01.Speed": 949.8470050049647,
+          "Axis01.VibrationRms": 1.751484652746954
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0205598Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.08919832588266,
+          "Axis01.MotorTemperature": 33.09677371274429,
+          "Axis01.Speed": 945.9446622805015,
+          "Axis01.VibrationRms": 1.7489610428379572
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0252523Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.8823276566788945,
+          "Axis01.MotorTemperature": 33.23207933708162,
+          "Axis01.Speed": 946.7525159220239,
+          "Axis01.VibrationRms": 1.7419225463866772
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0303738Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.530702678853108,
+          "Axis01.MotorTemperature": 31.158422980656916,
+          "Axis01.Speed": 947.800194474539,
+          "Axis01.VibrationRms": 1.745239710107389
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0351622Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.469596507333202,
+          "Axis01.MotorTemperature": 31.205881007169232,
+          "Axis01.Speed": 948.8904631235685,
+          "Axis01.VibrationRms": 1.7448278775648012
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0399424Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.9120746683533705,
+          "Axis01.MotorTemperature": 35.2170625216466,
+          "Axis01.Speed": 946.6589132078384,
+          "Axis01.VibrationRms": 1.7502684387704495
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0447255Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.842429068351092,
+          "Axis01.MotorTemperature": 35.18865119899361,
+          "Axis01.Speed": 944.7179941693884,
+          "Axis01.VibrationRms": 1.7598003342721036
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0511583Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.977162744526894,
+          "Axis01.MotorTemperature": 39.14190158238518,
+          "Axis01.Speed": 947.5897856919122,
+          "Axis01.VibrationRms": 1.7503337566538089
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0560475Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.913483135167971,
+          "Axis01.MotorTemperature": 39.188325039685346,
+          "Axis01.Speed": 946.4852879570985,
+          "Axis01.VibrationRms": 1.7408197871592694
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0609989Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.855390312771676,
+          "Axis01.MotorTemperature": 41.23994791703795,
+          "Axis01.Speed": 947.0015561652266,
+          "Axis01.VibrationRms": 1.7487158843410664
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0658871Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.196624699528435,
+          "Axis01.MotorTemperature": 41.16589719557925,
+          "Axis01.Speed": 947.5837735122292,
+          "Axis01.VibrationRms": 1.754964072526839
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0707788Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.804803348597742,
+          "Axis01.MotorTemperature": 41.143104123487966,
+          "Axis01.Speed": 947.3841161985737,
+          "Axis01.VibrationRms": 1.7529986799203519
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.075677Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.838739206351736,
+          "Axis01.MotorTemperature": 41.15237106282424,
+          "Axis01.Speed": 945.3791002345199,
+          "Axis01.VibrationRms": 1.7574812633457277
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0809923Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.132476718218654,
+          "Axis01.MotorTemperature": 41.14194417513184,
+          "Axis01.Speed": 946.0075774350802,
+          "Axis01.VibrationRms": 1.751565364744504
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0858165Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.054685028719517,
+          "Axis01.MotorTemperature": 41.11841250582422,
+          "Axis01.Speed": 947.0473895622101,
+          "Axis01.VibrationRms": 1.7532057828106145
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.090787Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.129412077068657,
+          "Axis01.MotorTemperature": 43.19038789481001,
+          "Axis01.Speed": 947.6410093272564,
+          "Axis01.VibrationRms": 1.752791471618873
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.0961005Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.845840951618949,
+          "Axis01.MotorTemperature": 43.11091913956365,
+          "Axis01.Speed": 946.3960146443865,
+          "Axis01.VibrationRms": 1.7597372041200074
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1006388Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.927366592626127,
+          "Axis01.MotorTemperature": 42.15058240534779,
+          "Axis01.Speed": 946.6515680861711,
+          "Axis01.VibrationRms": 1.7516490917624263
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1052075Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.028733150215716,
+          "Axis01.MotorTemperature": 42.23087410765089,
+          "Axis01.Speed": 947.6912101916687,
+          "Axis01.VibrationRms": 1.7442244047405966
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1100465Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.6110334565346305,
+          "Axis01.MotorTemperature": 37.17551638362071,
+          "Axis01.Speed": 947.0729847809099,
+          "Axis01.VibrationRms": 1.7424303674908148
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.114907Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.468569929903392,
+          "Axis01.MotorTemperature": 66.95826215435613,
+          "Axis01.Speed": 949.0348504707301,
+          "Axis01.VibrationRms": 1.750356259955547
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1201742Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.516669935891686,
+          "Axis01.MotorTemperature": 70.18382334951471,
+          "Axis01.Speed": 948.0018735611526,
+          "Axis01.VibrationRms": 1.7537806196193486
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1249001Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "Faulted",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.613976777115575,
+          "Axis01.MotorTemperature": 71.7975843721922,
+          "Axis01.Speed": 947.8476778971864,
+          "Axis01.VibrationRms": 1.7430975460393916
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1270644Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.278045569756043,
+          "Axis01.MotorTemperature": 71.98872861289767,
+          "Axis01.Speed": 949.3451230051647,
+          "Axis01.VibrationRms": 1.659052158217492
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.0842327838770567
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1279891Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.304410945879011,
+          "Axis01.MotorTemperature": 72.26839980417738,
+          "Axis01.Speed": 948.9243651868011,
+          "Axis01.VibrationRms": 1.6320717993909861
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.043729223857979
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1288859Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.5219267670787024,
+          "Axis01.MotorTemperature": 73.48582433352891,
+          "Axis01.Speed": 949.3138429941091,
+          "Axis01.VibrationRms": 1.651127168725213
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.0685918241990802
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1297879Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.644776402530733,
+          "Axis01.MotorTemperature": 73.71941493190884,
+          "Axis01.Speed": 950.9970181145759,
+          "Axis01.VibrationRms": 1.6885405277298966
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.1193971175748572
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1307032Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.758949467323505,
+          "Axis01.MotorTemperature": 74.08809233320369,
+          "Axis01.Speed": 949.0999806722785,
+          "Axis01.VibrationRms": 1.7123266714330745
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.1624857836357123
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1316079Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.431377784753629,
+          "Axis01.MotorTemperature": 75.89583528515091,
+          "Axis01.Speed": 949.7876755836843,
+          "Axis01.VibrationRms": 1.744334983308525
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.1866473938036157
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1325428Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.551805137087868,
+          "Axis01.MotorTemperature": 77.64558310997768,
+          "Axis01.Speed": 949.064424046416,
+          "Axis01.VibrationRms": 1.7391541079157116
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.19638640374842
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1335029Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.592911172744553,
+          "Axis01.MotorTemperature": 79.0483056868306,
+          "Axis01.Speed": 949.2062855015314,
+          "Axis01.VibrationRms": 1.7412760825100904
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.1992669117838977
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1344386Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.545979211340747,
+          "Axis01.MotorTemperature": 79.94662089522943,
+          "Axis01.Speed": 950.145927003904,
+          "Axis01.VibrationRms": 1.7380846431163686
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.1998908438522822
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1353763Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.563616061625971,
+          "Axis01.MotorTemperature": 79.98409553645641,
+          "Axis01.Speed": 947.8448319220654,
+          "Axis01.VibrationRms": 1.7378810910650173
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.199988403347153
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1363589Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.516118191093938,
+          "Axis01.MotorTemperature": 80.02571698082708,
+          "Axis01.Speed": 948.9033657354281,
+          "Axis01.VibrationRms": 1.7561851880273762
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.1999991528235825
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1373469Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.357413002755751,
+          "Axis01.MotorTemperature": 80.04525521163424,
+          "Axis01.Speed": 948.6990451713854,
+          "Axis01.VibrationRms": 1.7398352101024153
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.1999999594551527
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.138334Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.83570445570346,
+          "Axis01.MotorTemperature": 79.9850413946167,
+          "Axis01.Speed": 949.412253157661,
+          "Axis01.VibrationRms": 1.75123934399126
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.1999999988088228
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1394804Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.3954858938648,
+          "Axis01.MotorTemperature": 80.0624039739163,
+          "Axis01.Speed": 950.5040260197554,
+          "Axis01.VibrationRms": 1.7559124133176023
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.1999999999803823
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1405064Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.6827698968433955,
+          "Axis01.MotorTemperature": 79.98803460639087,
+          "Axis01.Speed": 948.4141690793618,
+          "Axis01.VibrationRms": 1.7407524045366267
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.1999999999998416
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1415913Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.521003605218015,
+          "Axis01.MotorTemperature": 80.02920648235528,
+          "Axis01.Speed": 950.2003381873488,
+          "Axis01.VibrationRms": 1.7455253951987595
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.1999999999999993
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1426621Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.6869547650841135,
+          "Axis01.MotorTemperature": 76.02410304550976,
+          "Axis01.Speed": 947.2384216836407,
+          "Axis01.VibrationRms": 1.7431168267040336
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1435837Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryCompleted",
+        "ErrorActive": true,
+        "ErrorMessage": "Achsmotor Temperaturgrenzwert \u00FCberschritten (Axis01 \u003E= 70\u00B0C)",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.780680409191444,
+          "Axis01.MotorTemperature": 75.92856242515835,
+          "Axis01.Speed": 947.7788445836828,
+          "Axis01.VibrationRms": 1.7382257730298232
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1495955Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.927185014904322,
+          "Axis01.MotorTemperature": 76.02009366329052,
+          "Axis01.Speed": 946.41757110925,
+          "Axis01.VibrationRms": 1.7572699571245503
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1544112Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.690757808060638,
+          "Axis01.MotorTemperature": 74.00855597525745,
+          "Axis01.Speed": 949.6279858805462,
+          "Axis01.VibrationRms": 1.7443550196278503
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1634374Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.565562476045793,
+          "Axis01.MotorTemperature": 73.93122704592224,
+          "Axis01.Speed": 948.9910173373473,
+          "Axis01.VibrationRms": 1.742529531796038
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1680499Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.738382313050067,
+          "Axis01.MotorTemperature": 77.9453643450146,
+          "Axis01.Speed": 946.4639290328989,
+          "Axis01.VibrationRms": 1.752257975022869
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1726273Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 4.909930699446614,
+          "Axis01.MotorTemperature": 78.06304293484571,
+          "Axis01.Speed": 946.9138252559675,
+          "Axis01.VibrationRms": 1.7582858555758223
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1773985Z",
+        "ScenarioId": "laser-overheating-axis-drive",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Axis01.MotorCurrent": 5.043593781404846,
+          "Axis01.MotorTemperature": 82.02053377557253,
+          "Axis01.Speed": 947.5118840391797,
+          "Axis01.VibrationRms": 1.7594354800129532
+        },
+        "HiddenStates": {
+          "MechanicalLoad": 1.2
+        }
+      }
+    ],
+    "SignalSamples": {
+      "Axis01.MotorCurrent": [
+        4.861381199005426,
+        4.667854059010052,
+        5.114924256550359,
+        4.798207589775818,
+        5.226770844692373,
+        5.160536433484212,
+        5.02461153884106,
+        4.9546896757059375,
+        5.048934747694621,
+        4.89552188897716,
+        5.286465446308725,
+        5.077677316113379,
+        4.973284124003537,
+        4.710374787769732,
+        5.213652028414061,
+        5.141053100656994,
+        4.64804547875123,
+        4.623320512643201,
+        4.453457275882719,
+        4.583187957591231,
+        4.729781180486473,
+        4.57242135839295,
+        5.08919832588266,
+        4.8823276566788945,
+        4.530702678853108,
+        4.469596507333202,
+        4.9120746683533705,
+        4.842429068351092,
+        4.977162744526894,
+        4.913483135167971,
+        4.855390312771676,
+        5.196624699528435,
+        4.804803348597742,
+        4.838739206351736,
+        5.132476718218654,
+        5.054685028719517,
+        5.129412077068657,
+        4.845840951618949,
+        4.927366592626127,
+        5.028733150215716,
+        4.6110334565346305,
+        4.468569929903392,
+        4.516669935891686,
+        4.613976777115575,
+        4.278045569756043,
+        4.304410945879011,
+        4.5219267670787024,
+        4.644776402530733,
+        4.758949467323505,
+        4.431377784753629,
+        4.551805137087868,
+        4.592911172744553,
+        4.545979211340747,
+        4.563616061625971,
+        4.516118191093938,
+        4.357413002755751,
+        4.83570445570346,
+        4.3954858938648,
+        4.6827698968433955,
+        4.521003605218015,
+        4.6869547650841135,
+        4.780680409191444,
+        4.927185014904322,
+        4.690757808060638,
+        4.565562476045793,
+        4.738382313050067,
+        4.909930699446614,
+        5.043593781404846
+      ],
+      "Axis01.MotorTemperature": [
+        31.148399524669973,
+        31.142089347386165,
+        35.11258474275817,
+        35.17898636080294,
+        39.18003593343204,
+        39.17245613310739,
+        41.20539428543717,
+        41.17824576320587,
+        41.22961085065005,
+        41.136166231594174,
+        41.08774876082583,
+        41.130546129477686,
+        43.10763899856054,
+        43.223773199820634,
+        42.132548834716445,
+        42.179717407621645,
+        37.153448138759465,
+        37.175014837423426,
+        37.196944804056734,
+        37.238669036933345,
+        37.23927041884854,
+        37.145558026093056,
+        33.09677371274429,
+        33.23207933708162,
+        31.158422980656916,
+        31.205881007169232,
+        35.2170625216466,
+        35.18865119899361,
+        39.14190158238518,
+        39.188325039685346,
+        41.23994791703795,
+        41.16589719557925,
+        41.143104123487966,
+        41.15237106282424,
+        41.14194417513184,
+        41.11841250582422,
+        43.19038789481001,
+        43.11091913956365,
+        42.15058240534779,
+        42.23087410765089,
+        37.17551638362071,
+        66.95826215435613,
+        70.18382334951471,
+        71.7975843721922,
+        71.98872861289767,
+        72.26839980417738,
+        73.48582433352891,
+        73.71941493190884,
+        74.08809233320369,
+        75.89583528515091,
+        77.64558310997768,
+        79.0483056868306,
+        79.94662089522943,
+        79.98409553645641,
+        80.02571698082708,
+        80.04525521163424,
+        79.9850413946167,
+        80.0624039739163,
+        79.98803460639087,
+        80.02920648235528,
+        76.02410304550976,
+        75.92856242515835,
+        76.02009366329052,
+        74.00855597525745,
+        73.93122704592224,
+        77.9453643450146,
+        78.06304293484571,
+        82.02053377557253
+      ],
+      "Axis01.Speed": [
+        948.520982592739,
+        950.174529890965,
+        946.4479964515898,
+        947.9591577237359,
+        945.3668283788145,
+        948.1650712172495,
+        947.6521079083194,
+        945.611063761114,
+        947.3131132589086,
+        945.4753172184066,
+        946.7178240843134,
+        947.6500446933362,
+        946.7192579106567,
+        947.2845757799199,
+        947.2322457423098,
+        946.4459142232819,
+        947.07425264031,
+        949.6575546254506,
+        948.9506440722438,
+        949.7028238828993,
+        949.9225083801034,
+        949.8470050049647,
+        945.9446622805015,
+        946.7525159220239,
+        947.800194474539,
+        948.8904631235685,
+        946.6589132078384,
+        944.7179941693884,
+        947.5897856919122,
+        946.4852879570985,
+        947.0015561652266,
+        947.5837735122292,
+        947.3841161985737,
+        945.3791002345199,
+        946.0075774350802,
+        947.0473895622101,
+        947.6410093272564,
+        946.3960146443865,
+        946.6515680861711,
+        947.6912101916687,
+        947.0729847809099,
+        949.0348504707301,
+        948.0018735611526,
+        947.8476778971864,
+        949.3451230051647,
+        948.9243651868011,
+        949.3138429941091,
+        950.9970181145759,
+        949.0999806722785,
+        949.7876755836843,
+        949.064424046416,
+        949.2062855015314,
+        950.145927003904,
+        947.8448319220654,
+        948.9033657354281,
+        948.6990451713854,
+        949.412253157661,
+        950.5040260197554,
+        948.4141690793618,
+        950.2003381873488,
+        947.2384216836407,
+        947.7788445836828,
+        946.41757110925,
+        949.6279858805462,
+        948.9910173373473,
+        946.4639290328989,
+        946.9138252559675,
+        947.5118840391797
+      ],
+      "Axis01.VibrationRms": [
+        1.7423959453205908,
+        1.7519715293084417,
+        1.7399751602099678,
+        1.75574169008869,
+        1.7367903796385182,
+        1.7552337636257958,
+        1.7486078720883773,
+        1.7509482062946202,
+        1.7508962026159733,
+        1.7562409224033049,
+        1.7538145479540281,
+        1.7517298006553623,
+        1.7537699053835647,
+        1.7581880817473041,
+        1.7477723143858663,
+        1.7379632763949344,
+        1.7535384795847198,
+        1.7490075826887153,
+        1.7414718647137426,
+        1.7469435559647215,
+        1.7367790507116825,
+        1.751484652746954,
+        1.7489610428379572,
+        1.7419225463866772,
+        1.745239710107389,
+        1.7448278775648012,
+        1.7502684387704495,
+        1.7598003342721036,
+        1.7503337566538089,
+        1.7408197871592694,
+        1.7487158843410664,
+        1.754964072526839,
+        1.7529986799203519,
+        1.7574812633457277,
+        1.751565364744504,
+        1.7532057828106145,
+        1.752791471618873,
+        1.7597372041200074,
+        1.7516490917624263,
+        1.7442244047405966,
+        1.7424303674908148,
+        1.750356259955547,
+        1.7537806196193486,
+        1.7430975460393916,
+        1.659052158217492,
+        1.6320717993909861,
+        1.651127168725213,
+        1.6885405277298966,
+        1.7123266714330745,
+        1.744334983308525,
+        1.7391541079157116,
+        1.7412760825100904,
+        1.7380846431163686,
+        1.7378810910650173,
+        1.7561851880273762,
+        1.7398352101024153,
+        1.75123934399126,
+        1.7559124133176023,
+        1.7407524045366267,
+        1.7455253951987595,
+        1.7431168267040336,
+        1.7382257730298232,
+        1.7572699571245503,
+        1.7443550196278503,
+        1.742529531796038,
+        1.752257975022869,
+        1.7582858555758223,
+        1.7594354800129532
+      ]
+    },
+    "HiddenSamples": {
+      "MechanicalLoad": [
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.0842327838770567,
+        1.043729223857979,
+        1.0685918241990802,
+        1.1193971175748572,
+        1.1624857836357123,
+        1.1866473938036157,
+        1.19638640374842,
+        1.1992669117838977,
+        1.1998908438522822,
+        1.199988403347153,
+        1.1999991528235825,
+        1.1999999594551527,
+        1.1999999988088228,
+        1.1999999999803823,
+        1.1999999999998416,
+        1.1999999999999993,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2
+      ]
+    },
+    "RequiredSignalIds": [
+      "Axis01.MotorCurrent",
+      "Axis01.MotorTemperature",
+      "Axis01.Speed",
+      "Axis01.VibrationRms"
+    ],
+    "RequiredHiddenIds": [
+      "MechanicalLoad"
+    ],
+    "DirectionChecks": [
+      {
+        "SignalId": "Axis01.MotorCurrent",
+        "Direction": "decrease",
+        "StartValue": 4.557047658789013,
+        "EndValue": 4.870793573201176,
+        "Delta": 0.3137459144121628,
+        "Passed": false
+      },
+      {
+        "SignalId": "Axis01.Speed",
+        "Direction": "increase",
+        "StartValue": 949.090927133999,
+        "EndValue": 947.4193851651795,
+        "Delta": -1.671541968819497,
+        "Passed": false
+      },
+      {
+        "SignalId": "Axis01.MotorTemperature",
+        "Direction": "decrease",
+        "StartValue": 76.94509521168223,
+        "EndValue": 44.552547046963184,
+        "Delta": -32.392548164719045,
+        "Passed": true
+      }
+    ],
+    "TimingChecks": [],
+    "RequiredEvidenceChecks": [],
+    "Passed": true,
+    "FailedCriteria": []
+  },
+  "HydraulicRecovery": {
+    "ScenarioId": "hydraulic-leak",
+    "ProfileId": "bending-hydraulic-machine-300",
+    "Seed": 53,
+    "TimeFactor": 8,
+    "ExpectProductionResume": true,
+    "SampleCount": 51,
+    "ScenarioStartedAtUtc": "2026-08-09T21:02:07.1926635Z",
+    "ThresholdFirstReachedAtUtc": "2026-08-09T21:02:07.3050921Z",
+    "ThresholdConfirmedAtUtc": "2026-08-09T21:02:07.3169484Z",
+    "MachineFaultedAtUtc": "2026-08-09T21:02:07.3169485Z",
+    "RecoveryStartedAtUtc": "2026-08-09T21:02:07.3178947Z",
+    "RecoveryCompletedAtUtc": "2026-08-09T21:02:07.3356146Z",
+    "Timeline": [
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1936707Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Initiating",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 125.42790628539872,
+          "Hydraulic.PumpCurrent": 7.886152770035448,
+          "Hydraulic.OilTemperature": 45.045031982650016,
+          "Bending.PressForce": 87.07222415602718,
+          "Bending.CycleTime": 19.003011386843724
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.1297798222784068
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.1980475Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Developing",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 129.257662934819,
+          "Hydraulic.PumpCurrent": 7.91129361952081,
+          "Hydraulic.OilTemperature": 45.00342501329151,
+          "Bending.PressForce": 91.12400027218412,
+          "Bending.CycleTime": 18.11839822246922
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.0475051793649268
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2029002Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Degraded",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 136.8214832692295,
+          "Hydraulic.PumpCurrent": 8.174865568881733,
+          "Hydraulic.OilTemperature": 45.01844762427607,
+          "Bending.PressForce": 92.05160743567164,
+          "Bending.CycleTime": 18.472669873346145
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.910177765220335
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2077146Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Critical",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 135.67651851972215,
+          "Hydraulic.PumpCurrent": 7.9198157673739,
+          "Hydraulic.OilTemperature": 45.05528802956151,
+          "Bending.PressForce": 89.710790354404,
+          "Bending.CycleTime": 18.61239932776144
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.7740287002146402
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2122607Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 149.72218498152833,
+          "Hydraulic.PumpCurrent": 7.923598231427108,
+          "Hydraulic.OilTemperature": 45.099003275639845,
+          "Bending.PressForce": 93.80452359309425,
+          "Bending.CycleTime": 18.424844734368868
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.6372458264416143
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2169121Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 148.187500941628,
+          "Hydraulic.PumpCurrent": 7.776616238719151,
+          "Hydraulic.OilTemperature": 45.03311982495083,
+          "Bending.PressForce": 93.15592492210561,
+          "Bending.CycleTime": 18.43702577532071
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5246172621799501
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2217905Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 167.891554764791,
+          "Hydraulic.PumpCurrent": 7.956321281518942,
+          "Hydraulic.OilTemperature": 45.105272856697724,
+          "Bending.PressForce": 91.56360584977772,
+          "Bending.CycleTime": 18.75071141108928
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5166827083421393
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2266948Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 168.47348716669978,
+          "Hydraulic.PumpCurrent": 8.006863693440843,
+          "Hydraulic.OilTemperature": 45.10184212186966,
+          "Bending.PressForce": 93.58531565517276,
+          "Bending.CycleTime": 18.527168250256008
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5256953549557204
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2318692Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 168.13700746265857,
+          "Hydraulic.PumpCurrent": 7.961041805247752,
+          "Hydraulic.OilTemperature": 44.97698230804753,
+          "Bending.PressForce": 92.51367658135351,
+          "Bending.CycleTime": 18.713514984674205
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5182828875314995
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2377135Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 168.58854549762384,
+          "Hydraulic.PumpCurrent": 7.728679212457276,
+          "Hydraulic.OilTemperature": 44.987640337581446,
+          "Bending.PressForce": 94.30186369377542,
+          "Bending.CycleTime": 18.754222688044592
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5279410907432738
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2426168Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 168.60233055065737,
+          "Hydraulic.PumpCurrent": 7.690862148862664,
+          "Hydraulic.OilTemperature": 44.89334548397588,
+          "Bending.PressForce": 91.67580666503194,
+          "Bending.CycleTime": 18.716867692231585
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5194508774841882
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.247806Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 168.4695552905834,
+          "Hydraulic.PumpCurrent": 7.594368536196528,
+          "Hydraulic.OilTemperature": 45.059861296384,
+          "Bending.PressForce": 91.71261514552138,
+          "Bending.CycleTime": 18.74064753660512
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5169456386138416
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2526411Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 171.2566895694388,
+          "Hydraulic.PumpCurrent": 7.588484258388762,
+          "Hydraulic.OilTemperature": 45.04872608526803,
+          "Bending.PressForce": 91.19574554352975,
+          "Bending.CycleTime": 18.755464851954176
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5241533575168564
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2573136Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 171.11915923223657,
+          "Hydraulic.PumpCurrent": 7.4123488497675485,
+          "Hydraulic.OilTemperature": 45.09090747722919,
+          "Bending.PressForce": 89.54583259585903,
+          "Bending.CycleTime": 18.359178494668942
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5241264488131077
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2636517Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 170.56844388053676,
+          "Hydraulic.PumpCurrent": 7.742262173793034,
+          "Hydraulic.OilTemperature": 44.978751678046144,
+          "Bending.PressForce": 89.75019477846688,
+          "Bending.CycleTime": 18.468654267913212
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5170221448369785
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2683452Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 141.0712149449972,
+          "Hydraulic.PumpCurrent": 7.623917911272258,
+          "Hydraulic.OilTemperature": 44.953353403920715,
+          "Bending.PressForce": 87.55887577511625,
+          "Bending.CycleTime": 18.442541794702635
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5206294477340923
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2731414Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 141.29041205170128,
+          "Hydraulic.PumpCurrent": 7.485707581750982,
+          "Hydraulic.OilTemperature": 44.959821333256706,
+          "Bending.PressForce": 90.79134405164966,
+          "Bending.CycleTime": 18.359113118891546
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5177327154221616
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.277904Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 122.7257216391775,
+          "Hydraulic.PumpCurrent": 7.395163525458064,
+          "Hydraulic.OilTemperature": 45.04531353462156,
+          "Bending.PressForce": 80.87504844848281,
+          "Bending.CycleTime": 18.21533623763984
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5227917776824265
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2827124Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 122.24754299871813,
+          "Hydraulic.PumpCurrent": 7.285011074364691,
+          "Hydraulic.OilTemperature": 45.05470028954647,
+          "Bending.PressForce": 89.21741943897355,
+          "Bending.CycleTime": 18.274199454598982
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5209474605043845
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2875552Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 122.90189001175906,
+          "Hydraulic.PumpCurrent": 7.263583400977173,
+          "Hydraulic.OilTemperature": 45.013290797721766,
+          "Bending.PressForce": 86.65785828266156,
+          "Bending.CycleTime": 18.665099364002938
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5264889390633698
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2922904Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 122.43600107838442,
+          "Hydraulic.PumpCurrent": 7.094820687154601,
+          "Hydraulic.OilTemperature": 44.90077955910998,
+          "Bending.PressForce": 86.21487579760125,
+          "Bending.CycleTime": 18.592250729575216
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5187613728557454
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.2972069Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 122.91817810263088,
+          "Hydraulic.PumpCurrent": 7.201206224502575,
+          "Hydraulic.OilTemperature": 44.89189916636945,
+          "Bending.PressForce": 85.84015777944055,
+          "Bending.CycleTime": 18.3461019628518
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5211321918645713
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3020226Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 123.30039304933136,
+          "Hydraulic.PumpCurrent": 7.053939661039778,
+          "Hydraulic.OilTemperature": 45.06631982715554,
+          "Bending.PressForce": 83.39900264391086,
+          "Bending.CycleTime": 18.277459064288717
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5272666000518598
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3068878Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 120.58635698579883,
+          "Hydraulic.PumpCurrent": 7.293082127062898,
+          "Hydraulic.OilTemperature": 45.12324053949051,
+          "Bending.PressForce": 87.2131793767436,
+          "Bending.CycleTime": 18.48505938736734
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5180648303588642
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3117649Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 121.0777121955779,
+          "Hydraulic.PumpCurrent": 7.0560964049343085,
+          "Hydraulic.OilTemperature": 44.9457764554791,
+          "Bending.PressForce": 83.98603029297037,
+          "Bending.CycleTime": 18.635101029819065
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5230730566056094
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3167917Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Faulted",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 119.78282775167077,
+          "Hydraulic.PumpCurrent": 6.807414264735549,
+          "Hydraulic.OilTemperature": 45.08725337159669,
+          "Bending.PressForce": 82.56686450529392,
+          "Bending.CycleTime": 18.300271132782726
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5250050797510633
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3178975Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "Faulted",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 119.9417284354949,
+          "Hydraulic.PumpCurrent": 6.784215003805358,
+          "Hydraulic.OilTemperature": 44.95764632455247,
+          "Bending.PressForce": 85.11404853201697,
+          "Bending.CycleTime": 18.680941952035937
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5189114735130054
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3188981Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 129.15133713566678,
+          "Hydraulic.PumpCurrent": 6.743517630987515,
+          "Hydraulic.OilTemperature": 45.00242174070609,
+          "Bending.PressForce": 92.65425744121059,
+          "Bending.CycleTime": 18.484153839987236
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.1425573368556252
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.31988Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 132.74596032489615,
+          "Hydraulic.PumpCurrent": 6.8164840063712635,
+          "Hydraulic.OilTemperature": 44.94445666973506,
+          "Bending.PressForce": 91.63127950238795,
+          "Bending.CycleTime": 18.118427768287933
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.320857Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 132.84844817704976,
+          "Hydraulic.PumpCurrent": 6.814458853050736,
+          "Hydraulic.OilTemperature": 44.94973392693294,
+          "Bending.PressForce": 91.6400523893636,
+          "Bending.CycleTime": 18.62289280560065
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3218362Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 132.65131927006428,
+          "Hydraulic.PumpCurrent": 6.831611732519487,
+          "Hydraulic.OilTemperature": 45.04990150405012,
+          "Bending.PressForce": 92.9409025861612,
+          "Bending.CycleTime": 18.374992004439832
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.322812Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 131.51239202260484,
+          "Hydraulic.PumpCurrent": 6.733964016333987,
+          "Hydraulic.OilTemperature": 45.095808709067086,
+          "Bending.PressForce": 91.82440400462352,
+          "Bending.CycleTime": 18.54650848897817
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3237932Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 142.77011004311444,
+          "Hydraulic.PumpCurrent": 6.708759746878067,
+          "Hydraulic.OilTemperature": 45.037508098805816,
+          "Bending.PressForce": 94.54847485774604,
+          "Bending.CycleTime": 18.711927955365624
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.324796Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 141.11201553851697,
+          "Hydraulic.PumpCurrent": 6.6006571198663115,
+          "Hydraulic.OilTemperature": 45.0742275648101,
+          "Bending.PressForce": 89.94269103739445,
+          "Bending.CycleTime": 18.35626012551302
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3257782Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 141.93199405594547,
+          "Hydraulic.PumpCurrent": 6.68758875126945,
+          "Hydraulic.OilTemperature": 44.96745937900418,
+          "Bending.PressForce": 92.91044754200624,
+          "Bending.CycleTime": 18.456126871960397
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3267505Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 142.8036160380025,
+          "Hydraulic.PumpCurrent": 6.612473080191017,
+          "Hydraulic.OilTemperature": 45.024545122868176,
+          "Bending.PressForce": 95.73759057851906,
+          "Bending.CycleTime": 18.555699830829514
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3277502Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 141.50726115112226,
+          "Hydraulic.PumpCurrent": 6.650384030032736,
+          "Hydraulic.OilTemperature": 44.9680609523039,
+          "Bending.PressForce": 93.95348525071557,
+          "Bending.CycleTime": 18.34395691250503
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3287371Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 142.63889995155495,
+          "Hydraulic.PumpCurrent": 6.656327812027392,
+          "Hydraulic.OilTemperature": 45.007070779648515,
+          "Bending.PressForce": 94.48966697035233,
+          "Bending.CycleTime": 18.706154969165787
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3298813Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 142.70430998241923,
+          "Hydraulic.PumpCurrent": 6.745666056062862,
+          "Hydraulic.OilTemperature": 45.03351890645906,
+          "Bending.PressForce": 89.67193400681295,
+          "Bending.CycleTime": 18.37132229756867
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3308994Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 141.64981450102974,
+          "Hydraulic.PumpCurrent": 6.868174799753583,
+          "Hydraulic.OilTemperature": 44.95329813091244,
+          "Bending.PressForce": 90.30459669035255,
+          "Bending.CycleTime": 18.710846975929783
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3318676Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 142.08295318888437,
+          "Hydraulic.PumpCurrent": 6.8051632918162195,
+          "Hydraulic.OilTemperature": 45.081078315732896,
+          "Bending.PressForce": 88.62570398164931,
+          "Bending.CycleTime": 18.339296139710836
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3328197Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 142.3363855180713,
+          "Hydraulic.PumpCurrent": 6.7120097153359914,
+          "Hydraulic.OilTemperature": 44.90330888903514,
+          "Bending.PressForce": 92.95069201881262,
+          "Bending.CycleTime": 18.44655633799489
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3337532Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 158.29426901543337,
+          "Hydraulic.PumpCurrent": 6.706154102407241,
+          "Hydraulic.OilTemperature": 45.06228300738603,
+          "Bending.PressForce": 98.79013416790627,
+          "Bending.CycleTime": 18.421323779388725
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3346688Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 158.10654587335947,
+          "Hydraulic.PumpCurrent": 6.657550269007555,
+          "Hydraulic.OilTemperature": 45.123623772248,
+          "Bending.PressForce": 96.92883689094371,
+          "Bending.CycleTime": 18.371467572764008
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3355868Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryCompleted",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 157.9316110825491,
+          "Hydraulic.PumpCurrent": 6.539595420064431,
+          "Hydraulic.OilTemperature": 44.98404474827704,
+          "Bending.PressForce": 97.59585158613802,
+          "Bending.CycleTime": 18.664628646098805
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.336535Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 157.23885867920208,
+          "Hydraulic.PumpCurrent": 6.466679608310154,
+          "Hydraulic.OilTemperature": 44.90851082637439,
+          "Bending.PressForce": 95.6748451619924,
+          "Bending.CycleTime": 18.523777367330503
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3410804Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 157.75654529053978,
+          "Hydraulic.PumpCurrent": 6.1101513480413425,
+          "Hydraulic.OilTemperature": 45.033638088507836,
+          "Bending.PressForce": 96.32090371569947,
+          "Bending.CycleTime": 18.32259938837335
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3459889Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 179.35209559463462,
+          "Hydraulic.PumpCurrent": 5.991264053648568,
+          "Hydraulic.OilTemperature": 45.04051514787702,
+          "Bending.PressForce": 96.82603583101694,
+          "Bending.CycleTime": 18.521155423006157
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3503712Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 178.35346534335451,
+          "Hydraulic.PumpCurrent": 5.907653896755001,
+          "Hydraulic.OilTemperature": 45.030774057137904,
+          "Bending.PressForce": 97.24568572535073,
+          "Bending.CycleTime": 18.68548759520802
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3547481Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 179.60809716433963,
+          "Hydraulic.PumpCurrent": 5.730240240324008,
+          "Hydraulic.OilTemperature": 45.12204439307389,
+          "Bending.PressForce": 96.39442994902019,
+          "Bending.CycleTime": 18.220142324464906
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-09T21:02:07.3594858Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 179.7498512742726,
+          "Hydraulic.PumpCurrent": 6.023615944599248,
+          "Hydraulic.OilTemperature": 45.104959622224484,
+          "Bending.PressForce": 98.53774429568405,
+          "Bending.CycleTime": 18.52934578946979
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1.2
+        }
+      }
+    ],
+    "SignalSamples": {
+      "Hydraulic.SupplyPressure": [
+        125.42790628539872,
+        129.257662934819,
+        136.8214832692295,
+        135.67651851972215,
+        149.72218498152833,
+        148.187500941628,
+        167.891554764791,
+        168.47348716669978,
+        168.13700746265857,
+        168.58854549762384,
+        168.60233055065737,
+        168.4695552905834,
+        171.2566895694388,
+        171.11915923223657,
+        170.56844388053676,
+        141.0712149449972,
+        141.29041205170128,
+        122.7257216391775,
+        122.24754299871813,
+        122.90189001175906,
+        122.43600107838442,
+        122.91817810263088,
+        123.30039304933136,
+        120.58635698579883,
+        121.0777121955779,
+        119.78282775167077,
+        119.9417284354949,
+        129.15133713566678,
+        132.74596032489615,
+        132.84844817704976,
+        132.65131927006428,
+        131.51239202260484,
+        142.77011004311444,
+        141.11201553851697,
+        141.93199405594547,
+        142.8036160380025,
+        141.50726115112226,
+        142.63889995155495,
+        142.70430998241923,
+        141.64981450102974,
+        142.08295318888437,
+        142.3363855180713,
+        158.29426901543337,
+        158.10654587335947,
+        157.9316110825491,
+        157.23885867920208,
+        157.75654529053978,
+        179.35209559463462,
+        178.35346534335451,
+        179.60809716433963,
+        179.7498512742726
+      ],
+      "Hydraulic.PumpCurrent": [
+        7.886152770035448,
+        7.91129361952081,
+        8.174865568881733,
+        7.9198157673739,
+        7.923598231427108,
+        7.776616238719151,
+        7.956321281518942,
+        8.006863693440843,
+        7.961041805247752,
+        7.728679212457276,
+        7.690862148862664,
+        7.594368536196528,
+        7.588484258388762,
+        7.4123488497675485,
+        7.742262173793034,
+        7.623917911272258,
+        7.485707581750982,
+        7.395163525458064,
+        7.285011074364691,
+        7.263583400977173,
+        7.094820687154601,
+        7.201206224502575,
+        7.053939661039778,
+        7.293082127062898,
+        7.0560964049343085,
+        6.807414264735549,
+        6.784215003805358,
+        6.743517630987515,
+        6.8164840063712635,
+        6.814458853050736,
+        6.831611732519487,
+        6.733964016333987,
+        6.708759746878067,
+        6.6006571198663115,
+        6.68758875126945,
+        6.612473080191017,
+        6.650384030032736,
+        6.656327812027392,
+        6.745666056062862,
+        6.868174799753583,
+        6.8051632918162195,
+        6.7120097153359914,
+        6.706154102407241,
+        6.657550269007555,
+        6.539595420064431,
+        6.466679608310154,
+        6.1101513480413425,
+        5.991264053648568,
+        5.907653896755001,
+        5.730240240324008,
+        6.023615944599248
+      ],
+      "Hydraulic.OilTemperature": [
+        45.045031982650016,
+        45.00342501329151,
+        45.01844762427607,
+        45.05528802956151,
+        45.099003275639845,
+        45.03311982495083,
+        45.105272856697724,
+        45.10184212186966,
+        44.97698230804753,
+        44.987640337581446,
+        44.89334548397588,
+        45.059861296384,
+        45.04872608526803,
+        45.09090747722919,
+        44.978751678046144,
+        44.953353403920715,
+        44.959821333256706,
+        45.04531353462156,
+        45.05470028954647,
+        45.013290797721766,
+        44.90077955910998,
+        44.89189916636945,
+        45.06631982715554,
+        45.12324053949051,
+        44.9457764554791,
+        45.08725337159669,
+        44.95764632455247,
+        45.00242174070609,
+        44.94445666973506,
+        44.94973392693294,
+        45.04990150405012,
+        45.095808709067086,
+        45.037508098805816,
+        45.0742275648101,
+        44.96745937900418,
+        45.024545122868176,
+        44.9680609523039,
+        45.007070779648515,
+        45.03351890645906,
+        44.95329813091244,
+        45.081078315732896,
+        44.90330888903514,
+        45.06228300738603,
+        45.123623772248,
+        44.98404474827704,
+        44.90851082637439,
+        45.033638088507836,
+        45.04051514787702,
+        45.030774057137904,
+        45.12204439307389,
+        45.104959622224484
+      ],
+      "Bending.PressForce": [
+        87.07222415602718,
+        91.12400027218412,
+        92.05160743567164,
+        89.710790354404,
+        93.80452359309425,
+        93.15592492210561,
+        91.56360584977772,
+        93.58531565517276,
+        92.51367658135351,
+        94.30186369377542,
+        91.67580666503194,
+        91.71261514552138,
+        91.19574554352975,
+        89.54583259585903,
+        89.75019477846688,
+        87.55887577511625,
+        90.79134405164966,
+        80.87504844848281,
+        89.21741943897355,
+        86.65785828266156,
+        86.21487579760125,
+        85.84015777944055,
+        83.39900264391086,
+        87.2131793767436,
+        83.98603029297037,
+        82.56686450529392,
+        85.11404853201697,
+        92.65425744121059,
+        91.63127950238795,
+        91.6400523893636,
+        92.9409025861612,
+        91.82440400462352,
+        94.54847485774604,
+        89.94269103739445,
+        92.91044754200624,
+        95.73759057851906,
+        93.95348525071557,
+        94.48966697035233,
+        89.67193400681295,
+        90.30459669035255,
+        88.62570398164931,
+        92.95069201881262,
+        98.79013416790627,
+        96.92883689094371,
+        97.59585158613802,
+        95.6748451619924,
+        96.32090371569947,
+        96.82603583101694,
+        97.24568572535073,
+        96.39442994902019,
+        98.53774429568405
+      ],
+      "Bending.CycleTime": [
+        19.003011386843724,
+        18.11839822246922,
+        18.472669873346145,
+        18.61239932776144,
+        18.424844734368868,
+        18.43702577532071,
+        18.75071141108928,
+        18.527168250256008,
+        18.713514984674205,
+        18.754222688044592,
+        18.716867692231585,
+        18.74064753660512,
+        18.755464851954176,
+        18.359178494668942,
+        18.468654267913212,
+        18.442541794702635,
+        18.359113118891546,
+        18.21533623763984,
+        18.274199454598982,
+        18.665099364002938,
+        18.592250729575216,
+        18.3461019628518,
+        18.277459064288717,
+        18.48505938736734,
+        18.635101029819065,
+        18.300271132782726,
+        18.680941952035937,
+        18.484153839987236,
+        18.118427768287933,
+        18.62289280560065,
+        18.374992004439832,
+        18.54650848897817,
+        18.711927955365624,
+        18.35626012551302,
+        18.456126871960397,
+        18.555699830829514,
+        18.34395691250503,
+        18.706154969165787,
+        18.37132229756867,
+        18.710846975929783,
+        18.339296139710836,
+        18.44655633799489,
+        18.421323779388725,
+        18.371467572764008,
+        18.664628646098805,
+        18.523777367330503,
+        18.32259938837335,
+        18.521155423006157,
+        18.68548759520802,
+        18.220142324464906,
+        18.52934578946979
+      ]
+    },
+    "HiddenSamples": {
+      "HydraulicEfficiency": [
+        1.1297798222784068,
+        1.0475051793649268,
+        0.910177765220335,
+        0.7740287002146402,
+        0.6372458264416143,
+        0.5246172621799501,
+        0.5166827083421393,
+        0.5256953549557204,
+        0.5182828875314995,
+        0.5279410907432738,
+        0.5194508774841882,
+        0.5169456386138416,
+        0.5241533575168564,
+        0.5241264488131077,
+        0.5170221448369785,
+        0.5206294477340923,
+        0.5177327154221616,
+        0.5227917776824265,
+        0.5209474605043845,
+        0.5264889390633698,
+        0.5187613728557454,
+        0.5211321918645713,
+        0.5272666000518598,
+        0.5180648303588642,
+        0.5230730566056094,
+        0.5250050797510633,
+        0.5189114735130054,
+        1.1425573368556252,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2,
+        1.2
+      ]
+    },
+    "RequiredSignalIds": [
+      "Hydraulic.SupplyPressure",
+      "Hydraulic.PumpCurrent",
+      "Hydraulic.OilTemperature",
+      "Bending.PressForce",
+      "Bending.CycleTime"
+    ],
+    "RequiredHiddenIds": [
+      "HydraulicEfficiency"
+    ],
+    "DirectionChecks": [
+      {
+        "SignalId": "HydraulicEfficiency",
+        "Direction": "decrease",
+        "StartValue": 0.6790294261142114,
+        "EndValue": 1.1999999999999997,
+        "Delta": 0.5209705738857884,
+        "Passed": false
+      },
+      {
+        "SignalId": "Hydraulic.SupplyPressure",
+        "Direction": "decrease",
+        "StartValue": 152.9379781387783,
+        "EndValue": 161.03837437713923,
+        "Delta": 8.10039623836093,
+        "Passed": false
+      },
+      {
+        "SignalId": "Hydraulic.PumpCurrent",
+        "Direction": "increase",
+        "StartValue": 7.877539906140179,
+        "EndValue": 6.376521057505278,
+        "Delta": -1.5010188486349012,
+        "Passed": false
+      },
+      {
+        "SignalId": "Hydraulic.OilTemperature",
+        "Direction": "increase",
+        "StartValue": 45.03160501291051,
+        "EndValue": 45.02900658323225,
+        "Delta": -0.002598429678258185,
+        "Passed": false
+      },
+      {
+        "SignalId": "Bending.PressForce",
+        "Direction": "change",
+        "StartValue": 91.85599619367662,
+        "EndValue": 95.5162883345472,
+        "Delta": 3.660292140870581,
+        "Passed": true
+      },
+      {
+        "SignalId": "Bending.CycleTime",
+        "Direction": "increase",
+        "StartValue": 18.60595682358424,
+        "EndValue": 18.47971894497832,
+        "Delta": -0.12623787860592017,
+        "Passed": false
+      },
+      {
+        "SignalId": "Hydraulic.SupplyPressure",
+        "Direction": "recovery-increase",
+        "StartValue": 140.7747879634621,
+        "EndValue": 148.76866232823883,
+        "Delta": 7.99387436477673,
+        "Passed": true
+      }
+    ],
+    "TimingChecks": [],
+    "RequiredEvidenceChecks": [],
+    "Passed": true,
+    "FailedCriteria": []
+  },
+  "SensorDrift": {
+    "ScenarioId": "sensor-drift",
+    "ProfileId": "laser-processing-machine-300",
+    "Seed": 45,
+    "TimeFactor": 15,
+    "SampleCount": 40,
+    "SignalSamples": {
+      "Axis01.MotorTemperature": [
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015,
+        44.751349126773015
+      ],
+      "Thermal.SpindleMotorTemp": [
+        87.78028962241638,
+        87.78345800468321,
+        88.1785296656222,
+        87.91007982513862,
+        88.18886317238378,
+        88.08376443012301,
+        88.25229429405604,
+        87.80782842000407,
+        87.84116715435712,
+        88.13777181628343,
+        87.78963779455259,
+        88.0505637265391,
+        87.87047941997174,
+        87.96034709430941,
+        88.1467912913852,
+        87.84017665515071,
+        87.89629547806916,
+        88.25733428810457,
+        88.23215074016711,
+        87.96774870217043,
+        87.84327267199696,
+        88.00830774031742,
+        87.81044274307946,
+        88.25781349856724,
+        88.08116644683915,
+        88.20045344536707,
+        87.9201832893629,
+        87.92391347096023,
+        87.94881435837935,
+        88.1561634634145,
+        87.78753871202706,
+        88.02090032863029,
+        87.85381332711403,
+        88.13848693063564,
+        87.99914605916204,
+        88.14421547556854,
+        88.24408501012762,
+        87.78218827937263,
+        88.23136987823774,
+        87.99988428212019
+      ]
+    },
+    "HiddenSamples": {
+      "ThermalLoad": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "RequiredSignalIds": [
+      "Axis01.MotorTemperature",
+      "Thermal.SpindleMotorTemp"
+    ],
+    "RequiredHiddenIds": [
+      "ThermalLoad"
+    ],
+    "SensorStart": 44.751349126773015,
+    "SensorEnd": 44.751349126773015,
+    "SensorDelta": 0,
+    "HiddenStart": 2,
+    "HiddenEnd": 2,
+    "HiddenDelta": 0,
+    "RedundantStart": 88.08433744454973,
+    "RedundantEnd": 88.05751183252735,
+    "RedundantDelta": -0.02682561202237821,
+    "DirectionChecks": [],
+    "TimingChecks": [],
+    "RequiredEvidenceChecks": [
+      "sensor-drift-samples-ok"
+    ],
+    "Passed": true,
+    "FailedCriteria": []
+  },
+  "CoolantLoss": {
+    "ScenarioId": "coolant-loss",
+    "ProfileId": "laser-processing-machine-300",
+    "Seed": 47,
+    "TimeFactor": 18,
+    "SampleCount": 40,
+    "SignalSamples": {
+      "Cooling.PrimaryCircuit.Flow": [
+        14.942273547690473,
+        15.072969642409973,
+        15.020089605705229,
+        15.073429251581269,
+        15.01724925342527,
+        15.02705256717123,
+        15.077331942518574,
+        14.953380339320649,
+        15.048419932756104,
+        14.984333456439684,
+        15.07650201306803,
+        15.074875042964328,
+        15.01394316716085,
+        14.955352854105273,
+        15.071374018065256,
+        15.02770319319783,
+        14.988197036091943,
+        14.923786820616751,
+        14.999237732289835,
+        15.065930053350948,
+        15.059907231918604,
+        14.993875260997168,
+        15.056956785675894,
+        15.03257221363365,
+        14.97725259788035,
+        14.974030776441143,
+        15.009416138900193,
+        15.024591493178312,
+        15.035576761593369,
+        14.99264894544679,
+        15.042640573997316,
+        14.994358628554664,
+        15.045923617998325,
+        15.02176279844345,
+        14.938348032643802,
+        15.063315702051097,
+        14.987452846379567,
+        15.005819832412971,
+        15.063289284503675,
+        15.055874712410429
+      ],
+      "Cooling.PrimaryCircuit.Pressure": [
+        4.005071212702181,
+        4.004172223720538,
+        4.0048609468891465,
+        4.004817569938344,
+        4.007461678393566,
+        3.9944196114273938,
+        4.0081970106055875,
+        3.9995964085962066,
+        4.001539409885005,
+        4.002465540358627,
+        4.007576968268253,
+        4.003506576121276,
+        4.002906109821182,
+        4.003626069961884,
+        4.007711025566517,
+        4.0046789119566215,
+        4.003861461052703,
+        3.9933744100215267,
+        4.008136924632709,
+        3.9972389676581046,
+        4.000349325127249,
+        3.993300820623538,
+        3.9938402116091134,
+        3.991179136538854,
+        4.00414813148205,
+        3.9982352150803386,
+        3.992499400060272,
+        3.998368563366518,
+        4.000117428817228,
+        4.0013338993251235,
+        3.995835754999645,
+        4.001545855182112,
+        3.994693868008382,
+        3.9967633037632035,
+        3.9905205008794384,
+        4.008054413759888,
+        3.995930634865534,
+        3.99312914777667,
+        3.9982141443848325,
+        3.9980054366268116
+      ],
+      "Cooling.PrimaryCircuit.Temperature": [
+        28.17130734417262,
+        28.162709300734047,
+        29.04013517662732,
+        28.419000112664456,
+        29.02653682745876,
+        28.368436856262917,
+        28.356106617634747,
+        28.066708099107032,
+        28.335547335155557,
+        28.782385486511856,
+        28.83712648277242,
+        28.940119592289932,
+        28.338903083149056,
+        28.200173480312245,
+        28.288378956939912,
+        28.304080402737338,
+        29.032237039265105,
+        29.188670043371644,
+        28.674554420975603,
+        28.198309508550658,
+        28.17832382567192,
+        28.052522988250622,
+        28.26614091356049,
+        28.813557311800057,
+        29.11698428156853,
+        28.39417368667948,
+        28.113793977339498,
+        28.096280665162322,
+        28.26501608347936,
+        28.169625916312775,
+        28.622622929677217,
+        28.947335384839604,
+        28.37066615129891,
+        28.26551628181036,
+        28.174355064799958,
+        28.08261280342293,
+        28.223659382778578,
+        28.224787574722527,
+        28.975780275609353,
+        28.25644041175404
+      ]
+    },
+    "HiddenSamples": {
+      "CoolingEfficiency": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "RequiredSignalIds": [
+      "Cooling.PrimaryCircuit.Flow",
+      "Cooling.PrimaryCircuit.Pressure",
+      "Cooling.PrimaryCircuit.Temperature"
+    ],
+    "RequiredHiddenIds": [
+      "CoolingEfficiency"
+    ],
+    "SensorStart": null,
+    "SensorEnd": null,
+    "SensorDelta": null,
+    "HiddenStart": null,
+    "HiddenEnd": null,
+    "HiddenDelta": null,
+    "RedundantStart": null,
+    "RedundantEnd": null,
+    "RedundantDelta": null,
+    "DirectionChecks": [
+      {
+        "SignalId": "CoolingEfficiency",
+        "Direction": "decrease",
+        "StartValue": 0.38497752120659967,
+        "EndValue": 0,
+        "Delta": -0.38497752120659967,
+        "Passed": true
+      },
+      {
+        "SignalId": "Cooling.PrimaryCircuit.Flow",
+        "Direction": "decrease",
+        "StartValue": 15.083930855380249,
+        "EndValue": 14.951771602890085,
+        "Delta": -0.13215925249016358,
+        "Passed": true
+      },
+      {
+        "SignalId": "Cooling.PrimaryCircuit.Pressure",
+        "Direction": "decrease",
+        "StartValue": 4.003260951878869,
+        "EndValue": 3.9973032596138403,
+        "Delta": -0.005957692265028847,
+        "Passed": true
+      },
+      {
+        "SignalId": "Cooling.PrimaryCircuit.Temperature",
+        "Direction": "increase",
+        "StartValue": 25.91878529945749,
+        "EndValue": 28.347486437604168,
+        "Delta": 2.4287011381466783,
+        "Passed": true
+      }
+    ],
+    "TimingChecks": [
+      {
+        "Name": "flow-pressure-before-temp",
+        "PrimaryChangeIndex": 0,
+        "SecondaryChangeIndex": 2,
+        "Passed": true
+      }
+    ],
+    "RequiredEvidenceChecks": [
+      "coolant-loss-samples-ok"
+    ],
+    "Passed": true,
+    "FailedCriteria": []
+  },
+  "HydraulicLeak": {
+    "ScenarioId": "hydraulic-leak",
+    "ProfileId": "bending-hydraulic-machine-300",
+    "Seed": 49,
+    "TimeFactor": 16,
+    "SampleCount": 50,
+    "SignalSamples": {
+      "Hydraulic.SupplyPressure": [
+        132.98450139263738,
+        149.11396187637365,
+        169.33249134977254,
+        173.16227982322889,
+        144.12314939723834,
+        125.23942329110177,
+        125.14356857033519,
+        133.12371385701647,
+        168.8228146757776,
+        168.87321389774377,
+        144.1888585648848,
+        125.56664653907336,
+        124.87955980203934,
+        132.7263727526936,
+        169.19896835518782,
+        169.08625542856058,
+        144.49048801935285,
+        126.03533300407581,
+        123.5913159082967,
+        132.7690749345239,
+        169.62268078036024,
+        169.4940685029902,
+        172.65129471678324,
+        125.77703521686321,
+        125.46411852000891,
+        123.66013258717439,
+        147.54544007034963,
+        169.46445681261133,
+        172.70563752594592,
+        125.32303140347345,
+        124.77469015954436,
+        123.70799803927169,
+        147.1201800078444,
+        169.17450513337008,
+        172.06193755601512,
+        144.1201782129835,
+        125.83435091985508,
+        124.0161994526146,
+        133.28434135520226,
+        169.40511535988173,
+        170.06669672075824,
+        143.72650590769862,
+        126.18946313498634,
+        123.79192937549051,
+        133.50029914813695,
+        168.8025765495848,
+        169.37834953509136,
+        143.82529999818567,
+        126.46067060883001,
+        124.62390756038016
+      ],
+      "Hydraulic.PumpCurrent": [
+        8.075330917791527,
+        8.088808393626028,
+        8.18149334958968,
+        8.290777100809265,
+        8.420047777441226,
+        8.714263042437793,
+        8.540836242976118,
+        8.525001537107354,
+        8.579153087820622,
+        8.819131895829432,
+        8.934960035893363,
+        9.017993291667013,
+        9.134512208525832,
+        9.220611516288024,
+        9.353935785060527,
+        9.15815074266434,
+        9.365083981258612,
+        9.371958214217608,
+        9.300740404546533,
+        9.582422458741696,
+        9.67385780267764,
+        9.63391961150913,
+        9.746685394120368,
+        9.746099661274076,
+        9.884976035407423,
+        9.728099500138363,
+        10.186169711514284,
+        10.374512465092218,
+        10.186093655155597,
+        10.042394339923993,
+        9.84091315639683,
+        9.343693990644349,
+        9.949634742998336,
+        9.880544732878132,
+        10.304954765725297,
+        10.113675991237557,
+        9.870430802086107,
+        10.055656746051781,
+        10.228464034001803,
+        10.71225325598622,
+        10.678357602589632,
+        10.561507608371723,
+        10.85725722573792,
+        10.547662649024042,
+        10.088298543285426,
+        10.479408027297195,
+        10.723897870599234,
+        10.438388008680244,
+        10.70434647084341,
+        11.00951265934305
+      ],
+      "Hydraulic.OilTemperature": [
+        51.22505454100615,
+        51.369113849138806,
+        51.34053233569146,
+        51.23671851683734,
+        51.18678823537449,
+        51.25947452542286,
+        51.1565204091382,
+        51.23881758536016,
+        51.26803562181597,
+        51.319932551122406,
+        51.19944612952031,
+        51.348124337880314,
+        51.366914360384065,
+        51.17624192361501,
+        51.19614272790207,
+        51.324239838382674,
+        51.17678208378664,
+        51.19010712160316,
+        51.19185073355664,
+        51.21528911956811,
+        51.29215018509291,
+        51.219447860592524,
+        51.21750833761556,
+        51.28565955697223,
+        51.22367398083354,
+        51.200152055316416,
+        51.288035946772666,
+        51.377584661919535,
+        51.160238978932476,
+        51.265959176098214,
+        51.146897175870194,
+        58.93127470981368,
+        58.998705759406505,
+        58.90473389303025,
+        58.41348516360915,
+        56.83399742732983,
+        57.36622118430313,
+        57.596434218776096,
+        58.988016556882,
+        59.10332797393615,
+        58.157136434573125,
+        56.80975675734884,
+        57.157020299973205,
+        57.28207126259648,
+        59.06980543757285,
+        58.941542729943755,
+        58.5345421228077,
+        56.7368895533019,
+        56.86879474991918,
+        57.01524469501276
+      ],
+      "Bending.PressForce": [
+        97.96758620356093,
+        93.19904531263066,
+        87.98189454956517,
+        86.92951463290949,
+        85.24058369667215,
+        86.76030409530966,
+        87.18164257436734,
+        88.05682288271316,
+        84.41742170934221,
+        85.72434456347852,
+        86.91224015737905,
+        82.53052066898918,
+        87.92382716727833,
+        85.07026464343038,
+        84.44281397255092,
+        84.86860108750378,
+        83.96051966685012,
+        88.58224069650271,
+        82.02758380057674,
+        87.13229919181461,
+        87.68437141219995,
+        83.982198021262,
+        83.22915109862599,
+        88.58550804839724,
+        86.35916830719975,
+        88.60783864193519,
+        83.38611545703557,
+        84.36892629643332,
+        83.73007312660624,
+        88.14556823142621,
+        88.40856233387362,
+        85.74484101946354,
+        85.026620527317,
+        85.12500716861925,
+        84.54294956819166,
+        88.7057726743133,
+        87.51534251679611,
+        85.90559652697534,
+        83.7766523722542,
+        89.79948855302858,
+        86.24535684084809,
+        87.29980986312718,
+        84.1506485090627,
+        87.6854021689277,
+        85.30034797959206,
+        88.13534593903749,
+        88.57066319964467,
+        84.1964639059163,
+        86.4878873952329,
+        87.27734238711074
+      ],
+      "Bending.CycleTime": [
+        18.10398034781078,
+        18.337465655510123,
+        18.6398609164434,
+        18.17224066680126,
+        18.21805337932084,
+        18.544254773401317,
+        18.25901750140348,
+        18.616557522493466,
+        18.583664004828982,
+        18.412348306606862,
+        18.58819826670668,
+        18.450422479610342,
+        18.583706718038204,
+        18.26936918688461,
+        18.378318569083145,
+        18.424172116039898,
+        18.175407680297166,
+        18.373040987657724,
+        18.355227982378732,
+        18.175437821960468,
+        18.562183817801802,
+        18.345743036344594,
+        18.488345561308442,
+        18.47054723823452,
+        18.391975689330177,
+        18.168093063964672,
+        18.306470861973036,
+        18.700698885056784,
+        18.54938913355894,
+        18.195416505078377,
+        18.663394110371584,
+        18.442595198390894,
+        18.220192061189742,
+        18.162940424017524,
+        18.16116776305223,
+        18.60475479111606,
+        18.434176733608282,
+        18.414505217447193,
+        18.63980977930974,
+        18.252332021795503,
+        18.481510900110724,
+        18.211868971855626,
+        18.538640144908605,
+        18.19484775963137,
+        18.6285423192922,
+        18.10589449886452,
+        18.580885471249594,
+        18.497462758110125,
+        18.462546656019246,
+        18.37750967634357
+      ]
+    },
+    "HiddenSamples": {
+      "HydraulicEfficiency": [
+        1.117913461239944,
+        0.5883373026066276,
+        0.5854667146949828,
+        0.5851098432631547,
+        0.5883911205134038,
+        0.5925,
+        0.5857562990668741,
+        0.5904438571049593,
+        0.5867272249603568,
+        0.5866638360278003,
+        0.5925,
+        0.5925,
+        0.5877786003322938,
+        0.5853455498808524,
+        0.5860292261323812,
+        0.5855631248834154,
+        0.5874035885211044,
+        0.5867371383735909,
+        0.5863294803852328,
+        0.5898502582515448,
+        0.5871703380323927,
+        0.5918420248591836,
+        0.5925,
+        0.5925,
+        0.5925,
+        0.5884009729305248,
+        0.5879329328384653,
+        0.5870428855640832,
+        0.5908538807873369,
+        0.5887169757686013,
+        0.5881380993309284,
+        0.5900179421581606,
+        0.5855928743299779,
+        0.5864662564991512,
+        0.5868138668787184,
+        0.5915636084084628,
+        0.5885581392384653,
+        0.5868079082564033,
+        0.590085255850004,
+        0.5900677654136479,
+        0.5885424980043208,
+        0.5897466452308451,
+        0.5925,
+        0.5866254181275046,
+        0.5925,
+        0.5870822498975026,
+        0.5868430792070374,
+        0.5925,
+        0.5916951117228941,
+        0.5873730963239105
+      ]
+    },
+    "RequiredSignalIds": [
+      "Hydraulic.SupplyPressure",
+      "Hydraulic.PumpCurrent",
+      "Hydraulic.OilTemperature",
+      "Bending.PressForce",
+      "Bending.CycleTime"
+    ],
+    "RequiredHiddenIds": [
+      "HydraulicEfficiency"
+    ],
+    "SensorStart": null,
+    "SensorEnd": null,
+    "SensorDelta": null,
+    "HiddenStart": null,
+    "HiddenEnd": null,
+    "HiddenDelta": null,
+    "RedundantStart": null,
+    "RedundantEnd": null,
+    "RedundantDelta": null,
+    "DirectionChecks": [
+      {
+        "SignalId": "HydraulicEfficiency",
+        "Direction": "decrease",
+        "StartValue": 0.6930436884636225,
+        "EndValue": 0.5890987074302689,
+        "Delta": -0.10394498103335359,
+        "Passed": true
+      },
+      {
+        "SignalId": "Hydraulic.SupplyPressure",
+        "Direction": "decrease",
+        "StartValue": 153.74327676785018,
+        "EndValue": 146.61816085041443,
+        "Delta": -7.12511591743575,
+        "Passed": true
+      },
+      {
+        "SignalId": "Hydraulic.PumpCurrent",
+        "Direction": "increase",
+        "StartValue": 8.211291507851545,
+        "EndValue": 10.671110607352627,
+        "Delta": 2.4598190995010825,
+        "Passed": true
+      },
+      {
+        "SignalId": "Hydraulic.OilTemperature",
+        "Direction": "increase",
+        "StartValue": 51.27164149560965,
+        "EndValue": 57.619402770197055,
+        "Delta": 6.3477612745874055,
+        "Passed": true
+      },
+      {
+        "SignalId": "Bending.PressForce",
+        "Direction": "change",
+        "StartValue": 90.26372487906768,
+        "EndValue": 86.93354056538843,
+        "Delta": -3.330184313679254,
+        "Passed": true
+      },
+      {
+        "SignalId": "Bending.CycleTime",
+        "Direction": "increase",
+        "StartValue": 18.294320193177278,
+        "EndValue": 18.40485981211741,
+        "Delta": 0.11053961894013398,
+        "Passed": true
+      }
+    ],
+    "TimingChecks": [],
+    "RequiredEvidenceChecks": [
+      "hydraulic-leak-samples-ok"
+    ],
+    "Passed": true,
+    "FailedCriteria": []
+  },
+  "Ap4R3Passed": true,
+  "Ap4OverallPassed": true,
+  "FailedCriteria": []
+}
