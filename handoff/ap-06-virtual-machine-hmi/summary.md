@@ -11,9 +11,9 @@
 ## Git Closure
 
 ```text
-Commit: 4504b9b8fba7ec3500243205050e74261f939f32
+Commit: 44136aff84569f47baf84d9fc6095df882f3a369
 Tag: opcua-simulator-virtual-machine-hmi-ap6-complete
-TagTarget: 4504b9b8fba7ec3500243205050e74261f939f32
+TagTarget: 44136aff84569f47baf84d9fc6095df882f3a369
 CommitEqualsTagTarget: true
 AP6Passed: true
 ```

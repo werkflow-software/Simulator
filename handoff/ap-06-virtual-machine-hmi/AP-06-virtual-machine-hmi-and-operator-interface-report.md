@@ -90,9 +90,9 @@ Siehe `handoff/ap-06-virtual-machine-hmi/changed-source-files.txt`
 
 | Feld | Wert |
 |------|------|
-| Commit-SHA | `4504b9b8fba7ec3500243205050e74261f939f32` |
+| Commit-SHA | `44136aff84569f47baf84d9fc6095df882f3a369` |
 | Tag | `opcua-simulator-virtual-machine-hmi-ap6-complete` |
-| TagTarget-SHA | `4504b9b8fba7ec3500243205050e74261f939f32` |
+| TagTarget-SHA | `44136aff84569f47baf84d9fc6095df882f3a369` |
 | CommitEqualsTagTarget | true |
 | Git-Status | AP-6-Dateien committed; fremde lokale Handoff-Änderungen unstaged |
 
