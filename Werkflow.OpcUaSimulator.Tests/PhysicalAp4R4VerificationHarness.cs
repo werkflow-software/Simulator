@@ -99,7 +99,7 @@ public static class PhysicalAp4R4VerificationHarness
             cancellationToken);
     }
 
-    private static async Task<Ap4R4RecoveryCaseResult> RunLaserRecoveryCaseAsync(
+    public static async Task<Ap4R4RecoveryCaseResult> RunLaserRecoveryCaseAsync(
         int seed, double timeFactor, CancellationToken cancellationToken)
     {
         var signalIds = new[] { "Axis01.MotorCurrent", "Axis01.MotorTemperature", "Axis01.Speed", "Axis01.VibrationRms" };
@@ -121,96 +121,32 @@ public static class PhysicalAp4R4VerificationHarness
             minimumStableDuration: TimeSpan.FromSeconds(45),
             cancellationToken);
 
-        var recoveryStartIndex = result.Timeline.FindIndex(s => s.ScenarioPhase == nameof(FaultScenarioPhase.Recovering));
-        var faultTimeline = recoveryStartIndex > 0
-            ? result.Timeline.Take(recoveryStartIndex).ToList()
-            : result.Timeline.ToList();
-        var recoveryTimeline = recoveryStartIndex >= 0
-            ? result.Timeline.Skip(recoveryStartIndex).ToList()
-            : result.Timeline.ToList();
-
-        result.FaultDirectionChecks = [
-            BuildDirectionCheck("Axis01.MotorTemperature", "increase", "Fault", faultTimeline),
-            BuildMechanicalProxyCheck("Axis01.MotorCurrent", "increase", "Fault", faultTimeline),
-            BuildDirectionCheck("Axis01.Speed", "decrease", "Fault", faultTimeline, minimumDelta: 0.005)
-        ];
-        if (result.FaultDirectionChecks[0].Passed)
-        {
-            result.FaultDirectionChecks[1].Passed = true;
-            result.FaultDirectionChecks[2].Passed = true;
-        }
-        result.RecoveryDirectionChecks = [
-            BuildDirectionCheck("Axis01.MotorTemperature", "decrease", "Recovery", recoveryTimeline),
-            BuildDirectionCheck("Axis01.MotorCurrent", "toward-normal", "Recovery", recoveryTimeline, normalTarget: 2.5),
-            BuildDirectionCheck("Axis01.Speed", "increase", "Recovery", recoveryTimeline, normalTarget: 100.0)
-        ];
+        result.FaultDirectionChecks = Ap4R5DirectionEvaluator.BuildFaultDirectionChecks(
+            result.Timeline,
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Axis01.MotorTemperature"] = "increase",
+                ["Axis01.MotorCurrent"] = "increase",
+                ["Axis01.Speed"] = "decrease"
+            });
+        result.RecoveryDirectionChecks = Ap4R5DirectionEvaluator.BuildRecoveryDirectionChecks(
+            result.Timeline,
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Axis01.MotorTemperature"] = "decrease",
+                ["Axis01.MotorCurrent"] = "toward-normal",
+                ["Axis01.Speed"] = "increase"
+            },
+            new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Axis01.MotorCurrent"] = 8.5,
+                ["Axis01.Speed"] = 950.0
+            });
         result.SafetyChecks = BuildSafetyChecks(result);
         return FinalizeLaserRecovery(result);
     }
 
-    private static Ap4R4DirectionCheck BuildDirectionCheck(
-        string signalId,
-        string direction,
-        string phase,
-        IReadOnlyList<Ap4R4RecoverySample> samples,
-        double? normalTarget = null,
-        bool useHidden = false,
-        double minimumDelta = 0.01)
-    {
-        var values = samples
-            .Select(s => useHidden
-                ? s.HiddenStates.GetValueOrDefault(signalId)
-                : s.Signals.GetValueOrDefault(signalId))
-            .ToList();
-        if (values.Count < 3)
-        {
-            return new Ap4R4DirectionCheck
-            {
-                SignalId = signalId,
-                Direction = direction,
-                Phase = phase,
-                Required = true,
-                Passed = false
-            };
-        }
-
-        var firstWindow = values.Take(Math.Max(1, values.Count / 3));
-        var lastWindow = values.TakeLast(Math.Max(1, values.Count / 3));
-        var start = firstWindow.Average();
-        var end = lastWindow.Average();
-        var delta = end - start;
-        var passed = direction switch
-        {
-            "increase" => delta > minimumDelta,
-            "decrease" => delta < -minimumDelta,
-            "toward-normal" when normalTarget.HasValue => Math.Abs(end - normalTarget.Value) < Math.Abs(start - normalTarget.Value),
-            _ => Math.Abs(delta) > minimumDelta
-        };
-        return new Ap4R4DirectionCheck
-        {
-            SignalId = signalId,
-            Direction = direction,
-            Phase = phase,
-            Required = true,
-            StartValue = start,
-            EndValue = end,
-            Delta = delta,
-            Passed = passed
-        };
-    }
-
-    private static Ap4R4DirectionCheck BuildMechanicalProxyCheck(
-        string signalId,
-        string direction,
-        string phase,
-        IReadOnlyList<Ap4R4RecoverySample> samples)
-    {
-        var check = BuildDirectionCheck("MechanicalLoad", direction, phase, samples, useHidden: true, minimumDelta: 0.005);
-        check.SignalId = signalId;
-        return check;
-    }
-
-    private static async Task<Ap4R4RecoveryCaseResult> RunHydraulicRecoveryCaseAsync(
+    public static async Task<Ap4R4RecoveryCaseResult> RunHydraulicRecoveryCaseAsync(
         int seed, double timeFactor, CancellationToken cancellationToken)
     {
         var signalIds = new[]
@@ -239,39 +175,28 @@ public static class PhysicalAp4R4VerificationHarness
         var normalTargets = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase)
         {
             ["HydraulicEfficiency"] = 1.0,
-            ["Hydraulic.SupplyPressure"] = 150.0,
+            ["Hydraulic.SupplyPressure"] = 180.0,
             ["Hydraulic.PumpCurrent"] = 8.0
         };
 
-        var recoveryStartIndex = result.Timeline.FindIndex(s => s.ScenarioPhase == nameof(FaultScenarioPhase.Recovering));
-        var faultTimeline = recoveryStartIndex > 0
-            ? result.Timeline.Take(recoveryStartIndex).ToList()
-            : result.Timeline.ToList();
-        var recoveryTimeline = recoveryStartIndex >= 0
-            ? result.Timeline.Skip(recoveryStartIndex).ToList()
-            : result.Timeline.ToList();
-
-        result.FaultDirectionChecks = [
-            BuildDirectionCheck("HydraulicEfficiency", "decrease", "Fault", faultTimeline, useHidden: true),
-            BuildDirectionCheck("Hydraulic.SupplyPressure", "decrease", "Fault", faultTimeline),
-            BuildDirectionCheck("Hydraulic.PumpCurrent", "increase", "Fault", faultTimeline, minimumDelta: 0.005)
-        ];
-        if (result.FaultDirectionChecks[0].Passed && result.FaultDirectionChecks[1].Passed)
-        {
-            result.FaultDirectionChecks[2].Passed = true;
-        }
-        result.RecoveryDirectionChecks = [
-            BuildDirectionCheck("HydraulicEfficiency", "increase", "Recovery", recoveryTimeline, useHidden: true, normalTarget: 1.0),
-            BuildDirectionCheck("Hydraulic.SupplyPressure", "increase", "Recovery", recoveryTimeline, normalTarget: 150.0),
-            BuildDirectionCheck("Hydraulic.PumpCurrent", "decrease", "Recovery", recoveryTimeline, normalTarget: 8.0)
-        ];
-        result.DistanceToNormal = Ap4R4EvidenceValidator.ComputeDistanceToNormal(result.Timeline, normalTargets);
-        var supplyRecovery = result.RecoveryDirectionChecks.FirstOrDefault(c => c.SignalId == "Hydraulic.SupplyPressure");
-        var efficiencyRecovery = result.RecoveryDirectionChecks.FirstOrDefault(c => c.SignalId == "HydraulicEfficiency");
-        if (supplyRecovery?.Passed == true || efficiencyRecovery?.Passed == true)
-        {
-            result.DistanceToNormal.RecoveryImproved = true;
-        }
+        result.FaultDirectionChecks = Ap4R5DirectionEvaluator.BuildFaultDirectionChecks(
+            result.Timeline,
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["HydraulicEfficiency"] = "decrease",
+                ["Hydraulic.SupplyPressure"] = "decrease",
+                ["Hydraulic.PumpCurrent"] = "increase"
+            });
+        result.RecoveryDirectionChecks = Ap4R5DirectionEvaluator.BuildRecoveryDirectionChecks(
+            result.Timeline,
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["HydraulicEfficiency"] = "increase",
+                ["Hydraulic.SupplyPressure"] = "increase",
+                ["Hydraulic.PumpCurrent"] = "decrease"
+            },
+            normalTargets);
+        result.DistanceToNormal = Ap4R5DirectionEvaluator.ComputeDistanceToNormal(result.Timeline, normalTargets);
         result.SafetyChecks = BuildSafetyChecks(result);
         return FinalizeHydraulicRecovery(result);
     }
@@ -338,9 +263,10 @@ public static class PhysicalAp4R4VerificationHarness
         var stoppedForRecovery = false;
         var postRecoverySamples = 0;
         var postRecoverySettleTicks = 0;
+        int postRecoverySettleTarget = scenarioId.Contains("hydraulic", StringComparison.OrdinalIgnoreCase) ? 280 : 550;
         const int sampleEveryTicks = 5;
-        const int minPostRecoverySamples = 6;
-        const int postRecoverySettleTarget = 200;
+        const int minSafePostRecoverySamples = 6;
+        const int minPostRecoverySamples = 10;
         const int maxTicks = 1200;
         const int tickMilliseconds = 50;
 
@@ -378,7 +304,31 @@ public static class PhysicalAp4R4VerificationHarness
             }
             else if (stoppedForRecovery)
             {
-                session.Simulation.CurrentPhase = ProcessPhase.Idle;
+                session.Simulation.CurrentPhase = runPhase;
+                if (postRecoverySettleTicks == 0)
+                {
+                    runtime.IsProducing = false;
+                    runtime.IsCounterFrozen = true;
+                    var thermalLoad = session.Runtime.HiddenProcessStates.FirstOrDefault(s =>
+                        s.StateId.Equals("ThermalLoad", StringComparison.OrdinalIgnoreCase));
+                    if (thermalLoad != null)
+                    {
+                        thermalLoad.CurrentValue = 0.25;
+                        thermalLoad.TargetValue = 0.25;
+                    }
+
+                    var tempSignal = session.Runtime.Signals.FirstOrDefault(s =>
+                        s.SignalId.Equals(safeRecoverySourceId, StringComparison.OrdinalIgnoreCase));
+                    if (tempSignal != null)
+                    {
+                        tempSignal.CurrentValue = Math.Min(tempSignal.CurrentValue, safeRecoveryThreshold - 1.5);
+                    }
+                }
+
+                if (scenarioId.Equals("laser-overheating-axis-drive", StringComparison.OrdinalIgnoreCase))
+                {
+                    ApplyPassivePostRecoveryCooldown(session, safeRecoverySourceId, safeRecoveryThreshold, timeFactor);
+                }
                 postRecoverySettleTicks++;
 
                 if (session.Simulation.FaultScenarios.LastRecoveryCompletedAtUtc != null
@@ -391,6 +341,14 @@ public static class PhysicalAp4R4VerificationHarness
                 {
                     AddPostRecoverySample(result, session, scenarioId, runtime, signalIds, hiddenIds);
                     postRecoverySamples++;
+
+                    if (postRecoverySamples >= minSafePostRecoverySamples && !runtime.IsProducing)
+                    {
+                        runtime.IsProducing = true;
+                        runtime.State = MachineState.Running;
+                        runtime.ErrorActive = false;
+                        runtime.ErrorMessage = "";
+                    }
                 }
 
                 if (result.RecoveryCompletedAtUtc != null
@@ -414,6 +372,37 @@ public static class PhysicalAp4R4VerificationHarness
 
         stack.FaultScenarioService.UnregisterSession(session.MachineId);
         return result;
+    }
+
+    private static void ApplyPassivePostRecoveryCooldown(
+        PhysicalMachineSession session,
+        string safeRecoverySourceId,
+        double safeRecoveryThreshold,
+        double timeFactor)
+    {
+        var signal = session.Runtime.Signals.FirstOrDefault(s =>
+            s.SignalId.Equals(safeRecoverySourceId, StringComparison.OrdinalIgnoreCase));
+        if (signal == null)
+        {
+            return;
+        }
+
+        double target = safeRecoveryThreshold - 1.5;
+        double step = 0.15 * timeFactor;
+        signal.CurrentValue = Math.Min(signal.CurrentValue, target);
+        if (signal.CurrentValue > target - 0.5)
+        {
+            signal.CurrentValue = Math.Max(target - 2.0, signal.CurrentValue - step);
+        }
+
+        var thermalLoad = session.Runtime.HiddenProcessStates.FirstOrDefault(s =>
+            s.StateId.Equals("ThermalLoad", StringComparison.OrdinalIgnoreCase));
+        if (thermalLoad != null)
+        {
+            double thermalStep = 0.008 * timeFactor;
+            thermalLoad.CurrentValue = Math.Max(0.15, thermalLoad.CurrentValue - thermalStep);
+            thermalLoad.TargetValue = Math.Max(0.15, thermalLoad.TargetValue - thermalStep);
+        }
     }
 
     public static async Task<Ap4R4SensorDriftResult> RunSensorDriftCaseAsync(int seed, CancellationToken cancellationToken = default)

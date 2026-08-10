@@ -161,6 +161,8 @@ public static class PhysicalProfileDependencyBuilder
 		list.Add(Sd($"sd-{++num}", "PumpEfficiency", "Hydraulic.SupplyPressure", DependencyType.Linear, 18.0, 172.0, null, null, null));
 		list.Add(Sd($"sd-{++num}", "OilCondition", "Hydraulic.SupplyPressure", DependencyType.Linear, 6.0, 4.0, null, null, null));
 		list.Add(Sd($"sd-{++num}", "ValveResponse", "Hydraulic.SupplyPressure", DependencyType.Linear, 4.0, 1.0, null, null, null));
+		list.Add(Sd($"sd-{++num}", "HydraulicEfficiency", "Hydraulic.PumpCurrent", DependencyType.InverseLinear, 22.0, 2.0, null, null, null));
+		list.Add(Sd($"sd-{++num}", "PumpEfficiency", "Hydraulic.PumpCurrent", DependencyType.InverseLinear, 10.0, 1.5, null, null, null));
 		string id = $"sd-{++num}";
 		double? maxEffect = 165.0;
 		list.Add(Sd(id, "PressLoad", "Bending.PressForce", DependencyType.Saturating, 50.0, 98.0, null, null, maxEffect));

@@ -40,8 +40,7 @@ internal static class Ap4R4EvidenceValidator
         var keyRecoveryChecks = report.RecoveryDirectionChecks
             .Where(c => c.Required && (c.SignalId == "HydraulicEfficiency" || c.SignalId == "Hydraulic.SupplyPressure"))
             .ToList();
-        if (!report.DistanceToNormal.RecoveryImproved
-            && (keyRecoveryChecks.Count == 0 || keyRecoveryChecks.Any(c => !c.Passed)))
+        if (!report.DistanceToNormal.RecoveryImproved)
         {
             failed.Add("distance-to-normal-not-improved");
         }
@@ -191,7 +190,9 @@ internal static class Ap4R4EvidenceValidator
     public static Ap4R4PassEvaluation ValidatePostRecoverySafety(Ap4R4RecoveryCaseResult report)
     {
         var failed = new List<string>();
-        var postSamples = report.Timeline.Where(s => s.LifecycleStage == "PostRecovery").ToList();
+        var postSamples = report.Timeline
+            .Where(s => s.LifecycleStage == "PostRecovery" && !s.ProductionRunning)
+            .ToList();
         if (postSamples.Count < MinimumPostRecoverySamples)
         {
             failed.Add($"post-recovery-samples:{postSamples.Count}");
@@ -242,150 +243,21 @@ internal static class Ap4R4EvidenceValidator
     public static List<Ap4R4DirectionCheck> ComputeFaultDirectionChecks(
         IReadOnlyList<Ap4R4RecoverySample> timeline,
         IReadOnlyDictionary<string, string> expectedDirections,
-        int windowCount = 5)
-    {
-        int faultIndex = -1;
-        for (var i = 0; i < timeline.Count; i++)
-        {
-            if (timeline[i].ErrorActive && timeline[i].MachineState == nameof(MachineState.Error))
-            {
-                faultIndex = i;
-                break;
-            }
-        }
-
-        var preFaultSamples = faultIndex > 0 ? timeline.Take(faultIndex).ToList() : [];
-        var faultSamples = faultIndex >= 0
-            ? timeline.Skip(faultIndex).Where(s =>
-                s.ErrorActive
-                && s.ScenarioPhase != nameof(FaultScenarioPhase.Recovering)
-                && s.LifecycleStage != "PostRecovery").ToList()
-            : [];
-        if (faultSamples.Count < 2 || preFaultSamples.Count < 2)
-        {
-            return expectedDirections.Select(kv => new Ap4R4DirectionCheck
-            {
-                SignalId = kv.Key,
-                Direction = kv.Value,
-                Phase = "Fault",
-                Required = true,
-                Passed = false
-            }).ToList();
-        }
-
-        var startWindow = Math.Min(windowCount, preFaultSamples.Count);
-        var endWindow = Math.Min(windowCount, faultSamples.Count);
-
-        return expectedDirections.Select(kv =>
-        {
-            var start = AverageSignal(preFaultSamples.TakeLast(startWindow).ToList(), kv.Key, kv.Key == "HydraulicEfficiency");
-            var end = AverageSignal(faultSamples.TakeLast(endWindow).ToList(), kv.Key, kv.Key == "HydraulicEfficiency");
-            var delta = end - start;
-            return new Ap4R4DirectionCheck
-            {
-                SignalId = kv.Key,
-                Direction = kv.Value,
-                Phase = "Fault",
-                Required = true,
-                StartValue = start,
-                EndValue = end,
-                Delta = delta,
-                Passed = EvaluateDirection(kv.Value, delta)
-            };
-        }).ToList();
-    }
+        int windowCount = 5) =>
+        Ap4R5DirectionEvaluator.BuildFaultDirectionChecks(timeline, expectedDirections, windowCount);
 
     public static List<Ap4R4DirectionCheck> ComputeRecoveryDirectionChecks(
         IReadOnlyList<Ap4R4RecoverySample> timeline,
         IReadOnlyDictionary<string, string> expectedDirections,
         IReadOnlyDictionary<string, double> normalTargets,
-        int windowCount = 5)
-    {
-        var earlyRecovery = timeline.Where(s => s.LifecycleStage is "RecoveryStart" or "RecoveryMid").Take(windowCount * 2).ToList();
-        var lateRecovery = timeline.Where(s => s.LifecycleStage is "RecoveryMid" or "RecoveryCompleted" or "PostRecovery").TakeLast(windowCount * 2).ToList();
-        if (earlyRecovery.Count < 2 || lateRecovery.Count < 2)
-        {
-            return expectedDirections.Select(kv => new Ap4R4DirectionCheck
-            {
-                SignalId = kv.Key,
-                Direction = kv.Value,
-                Phase = "Recovery",
-                Required = true,
-                Passed = false
-            }).ToList();
-        }
-
-        var startWindow = Math.Min(windowCount, earlyRecovery.Count);
-        var endWindow = Math.Min(windowCount, lateRecovery.Count);
-
-        return expectedDirections.Select(kv =>
-        {
-            var start = AverageSignal(earlyRecovery.Take(startWindow).ToList(), kv.Key, kv.Key == "HydraulicEfficiency");
-            var end = AverageSignal(lateRecovery.TakeLast(endWindow).ToList(), kv.Key, kv.Key == "HydraulicEfficiency");
-            var delta = end - start;
-            var normal = normalTargets.GetValueOrDefault(kv.Key, end);
-            var distanceStart = Math.Abs(start - normal);
-            var distanceEnd = Math.Abs(end - normal);
-            var towardNormal = distanceEnd <= distanceStart;
-            var passed = kv.Value == "toward-normal"
-                ? towardNormal
-                : EvaluateDirection(kv.Value, delta);
-            return new Ap4R4DirectionCheck
-            {
-                SignalId = kv.Key,
-                Direction = kv.Value,
-                Phase = "Recovery",
-                Required = true,
-                StartValue = start,
-                EndValue = end,
-                Delta = delta,
-                DistanceToNormalStart = distanceStart,
-                DistanceToNormalEnd = distanceEnd,
-                Passed = passed
-            };
-        }).ToList();
-    }
+        int windowCount = 5) =>
+        Ap4R5DirectionEvaluator.BuildRecoveryDirectionChecks(timeline, expectedDirections, normalTargets, windowCount);
 
     public static Ap4R4DistanceToNormal ComputeDistanceToNormal(
         IReadOnlyList<Ap4R4RecoverySample> timeline,
         IReadOnlyDictionary<string, double> normalTargets,
-        int windowCount = 5)
-    {
-        var early = timeline.Where(s => s.LifecycleStage is "RecoveryStart" or "RecoveryMid").Take(windowCount).ToList();
-        var late = timeline.Where(s => s.LifecycleStage is "PostRecovery" or "RecoveryCompleted").TakeLast(windowCount).ToList();
-        if (early.Count == 0 || late.Count == 0)
-        {
-            return new Ap4R4DistanceToNormal { RecoveryImproved = false };
-        }
-
-        double startDistance = 0;
-        double endDistance = 0;
-        foreach (var (signalId, normal) in normalTargets)
-        {
-            var start = AverageSignal(early, signalId, signalId == "HydraulicEfficiency");
-            var end = AverageSignal(late, signalId, signalId == "HydraulicEfficiency");
-            startDistance += Math.Abs(start - normal);
-            endDistance += Math.Abs(end - normal);
-        }
-
-        return new Ap4R4DistanceToNormal
-        {
-            DistanceToNormalStart = startDistance,
-            DistanceToNormalEnd = endDistance,
-            RecoveryImproved = endDistance <= startDistance
-        };
-    }
-
-    private static bool EvaluateDirection(string direction, double delta)
-    {
-        return direction switch
-        {
-            "increase" => delta > 0.01,
-            "decrease" => delta < -0.01,
-            "change" => Math.Abs(delta) > 0.01,
-            _ => Math.Abs(delta) > 0.01
-        };
-    }
+        int windowCount = 5) =>
+        Ap4R5DirectionEvaluator.ComputeDistanceToNormal(timeline, normalTargets, windowCount);
 
     private static bool IsFaultThresholdViolated(
         double value,
@@ -416,23 +288,6 @@ internal static class Ap4R4EvidenceValidator
             FaultThresholdComparison.GreaterThanOrEqual => value >= threshold - tolerance,
             _ => Math.Abs(value - threshold) <= tolerance
         };
-    }
-
-    private static double AverageSignal(
-        IReadOnlyList<Ap4R4RecoverySample> samples,
-        string signalId,
-        bool useHidden)
-    {
-        var values = samples.Select(s =>
-        {
-            if (useHidden && s.HiddenStates.TryGetValue(signalId, out var hidden))
-            {
-                return hidden;
-            }
-
-            return s.Signals.GetValueOrDefault(signalId);
-        }).ToList();
-        return values.Count == 0 ? 0 : values.Average();
     }
 }
 
@@ -535,9 +390,12 @@ public sealed class Ap4R4DirectionCheck
     public string Direction { get; set; } = "";
     public string Phase { get; set; } = "";
     public bool Required { get; set; } = true;
+    public int WindowStartSampleCount { get; set; }
+    public int WindowEndSampleCount { get; set; }
     public double StartValue { get; set; }
     public double EndValue { get; set; }
     public double Delta { get; set; }
+    public double MinimumMeaningfulDelta { get; set; }
     public double? DistanceToNormalStart { get; set; }
     public double? DistanceToNormalEnd { get; set; }
     public bool Passed { get; set; }

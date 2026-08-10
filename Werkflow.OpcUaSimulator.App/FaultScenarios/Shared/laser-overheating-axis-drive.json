@@ -30,8 +30,8 @@
       "startPhase": "initiating",
       "endPhase": "faulted",
       "direction": "increase",
-      "magnitude": 0.35,
-      "ratePerSimulationMinute": 0.08,
+      "magnitude": 0.5,
+      "ratePerSimulationMinute": 0.12,
       "delay": "00:00:00",
       "inertia": 1.2,
       "minimumEffect": 0.0,
@@ -68,6 +68,22 @@
       "inertia": 1.0,
       "minimumEffect": 0.0,
       "maximumEffect": 0.6,
+      "isEnabled": true
+    },
+    {
+      "effectId": "friction-rise-overheat",
+      "targetType": "hiddenState",
+      "targetId": "Friction",
+      "effectType": "additiveDrift",
+      "startPhase": "developing",
+      "endPhase": "faulted",
+      "direction": "increase",
+      "magnitude": 0.55,
+      "ratePerSimulationMinute": 0.1,
+      "delay": "00:00:10",
+      "inertia": 1.0,
+      "minimumEffect": 0.0,
+      "maximumEffect": 0.7,
       "isEnabled": true
     }
   ],
