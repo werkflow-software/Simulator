@@ -9,6 +9,8 @@ public enum GroundTruthEventType
 	DegradationBecameDetectable,
 	ThresholdApproaching,
 	ThresholdFirstReached,
+	ThresholdEntered,
+	ThresholdExited,
 	ThresholdConfirmed,
 	MachineFaulted,
 	RecoveryStarted,

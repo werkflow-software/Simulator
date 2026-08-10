@@ -32,8 +32,9 @@ public class PhysicalAp5R2EvidenceTests
 		{
 			MakeEvent("fault-1", GroundTruthEventType.ScenarioStarted, TimeSpan.FromSeconds(10)),
 			MakeEvent("fault-1", GroundTruthEventType.DegradationBecameDetectable, TimeSpan.FromSeconds(20)),
+			MakeEvent("fault-1", GroundTruthEventType.ThresholdEntered, TimeSpan.FromSeconds(40)),
 			MakeEvent("fault-1", GroundTruthEventType.ThresholdFirstReached, TimeSpan.FromSeconds(40)),
-			MakeEvent("fault-1", GroundTruthEventType.ThresholdConfirmed, TimeSpan.FromSeconds(55), detail: "00:00:15"),
+			MakeEvent("fault-1", GroundTruthEventType.ThresholdConfirmed, TimeSpan.FromSeconds(55), detail: "00:00:15|00:00:40"),
 			MakeEvent("fault-1", GroundTruthEventType.MachineFaulted, TimeSpan.FromSeconds(55)),
 			MakePhaseEvent("fault-1", "Faulted", TimeSpan.FromSeconds(55)),
 			MakeEvent("fault-1", GroundTruthEventType.RecoveryStarted, TimeSpan.FromSeconds(60)),
@@ -81,8 +82,9 @@ public class PhysicalAp5R2EvidenceTests
 		{
 			MakeEvent("fault-1", GroundTruthEventType.ScenarioStarted, TimeSpan.FromSeconds(10)),
 			MakeEvent("fault-1", GroundTruthEventType.DegradationBecameDetectable, TimeSpan.FromSeconds(20)),
+			MakeEvent("fault-1", GroundTruthEventType.ThresholdEntered, TimeSpan.FromSeconds(40)),
 			MakeEvent("fault-1", GroundTruthEventType.ThresholdFirstReached, TimeSpan.FromSeconds(40)),
-			MakeEvent("fault-1", GroundTruthEventType.ThresholdConfirmed, TimeSpan.FromSeconds(45), detail: "00:00:15"),
+			MakeEvent("fault-1", GroundTruthEventType.ThresholdConfirmed, TimeSpan.FromSeconds(45), detail: "00:00:15|00:00:40"),
 			MakeEvent("fault-1", GroundTruthEventType.MachineFaulted, TimeSpan.FromSeconds(45)),
 			MakeEvent("fault-1", GroundTruthEventType.RecoveryCompleted, TimeSpan.FromSeconds(90))
 		};

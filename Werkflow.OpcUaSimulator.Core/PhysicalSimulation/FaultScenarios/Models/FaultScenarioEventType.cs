@@ -10,6 +10,8 @@ public enum FaultScenarioEventType
 	ScenarioPhaseChanged,
 	ThresholdApproaching,
 	ThresholdReached,
+	ThresholdEntered,
+	ThresholdExited,
 	ThresholdConfirmed,
 	MachineFaulted,
 	RecoveryStarted,

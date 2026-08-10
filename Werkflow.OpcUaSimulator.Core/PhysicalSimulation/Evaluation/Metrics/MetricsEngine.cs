@@ -247,7 +247,13 @@ public sealed class RunManifestEntry
 
 	public TimeSpan? ThresholdConfirmedAt { get; set; }
 
+	public TimeSpan? ConfirmedThresholdStreakStartedAt { get; set; }
+
 	public TimeSpan? ThresholdMinimumDuration { get; set; }
+
+	public int ThresholdEnterCount { get; set; }
+
+	public int ThresholdExitCount { get; set; }
 
 	public TimeSpan? FaultAt { get; set; }
 

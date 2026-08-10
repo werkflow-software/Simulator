@@ -23,6 +23,8 @@ public sealed class GroundTruthRunValidationResult
 	public bool RunSemanticsPassed { get; init; }
 
 	public bool MinimumDurationSatisfied { get; init; }
+
+	public bool ThresholdContinuityPassed { get; init; }
 }
 
 public static class GroundTruthRunValidator
@@ -56,18 +58,20 @@ public static class GroundTruthRunValidator
 		bool duplicates = ValidateNoDuplicateLifecycle(runEvents, failed);
 		bool semantics = ValidateRunSemantics(run, runEvents, failed);
 		bool minimumDuration = ValidateMinimumDuration(run, runEvents, failed);
+		bool continuity = ValidateThresholdContinuity(run, runEvents, failed);
 		bool requirements = ValidateRequirements(run, runEvents, failed, strictFaultLearningSeries);
 
 		return new GroundTruthRunValidationResult
 		{
 			RunId = run.RunId,
 			RunType = run.RunType,
-			Passed = chronology && duplicates && semantics && minimumDuration && requirements,
+			Passed = chronology && duplicates && semantics && minimumDuration && continuity && requirements,
 			FailedCriteria = failed,
 			ChronologyPassed = chronology,
 			DuplicateLifecycleEventsPassed = duplicates,
-			RunSemanticsPassed = semantics && minimumDuration,
-			MinimumDurationSatisfied = minimumDuration
+			RunSemanticsPassed = semantics && minimumDuration && continuity,
+			MinimumDurationSatisfied = minimumDuration,
+			ThresholdContinuityPassed = continuity
 		};
 	}
 
@@ -228,24 +232,77 @@ public static class GroundTruthRunValidator
 			return true;
 		}
 
-		var thresholdFirst = FirstTime(runEvents, GroundTruthEventType.ThresholdFirstReached);
 		var thresholdConfirmed = FirstTime(runEvents, GroundTruthEventType.ThresholdConfirmed);
-		if (thresholdFirst == null || thresholdConfirmed == null)
+		if (thresholdConfirmed == null)
 		{
 			return true;
 		}
 
 		var confirmedEvent = runEvents.First(e => e.EventType == GroundTruthEventType.ThresholdConfirmed);
 		TimeSpan minimumDuration = run.ThresholdMinimumDuration ?? ParseMinimumDuration(confirmedEvent);
-		if (minimumDuration <= TimeSpan.Zero)
+		TimeSpan? streakStart = run.ConfirmedThresholdStreakStartedAt ?? DeriveConfirmedStreakStart(runEvents);
+		if (minimumDuration <= TimeSpan.Zero || streakStart == null)
 		{
 			return true;
 		}
 
-		TimeSpan observed = thresholdConfirmed.Value - thresholdFirst.Value;
+		TimeSpan observed = thresholdConfirmed.Value - streakStart.Value;
 		if (observed + TickTolerance < minimumDuration)
 		{
 			failed.Add($"{run.RunId}:minimum-duration-not-satisfied");
+			return false;
+		}
+
+		return true;
+	}
+
+	public static bool ValidateThresholdContinuity(
+		RunManifestEntry run,
+		IReadOnlyList<GroundTruthEvent> runEvents,
+		List<string> failed)
+	{
+		if (run.RunType != "Fault")
+		{
+			return true;
+		}
+
+		var thresholdFirst = FirstTime(runEvents, GroundTruthEventType.ThresholdFirstReached);
+		var thresholdConfirmed = FirstTime(runEvents, GroundTruthEventType.ThresholdConfirmed);
+		var fault = FirstTime(runEvents, GroundTruthEventType.MachineFaulted);
+		var confirmedEvent = runEvents.FirstOrDefault(e => e.EventType == GroundTruthEventType.ThresholdConfirmed);
+		TimeSpan? streakStart = run.ConfirmedThresholdStreakStartedAt ?? DeriveConfirmedStreakStart(runEvents);
+
+		if (thresholdConfirmed == null || streakStart == null)
+		{
+			return true;
+		}
+
+		if (thresholdFirst != null && streakStart < thresholdFirst - TickTolerance)
+		{
+			failed.Add($"{run.RunId}:confirmed-streak-before-first-reached");
+			return false;
+		}
+
+		if (streakStart >= thresholdConfirmed)
+		{
+			failed.Add($"{run.RunId}:confirmed-streak-not-before-confirmed");
+			return false;
+		}
+
+		if (fault != null && fault < thresholdConfirmed - TickTolerance)
+		{
+			failed.Add($"{run.RunId}:fault-before-threshold-confirmed");
+			return false;
+		}
+
+		var exitInsideStreak = runEvents
+			.Where(e => e.EventType == GroundTruthEventType.ThresholdExited)
+			.Where(e => e.ExperimentSimulationTimestamp > streakStart.Value - TickTolerance
+				&& e.ExperimentSimulationTimestamp < thresholdConfirmed.Value + TickTolerance)
+			.ToList();
+		if (exitInsideStreak.Count > 0)
+		{
+			failed.Add($"{run.RunId}:threshold-exit-inside-confirmed-streak");
 			return false;
 		}
 
@@ -416,6 +473,9 @@ public static class GroundTruthRunValidator
 		run.ThresholdFirstReachedAt = FirstTime(ordered, GroundTruthEventType.ThresholdFirstReached);
 		run.ThresholdConfirmedAt = FirstTime(ordered, GroundTruthEventType.ThresholdConfirmed);
 		run.ThresholdAt = run.ThresholdFirstReachedAt;
+		run.ConfirmedThresholdStreakStartedAt = DeriveConfirmedStreakStart(ordered);
+		run.ThresholdEnterCount = ordered.Count(e => e.EventType == GroundTruthEventType.ThresholdEntered);
+		run.ThresholdExitCount = ordered.Count(e => e.EventType == GroundTruthEventType.ThresholdExited);
 		run.FaultAt = FirstTime(ordered, GroundTruthEventType.MachineFaulted);
 		run.RecoveryStartedAt = FirstTime(ordered, GroundTruthEventType.RecoveryStarted);
 		run.RecoveryCompletedAt = FirstTime(ordered, GroundTruthEventType.RecoveryCompleted);
@@ -453,12 +513,69 @@ public static class GroundTruthRunValidator
 			return TimeSpan.Zero;
 		}
 
-		if (confirmedEvent.Metadata.TryGetValue("detail", out var detail)
-			&& TimeSpan.TryParse(detail, CultureInfo.InvariantCulture, out var parsed))
+		string? detail = confirmedEvent.Metadata.TryGetValue("detail", out var metaDetail) ? metaDetail : null;
+		if (detail != null && detail.Contains('|', StringComparison.Ordinal))
+		{
+			detail = detail.Split('|')[0];
+		}
+
+		if (detail != null && TimeSpan.TryParse(detail, CultureInfo.InvariantCulture, out var parsed))
 		{
 			return parsed;
 		}
 
 		return TimeSpan.Zero;
+	}
+
+	private static TimeSpan? DeriveConfirmedStreakStart(IReadOnlyList<GroundTruthEvent> events)
+	{
+		var confirmed = events.FirstOrDefault(e => e.EventType == GroundTruthEventType.ThresholdConfirmed);
+		if (confirmed == null)
+		{
+			return null;
+		}
+
+		TimeSpan confirmedTime = confirmed.ExperimentSimulationTimestamp;
+		var enters = events
+			.Where(e => e.EventType == GroundTruthEventType.ThresholdEntered
+				&& e.ExperimentSimulationTimestamp < confirmedTime)
+			.OrderBy(e => e.ExperimentSimulationTimestamp)
+			.ToList();
+		if (enters.Count == 0)
+		{
+			return ParseConfirmedStreakStart(confirmed);
+		}
+
+		var exits = events
+			.Where(e => e.EventType == GroundTruthEventType.ThresholdExited
+				&& e.ExperimentSimulationTimestamp < confirmedTime)
+			.OrderBy(e => e.ExperimentSimulationTimestamp)
+			.ToList();
+		TimeSpan? lastExit = exits.Count > 0 ? exits[^1].ExperimentSimulationTimestamp : null;
+		var streakEnter = enters.LastOrDefault(e => lastExit == null || e.ExperimentSimulationTimestamp > lastExit);
+		return streakEnter?.ExperimentSimulationTimestamp ?? ParseConfirmedStreakStart(confirmed);
+	}
+
+	private static TimeSpan? ParseConfirmedStreakStart(GroundTruthEvent? confirmedEvent)
+	{
+		if (confirmedEvent == null)
+		{
+			return null;
+		}
+
+		if (confirmedEvent.Metadata.TryGetValue("detail", out var detail)
+			&& detail.Contains('|', StringComparison.Ordinal))
+		{
+			string streakPart = detail.Split('|')[1];
+			if (TimeSpan.TryParse(streakPart, CultureInfo.InvariantCulture, out var scenarioStreak))
+			{
+				var scenarioStart = confirmedEvent.ExperimentSimulationTimestamp;
+				return scenarioStart - scenarioStreak > TimeSpan.Zero
+					? confirmedEvent.ExperimentSimulationTimestamp - (confirmedEvent.ExperimentSimulationTimestamp - scenarioStart)
+					: null;
+			}
+		}
+
+		return null;
 	}
 }

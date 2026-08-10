@@ -108,4 +108,13 @@ public sealed class FaultScenarioInstance
 	public bool MachineFaultedEventEmitted { get; set; }
 
 	public bool RecoveryCompletedEventEmitted { get; set; }
+
+	public Dictionary<string, FaultThresholdRuleRuntimeState> ThresholdRuleStates { get; } =
+		new(StringComparer.OrdinalIgnoreCase);
+
+	public TimeSpan? ConfirmedThresholdStreakStartedSimulationTime { get; set; }
+
+	public int ThresholdEnterCount { get; set; }
+
+	public int ThresholdExitCount { get; set; }
 }
