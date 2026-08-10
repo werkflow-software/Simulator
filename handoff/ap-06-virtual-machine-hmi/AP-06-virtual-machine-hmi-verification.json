@@ -1,0 +1,68 @@
+{
+  "verificationRunId": "ap6-20260810201957-6974b063520346dea26acffaf2107",
+  "startedAtUtc": "2026-08-10T20:19:57.7810136Z",
+  "endedAtUtc": "2026-08-10T20:20:02.3624546Z",
+  "virtualMachine": {
+    "machineId": "a1111111-1111-4111-8111-111111111111",
+    "machineName": "Werkflow Virtual Laser 01",
+    "profile": "laser-processing-machine-300",
+    "endpoint": "opc.tcp://localhost:4840"
+  },
+  "windowLifecycle": {
+    "singleInstance": true,
+    "closeToTray": true,
+    "reopenPreservesState": true,
+    "explicitShutdownRequired": true,
+    "notes": "VirtualMachineWindowService keeps one _window instance; OnClosing cancels close and hides window."
+  },
+  "machineControl": {
+    "start": true,
+    "stop": true,
+    "pause": true,
+    "resume": true,
+    "reset": true,
+    "explicitShutdownStopsServer": true
+  },
+  "opcUa": {
+    "onlineBefore": true,
+    "onlineDuringStop": true,
+    "onlineDuringPhysicalFault": true,
+    "offlineAfterExplicitShutdown": true,
+    "nodeIdentityStable": true
+  },
+  "hmiSignalCoverage": {
+    "totalPhysicalSignals": 309,
+    "mappedSignals": 309,
+    "unmappedSignals": []
+  },
+  "faultSmoke": {
+    "scenarioId": "laser-overheating-axis-drive",
+    "hmiErrorVisible": true,
+    "opcUaStayedOnline": true,
+    "recoveryVisible": true
+  },
+  "leakageRegression": {
+    "machineId": "a8c72360-8a01-4c37-b78f-512a5c6af434",
+    "endpoint": "opc.tcp://127.0.0.1:48510",
+    "nodesInspected": 309,
+    "valuesInspected": 309,
+    "forbiddenTerms": [
+      "ScenarioId",
+      "ExperimentId",
+      "RunId",
+      "RunSeed",
+      "FaultRepetitionIndex",
+      "GroundTruth",
+      "HiddenState",
+      "Detectable",
+      "FaultScenario",
+      "laser-overheating-axis-drive",
+      "hydraulic-leak"
+    ],
+    "matches": [],
+    "allowedMachineErrorMessages": [],
+    "passed": true
+  },
+  "passed": true,
+  "failedCriteria": []
+}

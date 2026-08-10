@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Werkflow.OpcUaSimulator.Core.Defaults;
 using Werkflow.OpcUaSimulator.Core.Interfaces;
 using Werkflow.OpcUaSimulator.Core.Models;
+using Werkflow.OpcUaSimulator.Core.VirtualMachine;
 
 namespace Werkflow.OpcUaSimulator.Core.Services;
 
@@ -141,6 +142,15 @@ public sealed class ConfigurationService : IConfigurationService
 
 	private static void NormalizeMachine(MachineConfiguration machine)
 	{
+		if (machine.Port == VirtualMachineContract.Port)
+		{
+			machine.Id = VirtualMachineContract.MachineId;
+			machine.Name = VirtualMachineContract.DisplayName;
+			machine.PhysicalProfileId = VirtualMachineContract.PhysicalProfileId;
+			machine.Host = "localhost";
+			machine.UpdateEndpointFromHostPort();
+		}
+
 		machine.ErrorProbabilityPercent = Math.Min(machine.ErrorProbabilityPercent, 1.5);
 		machine.DisconnectProbabilityPercent = Math.Min(machine.DisconnectProbabilityPercent, 1.5);
 		machine.MinErrorDurationMs = SimulationErrorPolicy.CapDisruptedDuration(machine.MinErrorDurationMs);

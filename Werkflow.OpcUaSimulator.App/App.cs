@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Werkflow.OpcUaSimulator.App.Services;
+using Werkflow.OpcUaSimulator.App.VirtualMachine.Services;
+using Werkflow.OpcUaSimulator.App.VirtualMachine.ViewModels;
 using Werkflow.OpcUaSimulator.App.ViewModels;
 using Werkflow.OpcUaSimulator.Core.Interfaces;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.FaultScenarios;
@@ -62,6 +64,7 @@ public class App : Application
 			_host.Services.GetRequiredService<OverviewViewModel>().Refresh();
 			_host.Services.GetRequiredService<FaultScenariosViewModel>().Refresh();
 			_host.Services.GetRequiredService<PhysicalSignalsViewModel>().ReloadMachines();
+			_host.Services.GetRequiredService<SimulatorTrayService>();
 		}
 		catch (Exception ex)
 		{
@@ -123,6 +126,10 @@ public class App : Application
 			services.AddSingleton<ManualControlViewModel>();
 			services.AddSingleton<FaultScenariosViewModel>();
 			services.AddSingleton<ExperimentsViewModel>();
+			services.AddSingleton<VirtualMachineHmiViewModel>();
+			services.AddSingleton<SimulatorTrayService>();
+			services.AddSingleton<IHmiTrayNotifier>(sp => sp.GetRequiredService<SimulatorTrayService>());
+			services.AddSingleton<VirtualMachineWindowService>();
 			services.AddSingleton<MainViewModel>();
 			services.AddSingleton<MainWindow>();
 		})

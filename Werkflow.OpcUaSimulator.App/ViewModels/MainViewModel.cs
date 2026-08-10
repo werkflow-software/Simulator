@@ -8,6 +8,7 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel.__Internals;
 using CommunityToolkit.Mvvm.Input;
+using Werkflow.OpcUaSimulator.App.VirtualMachine.Services;
 using Werkflow.OpcUaSimulator.Core.Interfaces;
 using Werkflow.OpcUaSimulator.Core.Models;
 
@@ -225,13 +226,18 @@ public class MainViewModel : ObservableObject
 	[ExcludeFromCodeCoverage]
 	public IRelayCommand<string> NavigateCommand => navigateCommand ?? (navigateCommand = new RelayCommand<string>(Navigate));
 
-	public MainViewModel(ISimulationEngine simulationEngine, IConfigurationService configurationService, OverviewViewModel overview, MachinesViewModel machines, NodesViewModel nodes, JobsViewModel jobs, EventsViewModel eventsViewModel, LogViewModel log, SettingsViewModel settings, PhysicalSignalsViewModel physicalSignals, FaultScenariosViewModel faultScenarios, ExperimentsViewModel experiments)
+	private readonly VirtualMachineWindowService _virtualMachineWindowService;
+
+	private RelayCommand? openVirtualMachineCommand;
+
+	public MainViewModel(ISimulationEngine simulationEngine, IConfigurationService configurationService, OverviewViewModel overview, MachinesViewModel machines, NodesViewModel nodes, JobsViewModel jobs, EventsViewModel eventsViewModel, LogViewModel log, SettingsViewModel settings, PhysicalSignalsViewModel physicalSignals, FaultScenariosViewModel faultScenarios, ExperimentsViewModel experiments, VirtualMachineWindowService virtualMachineWindowService)
 	{
 		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0166: Expected O, but got Unknown
 		_simulationEngine = simulationEngine;
 		_configurationService = configurationService;
+		_virtualMachineWindowService = virtualMachineWindowService;
 		Overview = overview;
 		Machines = machines;
 		Nodes = nodes;
@@ -257,6 +263,14 @@ public class MainViewModel : ObservableObject
 		};
 		_timer.Start();
 		RefreshAll();
+	}
+
+	[ExcludeFromCodeCoverage]
+	public IRelayCommand OpenVirtualMachineCommand => openVirtualMachineCommand ??= new RelayCommand(OpenVirtualMachine);
+
+	private void OpenVirtualMachine()
+	{
+		_virtualMachineWindowService.ShowOrFocus(System.Windows.Application.Current?.MainWindow);
 	}
 
 	private void Navigate(string page)

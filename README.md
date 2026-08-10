@@ -45,6 +45,41 @@ dotnet run --project Werkflow.OpcUaSimulator.App
 | Maschine 3 | opc.tcp://localhost:4842 |
 | Maschine 4 | opc.tcp://localhost:4843 |
 
+## Virtual Machine HMI
+
+Maschine 1 ist die primäre virtuelle Produktionsmaschine für realitätsnahe inMotion- und spätere VIGIL-Lernversuche. Der Simulator kennt VIGIL nicht; die Maschine wird ausschließlich über OPC UA bereitgestellt.
+
+| Eigenschaft | Wert |
+|-------------|------|
+| Maschine | Werkflow Virtual Laser 01 |
+| Endpoint | `opc.tcp://localhost:4840` |
+| Security | None / Anonymous |
+| Profil | LaserProcessingMachine300 |
+| MachineId | stabil (`a1111111-1111-4111-8111-111111111111`) |
+
+Die **Virtuelle Maschine**-Schaltfläche im Hauptfenster öffnet die HMI-Bedienoberfläche (`VirtualMachineHmiWindow`). Die HMI liest Livewerte aus derselben Runtime wie OPC UA und Physical Simulation — keine separate Zustandsmaschine.
+
+**Tray / Fenster:** Schließen über das X versteckt nur die HMI; Maschine und OPC-UA-Server laufen weiter. Ein explizites **Maschine beenden** mit Sicherheitsabfrage stoppt Simulation und Server.
+
+### inMotion-Testablauf
+
+1. OPC-UA-Simulator starten
+2. **Virtuelle Maschine** öffnen
+3. **Werkflow Virtual Laser 01** starten (falls noch nicht aktiv)
+4. inMotion starten
+5. inMotion mit `opc.tcp://localhost:4840` verbinden
+6. OPC-UA-Signale konfigurieren
+7. Normalbetrieb beobachten
+8. Bei Bedarf FaultScenario ausschließlich im Simulator-HMI (Bereich **SIMULATION / TEST**) starten
+
+### VIGIL-Grundsatz
+
+> Der Simulator besitzt keine direkte VIGIL-Anbindung.
+> VIGIL verarbeitet die Maschine später ausschließlich über den regulären inMotion-Datenpfad.
+> Ground Truth und FaultScenario-Informationen dürfen niemals an inMotion/VIGIL übertragen werden.
+
+Vertrag und Details: `docs/virtual-machine-contract.md`
+
 ## Standardnodes
 
 | Semantik | Standard-NodeId | Datentyp |

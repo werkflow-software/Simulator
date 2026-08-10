@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Werkflow.OpcUaSimulator.Core.Models;
+using Werkflow.OpcUaSimulator.Core.VirtualMachine;
 
 namespace Werkflow.OpcUaSimulator.Core.Defaults;
 
@@ -9,11 +10,34 @@ public static class DefaultMachines
 	{
 		return new List<MachineConfiguration>
 		{
-			CreateMachine(1, 4840, "Schnell", "Schnelle Produktion mit geringer Störanfälligkeit", 1000, 0.3, 0.3, 5000, 30000, 5000, 30000, 2.0, MachineState.Idle),
+			CreateVirtualMachine(),
 			CreateMachine(2, 4841, "Normal", "Normale Produktion mit seltenen Warnungen", 3500, 0.5, 0.5, 8000, 45000, 8000, 45000, 1.0, MachineState.Idle),
 			CreateMachine(3, 4842, "Langsam", "Langsame, stabile Produktion", 8000, 0.4, 0.3, 10000, 60000, 10000, 60000, 0.5, MachineState.Idle),
 			CreateMachine(4, 4843, "Störanfällig", "Leicht erhöhte Störwahrscheinlichkeit, global auf 25 % begrenzt", 2500, 1.0, 1.0, 10000, 90000, 10000, 90000, 1.0, MachineState.Idle)
 		};
+	}
+
+	private static MachineConfiguration CreateVirtualMachine()
+	{
+		MachineConfiguration machine = CreateMachine(
+			1,
+			VirtualMachineContract.Port,
+			"Schnell",
+			"Virtuelle Laser-Produktionsmaschine für inMotion- und VIGIL-Lernversuche",
+			1000,
+			0.3,
+			0.3,
+			5000,
+			30000,
+			5000,
+			30000,
+			2.0,
+			MachineState.Idle);
+		machine.Id = VirtualMachineContract.MachineId;
+		machine.Name = VirtualMachineContract.DisplayName;
+		machine.PhysicalProfileId = VirtualMachineContract.PhysicalProfileId;
+		machine.UpdateEndpointFromHostPort();
+		return machine;
 	}
 
 	private static MachineConfiguration CreateMachine(int index, int port, string profile, string description, int productionIntervalMs, double errorProb, double disconnectProb, int minError, int maxError, int minOffline, int maxOffline, double speedFactor, MachineState baseState, bool startInError = false)
