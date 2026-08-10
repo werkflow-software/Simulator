@@ -8,12 +8,12 @@ namespace Werkflow.OpcUaSimulator.App.VirtualMachine.Services;
 /// </summary>
 public sealed class SimulatorTrayService : IHmiTrayNotifier, IDisposable
 {
-	private readonly VirtualMachineWindowService _virtualMachineWindowService;
+	private readonly Func<VirtualMachineWindowService> _virtualMachineWindowServiceFactory;
 	private bool _disposed;
 
-	public SimulatorTrayService(VirtualMachineWindowService virtualMachineWindowService)
+	public SimulatorTrayService(Func<VirtualMachineWindowService> virtualMachineWindowServiceFactory)
 	{
-		_virtualMachineWindowService = virtualMachineWindowService;
+		_virtualMachineWindowServiceFactory = virtualMachineWindowServiceFactory;
 	}
 
 	public void NotifyHmiHidden()
@@ -23,7 +23,7 @@ public sealed class SimulatorTrayService : IHmiTrayNotifier, IDisposable
 
 	public void OpenVirtualMachine()
 	{
-		_virtualMachineWindowService.ShowOrFocus(System.Windows.Application.Current?.MainWindow);
+		_virtualMachineWindowServiceFactory().ShowOrFocus(System.Windows.Application.Current?.MainWindow);
 	}
 
 	public void Dispose()

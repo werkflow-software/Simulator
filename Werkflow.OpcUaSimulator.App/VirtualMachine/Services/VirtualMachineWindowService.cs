@@ -18,6 +18,8 @@ public sealed class VirtualMachineWindowService
 
 	public void ShowOrFocus(Window? owner)
 	{
+		_viewModel.EnsureActivated();
+
 		if (_window == null)
 		{
 			_window = new VirtualMachineHmiWindow(_viewModel, _trayNotifier)

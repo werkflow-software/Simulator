@@ -39,6 +39,9 @@ public class App : Application
 			MainWindow mainWindow = _host.Services.GetRequiredService<MainWindow>();
 			MainWindow = mainWindow;
 			ShutdownMode = ShutdownMode.OnMainWindowClose;
+			mainWindow.Visibility = Visibility.Visible;
+			mainWindow.ShowInTaskbar = true;
+			mainWindow.WindowState = WindowState.Normal;
 			mainWindow.Show();
 			mainWindow.Activate();
 			mainWindow.Focus();
@@ -64,7 +67,6 @@ public class App : Application
 			_host.Services.GetRequiredService<OverviewViewModel>().Refresh();
 			_host.Services.GetRequiredService<FaultScenariosViewModel>().Refresh();
 			_host.Services.GetRequiredService<PhysicalSignalsViewModel>().ReloadMachines();
-			_host.Services.GetRequiredService<SimulatorTrayService>();
 		}
 		catch (Exception ex)
 		{
@@ -127,9 +129,10 @@ public class App : Application
 			services.AddSingleton<FaultScenariosViewModel>();
 			services.AddSingleton<ExperimentsViewModel>();
 			services.AddSingleton<VirtualMachineHmiViewModel>();
+			services.AddSingleton<VirtualMachineWindowService>();
+			services.AddSingleton<Func<VirtualMachineWindowService>>(sp => () => sp.GetRequiredService<VirtualMachineWindowService>());
 			services.AddSingleton<SimulatorTrayService>();
 			services.AddSingleton<IHmiTrayNotifier>(sp => sp.GetRequiredService<SimulatorTrayService>());
-			services.AddSingleton<VirtualMachineWindowService>();
 			services.AddSingleton<MainViewModel>();
 			services.AddSingleton<MainWindow>();
 		})

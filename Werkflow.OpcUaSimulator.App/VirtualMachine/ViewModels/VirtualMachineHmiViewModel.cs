@@ -40,6 +40,7 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	private readonly IFaultScenarioService _faultScenarioService;
 	private readonly IDialogService _dialogService;
 	private readonly DispatcherTimer _refreshTimer;
+	private bool _activated;
 
 	private MachineConfiguration? _machine;
 	private FaultScenarioListItem? _selectedFaultScenario;
@@ -130,14 +131,26 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 
 		_refreshTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
 		_refreshTimer.Tick += (_, _) => Refresh();
-		_refreshTimer.Start();
 
 		_simulationEngine.MachineStateChanged += (_, _) => UiDispatcher.Run(Refresh);
 		_machineServerService.ServerStatusChanged += (_, _) => UiDispatcher.Run(Refresh);
+	}
 
+	/// <summary>
+	/// Deferred activation: timer and fault catalog load only when HMI is first opened (not at app startup).
+	/// </summary>
+	public void EnsureActivated()
+	{
+		if (_activated)
+		{
+			return;
+		}
+
+		_activated = true;
 		EnsureMachineBound();
 		BuildTabs();
 		LoadFaultScenarios();
+		_refreshTimer.Start();
 		Refresh();
 	}
 
