@@ -213,7 +213,7 @@ public static class PhysicalAp4R3VerificationHarness
         var stack = PhysicalTestServiceFactory.CreateFaultScenarioService(log, bridge);
         await stack.FaultScenarioService.InitializeAsync(cancellationToken).ConfigureAwait(false);
 
-        var session = CreateSession(stack, profileId, seed, timeFactor, ProcessPhase.Processing);
+        var session = CreateSession(stack, profileId, seed, timeFactor, ProcessPhase.PeakLoad);
         var runtime = new MachineRuntimeState
         {
             MachineId = session.MachineId,
@@ -239,7 +239,7 @@ public static class PhysicalAp4R3VerificationHarness
         {
             MachineId = session.MachineId,
             ScenarioId = scenarioId,
-            Intensity = 1.5,
+            Intensity = 2.0,
             TimeFactor = timeFactor,
             AutoThresholdFaultEnabled = true,
             AutoScenarioEndEnabled = false
@@ -249,12 +249,13 @@ public static class PhysicalAp4R3VerificationHarness
         var postRecoverySamples = 0;
         const int sampleEveryTicks = 5;
         const int minPostRecoverySamples = 6;
-        const int maxTicks = 2500;
+        const int maxTicks = 1200;
+        const int tickMilliseconds = 50;
 
         for (var i = 0; i < maxTicks; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            stack.RuntimeCoordinator.Tick(session, TimeSpan.FromMilliseconds(200));
+            stack.RuntimeCoordinator.Tick(session, TimeSpan.FromMilliseconds(tickMilliseconds));
             runtime.Heartbeat++;
 
             var instance = session.Simulation.FaultScenarios.ActiveInstances.Values.FirstOrDefault();
@@ -282,6 +283,8 @@ public static class PhysicalAp4R3VerificationHarness
             }
             else if (stoppedForRecovery)
             {
+                session.Simulation.CurrentPhase = ProcessPhase.Cooling;
+
                 if (session.Simulation.FaultScenarios.LastRecoveryCompletedAtUtc != null
                     && result.RecoveryCompletedAtUtc == null)
                 {

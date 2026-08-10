@@ -55,6 +55,12 @@ public sealed class FaultScenarioInstance
 
 	public Dictionary<string, double> HiddenStateOffsets { get; } = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 
+	public Dictionary<string, double> SignalOffsets { get; } = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+
+	public TimeSpan RecoveryStableElapsedTime { get; set; }
+
+	public TimeSpan LastScenarioDeltaTime { get; set; }
+
 	public double OscillationPhase { get; set; }
 
 	public double IntermittentPhase { get; set; }

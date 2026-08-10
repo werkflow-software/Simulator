@@ -170,6 +170,16 @@ public sealed class JsonFaultScenarioRepository : IFaultScenarioRepository
 		public bool ResumeProductionAfterRecovery { get; set; } = true;
 
 		public string? MinimumStableDuration { get; set; }
+
+		public string? SafeRecoverySourceType { get; set; }
+
+		public string? SafeRecoverySourceId { get; set; }
+
+		public string? SafeRecoveryComparison { get; set; }
+
+		public double? SafeRecoveryThreshold { get; set; }
+
+		public double SafeRecoveryTolerance { get; set; } = 1.0;
 	}
 
 	private static readonly JsonSerializerOptions JsonOptions = CreateOptions();
@@ -288,7 +298,12 @@ public sealed class JsonFaultScenarioRepository : IFaultScenarioRepository
 				ClearErrorAtRecoveryStart = dto.Recovery.ClearErrorAtRecoveryStart,
 				ClearErrorAtRecoveryEnd = dto.Recovery.ClearErrorAtRecoveryEnd,
 				ResumeProductionAfterRecovery = dto.Recovery.ResumeProductionAfterRecovery,
-				MinimumStableDuration = ParseTime(dto.Recovery.MinimumStableDuration, TimeSpan.FromSeconds(30.0))
+				MinimumStableDuration = ParseTime(dto.Recovery.MinimumStableDuration, TimeSpan.FromSeconds(30.0)),
+				SafeRecoverySourceType = ParseNullableEnum(dto.Recovery.SafeRecoverySourceType, FaultThresholdSourceType.Signal),
+				SafeRecoverySourceId = dto.Recovery.SafeRecoverySourceId,
+				SafeRecoveryComparison = ParseNullableEnum(dto.Recovery.SafeRecoveryComparison, FaultThresholdComparison.LessThan),
+				SafeRecoveryThreshold = dto.Recovery.SafeRecoveryThreshold,
+				SafeRecoveryTolerance = ((dto.Recovery.SafeRecoveryTolerance > 0.0) ? dto.Recovery.SafeRecoveryTolerance : 1.0)
 			}),
 			CanRunInParallel = dto.CanRunInParallel,
 			MutuallyExclusiveScenarioIds = (dto.MutuallyExclusiveScenarioIds ?? new List<string>()),
@@ -348,6 +363,17 @@ public sealed class JsonFaultScenarioRepository : IFaultScenarioRepository
 		{
 			return fallback;
 		}
+		TEnum result;
+		return (Enum.TryParse<TEnum>(value, ignoreCase: true, out result) && Enum.IsDefined(result)) ? result : fallback;
+	}
+
+	private static TEnum? ParseNullableEnum<TEnum>(string? value, TEnum fallback) where TEnum : struct, Enum
+	{
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			return null;
+		}
+
 		TEnum result;
 		return (Enum.TryParse<TEnum>(value, ignoreCase: true, out result) && Enum.IsDefined(result)) ? result : fallback;
 	}

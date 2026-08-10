@@ -37,6 +37,7 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 			{
 				TimeSpan timeSpan2 = TimeSpan.FromTicks((long)((double)timeSpan.Ticks * item.TimeFactor));
 				item.ScenarioElapsedTime += timeSpan2;
+				item.LastScenarioDeltaTime = timeSpan2;
 				AdvancePhase(item);
 				ApplyEffects(item, session, timeSpan2);
 				CheckScenarioEnd(item);
@@ -45,19 +46,23 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 			{
 				TimeSpan deltaTime2 = TimeSpan.FromTicks((long)((double)timeSpan.Ticks * item.TimeFactor));
 				_recoveryEngine.TickRecovery(item, session.Profile, session.Runtime, session.Simulation, deltaTime2);
-				if (_recoveryEngine.IsRecoveryComplete(item))
-				{
-					CompleteInstance(item, session, bridge, clearFault: true);
-				}
 			}
 		}
 	}
 
-	public void ApplySignalOverrides(PhysicalMachineSession session)
+	public void ApplySignalOverrides(PhysicalMachineSession session, IFaultScenarioSimulationBridge? bridge)
 	{
 		Dictionary<string, SignalRuntimeState> dictionary = session.Runtime.Signals.ToDictionary<SignalRuntimeState, string>((SignalRuntimeState s) => s.SignalId, StringComparer.OrdinalIgnoreCase);
 		foreach (FaultScenarioInstance value4 in session.Simulation.FaultScenarios.ActiveInstances.Values)
 		{
+			foreach (KeyValuePair<string, double> offset in value4.SignalOffsets)
+			{
+				if (dictionary.TryGetValue(offset.Key, out var signalState))
+				{
+					signalState.CurrentValue += offset.Value;
+				}
+			}
+
 			foreach (FaultEffectDefinition item in value4.Definition.Effects.Where((FaultEffectDefinition e) => e.EffectType == FaultEffectType.SignalFreeze && e.IsEnabled))
 			{
 				if (!value4.FrozenSignalValues.TryGetValue(item.TargetId, out var value) && dictionary.TryGetValue(item.TargetId, out var value2))
@@ -68,6 +73,19 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 				if (dictionary.TryGetValue(item.TargetId, out var value3))
 				{
 					value3.CurrentValue = value;
+				}
+			}
+
+			if (value4.LifecycleState == FaultScenarioLifecycleState.Recovering)
+			{
+				_recoveryEngine.ApplyRecoverySignalOverrides(value4, session.Runtime);
+				TimeSpan deltaTime = value4.LastScenarioDeltaTime > TimeSpan.Zero
+					? value4.LastScenarioDeltaTime
+					: TimeSpan.FromMilliseconds(200);
+				_recoveryEngine.UpdateRecoveryStableTimer(value4, session.Profile, session.Runtime, deltaTime);
+				if (_recoveryEngine.IsRecoveryComplete(value4, session.Profile, session.Runtime))
+				{
+					CompleteInstance(value4, session, bridge, clearFault: true);
 				}
 			}
 		}
@@ -122,6 +140,16 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 					instance.HiddenStateOffsets[targetId] = num2;
 					value.TargetValue = Math.Clamp(value.TargetValue + num2, value2.HardMinimum, value2.HardMaximum);
 					value.CurrentValue = Math.Clamp(value.CurrentValue + num2 * 0.35, value2.HardMinimum, value2.HardMaximum);
+				}
+				else if (item.TargetType == FaultEffectTargetType.SignalQuality
+					&& item.EffectType != FaultEffectType.SignalFreeze
+					&& item.EffectType != FaultEffectType.ConnectionDrop)
+				{
+					string targetId = item.TargetId;
+					double valueOrDefault = instance.SignalOffsets.GetValueOrDefault(targetId);
+					double min = ((item.Direction == FaultEffectDirection.Decrease) ? (0.0 - item.MaximumEffect) : item.MinimumEffect);
+					double max = ((item.Direction == FaultEffectDirection.Decrease) ? (0.0 - item.MinimumEffect) : item.MaximumEffect);
+					instance.SignalOffsets[targetId] = Math.Clamp(valueOrDefault + num, min, max);
 				}
 			}
 		}

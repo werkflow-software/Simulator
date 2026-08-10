@@ -71,7 +71,7 @@ public sealed class PhysicalSimulationEngine : IPhysicalSimulationEngine
 		_faultScenarioEngine?.Tick(session, deltaTime, _faultBridge);
 		_signalEngine.CalculateSignals(session.Profile, session.Runtime, session.Simulation, random, deltaTime2);
 		_faultScenarioEngine?.EvaluateThresholdsAfterSignals(session, _faultBridge);
-		_faultScenarioEngine?.ApplySignalOverrides(session);
+		_faultScenarioEngine?.ApplySignalOverrides(session, _faultBridge);
 		_validator.ValidateTick(session);
 		stopwatch.Stop();
 		PhysicalSimulationMetrics metrics = session.Simulation.Metrics;

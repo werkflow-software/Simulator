@@ -10,5 +10,13 @@ public interface IFaultRecoveryEngine
 
 	void TickRecovery(FaultScenarioInstance instance, PhysicalMachineProfile profile, PhysicalMachineRuntime runtime, PhysicalSimulationContext context, TimeSpan deltaTime);
 
-	bool IsRecoveryComplete(FaultScenarioInstance instance);
+	bool IsRecoveryComplete(FaultScenarioInstance instance, PhysicalMachineProfile profile, PhysicalMachineRuntime runtime);
+
+	void ApplyRecoverySignalOverrides(FaultScenarioInstance instance, PhysicalMachineRuntime runtime);
+
+	void UpdateRecoveryStableTimer(
+		FaultScenarioInstance instance,
+		PhysicalMachineProfile profile,
+		PhysicalMachineRuntime runtime,
+		TimeSpan deltaTime);
 }

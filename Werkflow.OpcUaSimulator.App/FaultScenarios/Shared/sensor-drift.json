@@ -2,7 +2,7 @@
   "scenarioId": "sensor-drift",
   "scenarioVersion": "1.0",
   "displayName": "Sensor Drift",
-  "description": "Sensor driftet und friert einen Messwert ein, während verborgene Prozesszustände normal weiterlaufen.",
+  "description": "Sensor driftet langsam von der physikalischen Größe weg, während verborgene thermische Prozesszustände weitgehend normal bleiben.",
   "machineProfileIds": [
     "laser-processing-machine-300",
     "bending-hydraulic-machine-300"
@@ -24,25 +24,25 @@
   ],
   "effects": [
     {
-      "effectId": "motor-temp-freeze",
+      "effectId": "motor-temp-sensor-drift",
       "targetType": "signalQuality",
       "targetId": "Axis01.MotorTemperature",
-      "effectType": "signalFreeze",
+      "effectType": "additiveDrift",
       "startPhase": "developing",
       "endPhase": "faulted",
-      "direction": "stabilize",
-      "magnitude": 1.0,
-      "ratePerSimulationMinute": 0.0,
-      "delay": "00:00:20",
+      "direction": "increase",
+      "magnitude": 2.5,
+      "ratePerSimulationMinute": 0.42,
+      "delay": "00:00:15",
       "inertia": 1.0,
       "minimumEffect": 0.0,
-      "maximumEffect": 1.0,
+      "maximumEffect": 8.0,
       "isEnabled": true
     },
     {
-      "effectId": "hidden-state-normal",
+      "effectId": "thermal-load-stable",
       "targetType": "hiddenState",
-      "targetId": "ElectricalStability",
+      "targetId": "ThermalLoad",
       "effectType": "targetShift",
       "startPhase": "initiating",
       "endPhase": "faulted",
@@ -89,7 +89,7 @@
   "canRunInParallel": true,
   "mutuallyExclusiveScenarioIds": ["signal-freeze"],
   "isEnabled": true,
-  "tags": ["sensor", "drift", "freeze", "shared"],
+  "tags": ["sensor", "drift", "shared"],
   "supportsNonFaultingControlRun": false,
   "priority": 9
 }

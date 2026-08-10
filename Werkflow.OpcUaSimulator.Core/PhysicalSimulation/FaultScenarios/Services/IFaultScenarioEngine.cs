@@ -9,5 +9,5 @@ public interface IFaultScenarioEngine
 
 	void EvaluateThresholdsAfterSignals(PhysicalMachineSession session, IFaultScenarioSimulationBridge? bridge);
 
-	void ApplySignalOverrides(PhysicalMachineSession session);
+	void ApplySignalOverrides(PhysicalMachineSession session, IFaultScenarioSimulationBridge? bridge);
 }

@@ -83,7 +83,12 @@
     "clearErrorAtRecoveryStart": false,
     "clearErrorAtRecoveryEnd": true,
     "resumeProductionAfterRecovery": true,
-    "minimumStableDuration": "00:00:45"
+    "minimumStableDuration": "00:00:45",
+    "safeRecoverySourceType": "signal",
+    "safeRecoverySourceId": "Hydraulic.SupplyPressure",
+    "safeRecoveryComparison": "greaterThanOrEqual",
+    "safeRecoveryThreshold": 125.0,
+    "safeRecoveryTolerance": 5.0
   },
   "canRunInParallel": true,
   "mutuallyExclusiveScenarioIds": ["oil-aging"],

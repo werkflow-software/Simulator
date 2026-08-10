@@ -21,4 +21,19 @@ public sealed class FaultRecoveryDefinition
 	public bool ResumeProductionAfterRecovery { get; set; } = true;
 
 	public TimeSpan MinimumStableDuration { get; set; } = TimeSpan.FromSeconds(30.0);
+
+	public FaultThresholdSourceType? SafeRecoverySourceType { get; set; }
+
+	public string? SafeRecoverySourceId { get; set; }
+
+	public FaultThresholdComparison? SafeRecoveryComparison { get; set; }
+
+	public double? SafeRecoveryThreshold { get; set; }
+
+	public double SafeRecoveryTolerance { get; set; } = 1.0;
+
+	public bool HasSafeRecoveryThreshold =>
+		SafeRecoveryThreshold.HasValue
+		&& !string.IsNullOrWhiteSpace(SafeRecoverySourceId)
+		&& SafeRecoveryComparison.HasValue;
 }

@@ -99,7 +99,12 @@
     "clearErrorAtRecoveryStart": false,
     "clearErrorAtRecoveryEnd": true,
     "resumeProductionAfterRecovery": true,
-    "minimumStableDuration": "00:00:45"
+    "minimumStableDuration": "00:00:45",
+    "safeRecoverySourceType": "signal",
+    "safeRecoverySourceId": "Axis01.MotorTemperature",
+    "safeRecoveryComparison": "lessThan",
+    "safeRecoveryThreshold": 65.0,
+    "safeRecoveryTolerance": 2.5
   },
   "canRunInParallel": true,
   "mutuallyExclusiveScenarioIds": [],

@@ -44,6 +44,7 @@ public static class PhysicalAp4R2VerificationHarness
             LaserProcessingMachine300ProfileFactory.ProfileId,
             seed,
             timeFactor,
+            ProcessPhase.PeakLoad,
             cancellationToken);
 
         report.Bending = await RunFaultRecoveryCaseAsync(
@@ -51,6 +52,7 @@ public static class PhysicalAp4R2VerificationHarness
             BendingHydraulicMachine300ProfileFactory.ProfileId,
             seed + 11,
             timeFactor,
+            ProcessPhase.Processing,
             cancellationToken);
 
         report.EndedAtUtc = DateTime.UtcNow;
@@ -251,6 +253,7 @@ public static class PhysicalAp4R2VerificationHarness
         string profileId,
         int seed,
         double timeFactor,
+        ProcessPhase runPhase,
         CancellationToken cancellationToken)
     {
         var log = new TestLogService();
@@ -258,7 +261,7 @@ public static class PhysicalAp4R2VerificationHarness
         var stack = PhysicalTestServiceFactory.CreateFaultScenarioService(log, bridge);
         await stack.FaultScenarioService.InitializeAsync(cancellationToken).ConfigureAwait(false);
 
-        var session = CreateSession(stack, profileId, seed, timeFactor, ProcessPhase.Processing);
+        var session = CreateSession(stack, profileId, seed, timeFactor, runPhase);
         var runtime = new MachineRuntimeState
         {
             MachineId = session.MachineId,
@@ -283,17 +286,17 @@ public static class PhysicalAp4R2VerificationHarness
         {
             MachineId = session.MachineId,
             ScenarioId = scenarioId,
-            Intensity = 1.5,
+            Intensity = 2.0,
             TimeFactor = timeFactor,
             AutoThresholdFaultEnabled = true,
             AutoScenarioEndEnabled = false
         }, cancellationToken).ConfigureAwait(false);
 
         var stoppedForRecovery = false;
-        for (var i = 0; i < 2500 && !caseReport.RecoveryCompletedAtUtc.HasValue; i++)
+        for (var i = 0; i < 1200 && !caseReport.RecoveryCompletedAtUtc.HasValue; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            stack.RuntimeCoordinator.Tick(session, TimeSpan.FromMilliseconds(200));
+            stack.RuntimeCoordinator.Tick(session, TimeSpan.FromMilliseconds(50));
             runtime.Heartbeat++;
 
             var instance = session.Simulation.FaultScenarios.ActiveInstances.Values.FirstOrDefault();
