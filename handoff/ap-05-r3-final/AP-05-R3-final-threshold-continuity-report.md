@@ -52,7 +52,7 @@ Release Build OK.
 
 ## 16. Commit-SHA
 
-`e51981a25c64040bc5fafd04e4b1abb95743b416`
+`e3019878bc495f289e8d2e34efb06a5b520c8415`
 
 ## 17–18. Tag / Git-Status
 
