@@ -17,6 +17,9 @@ namespace Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Evaluation.Experiments
 
 public sealed class ExperimentRunner : IExperimentRunner
 {
+	private const int FaultRunMaxTicks = 4000;
+	private const int ControlRunMaxTicks = 2500;
+
 	private readonly IFaultScenarioService _faultScenarioService;
 	private readonly IPhysicalRuntimeCoordinator _runtimeCoordinator;
 	private readonly IGroundTruthRecorder _groundTruthRecorder;
@@ -59,27 +62,18 @@ public sealed class ExperimentRunner : IExperimentRunner
 
 	public void Pause()
 	{
-		lock (_sync)
-		{
-			_paused = true;
-		}
+		lock (_sync) { _paused = true; }
 	}
 
 	public void Resume()
 	{
-		lock (_sync)
-		{
-			_paused = false;
-		}
+		lock (_sync) { _paused = false; }
 	}
 
 	public void Cancel()
 	{
 		_cts?.Cancel();
-		lock (_sync)
-		{
-			_state = ExperimentRunnerState.Cancelled;
-		}
+		lock (_sync) { _state = ExperimentRunnerState.Cancelled; }
 	}
 
 	public async Task<ExperimentResult> RunAsync(
@@ -98,6 +92,7 @@ public sealed class ExperimentRunner : IExperimentRunner
 		var started = DateTime.UtcNow;
 		var runs = new List<RunManifestEntry>();
 		session.Simulation.TimeFactor = definition.TimeFactor;
+		session.Simulation.CurrentPhase = ProcessPhase.Processing;
 		_runtimeCoordinator.EnsureEngine(session, definition.BaseSeed);
 
 		_groundTruthRecorder.BeginExperiment(definition.ExperimentId, session.MachineId, definition.BaseSeed);
@@ -111,33 +106,35 @@ public sealed class ExperimentRunner : IExperimentRunner
 			int runIndex = 0;
 
 			_groundTruthRecorder.BeginRun("exp-start", "Experiment", definition.BaseSeed, 0);
-			_groundTruthRecorder.RecordEvent(
-				GroundTruthEventType.ExperimentStarted, simClock, simClock);
+			_groundTruthRecorder.UpdateExperimentClock(simClock);
+			_groundTruthRecorder.RecordEvent(GroundTruthEventType.ExperimentStarted, simClock, TimeSpan.Zero);
 			_groundTruthRecorder.CompleteRun();
 
 			simClock = await RunDurationAsync(
 				definition.WarmupDuration, session, simClock, tickMs, token, ExperimentRunnerState.Warmup);
 
-			lock (_sync)
-			{
-				_state = ExperimentRunnerState.NormalLearning;
-			}
+			lock (_sync) { _state = ExperimentRunnerState.NormalLearning; }
 
 			string normalRunId = $"normal-{runIndex}";
-			_groundTruthRecorder.BeginRun(normalRunId, "Normal", ExperimentSeedDeriver.DeriveRunSeed(definition.BaseSeed, runIndex, "Normal"), 0);
-			_groundTruthRecorder.RecordEvent(GroundTruthEventType.NormalObservationStarted, simClock, TimeSpan.Zero);
-			_signalRecorder.BeginRun(normalRunId);
-			simClock = await RunDurationAsync(
-				definition.NormalLearningDuration, session, simClock, tickMs, token, ExperimentRunnerState.NormalLearning, normalRunId);
-			_signalRecorder.CompleteRun();
-			runs.Add(new RunManifestEntry
+			var normalRun = new RunManifestEntry
 			{
 				RunId = normalRunId,
 				RunType = "Normal",
 				RunSeed = ExperimentSeedDeriver.DeriveRunSeed(definition.BaseSeed, runIndex, "Normal"),
 				RepetitionIndex = 0,
 				Outcome = "NoFault"
-			});
+			};
+			TimeSpan normalStart = simClock;
+			_groundTruthRecorder.BeginRun(normalRunId, "Normal", normalRun.RunSeed, 0);
+			_groundTruthRecorder.UpdateExperimentClock(simClock);
+			_groundTruthRecorder.RecordEvent(GroundTruthEventType.NormalObservationStarted, simClock, TimeSpan.Zero);
+			_signalRecorder.BeginRun(normalRunId);
+			simClock = await RunDurationAsync(
+				definition.NormalLearningDuration, session, simClock, tickMs, token, ExperimentRunnerState.NormalLearning, normalRunId);
+			normalRun.ScenarioStart = normalStart;
+			normalRun.RecoveryCompletedAt = simClock;
+			_signalRecorder.CompleteRun();
+			runs.Add(normalRun);
 			_groundTruthRecorder.CompleteRun();
 			runIndex++;
 
@@ -148,6 +145,8 @@ public sealed class ExperimentRunner : IExperimentRunner
 				{
 					await _faultScenarioService.ResetMachineAsync(session.MachineId, token);
 				}
+
+				session.Simulation.CurrentPhase = ProcessPhase.Processing;
 
 				if (planned.RunType == ExperimentRunType.Control)
 				{
@@ -166,14 +165,18 @@ public sealed class ExperimentRunner : IExperimentRunner
 				}
 			}
 
+			_groundTruthRecorder.BeginRun("exp-end", "Experiment", definition.BaseSeed, 0);
+			_groundTruthRecorder.UpdateExperimentClock(simClock);
+			_groundTruthRecorder.RecordEvent(GroundTruthEventType.ExperimentCompleted, simClock, TimeSpan.Zero);
+			_groundTruthRecorder.CompleteRun();
 			_groundTruthRecorder.CompleteExperiment();
-			lock (_sync)
-			{
-				_state = ExperimentRunnerState.Completed;
-			}
+
+			lock (_sync) { _state = ExperimentRunnerState.Completed; }
 
 			var completed = DateTime.UtcNow;
 			var gtEvents = _groundTruthRecorder.GetEventsForExperiment(definition.ExperimentId);
+			FinalizeRunsFromGroundTruth(runs, gtEvents);
+
 			var vigilEvents = definition.VigilMode == VigilMode.VigilEvaluation && _vigilEventSource.IsConnected
 				? _vigilEventSource.GetEvents(definition.ExperimentId)
 				: [];
@@ -181,6 +184,20 @@ public sealed class ExperimentRunner : IExperimentRunner
 				? EvidenceType.RealVigilEvidence
 				: EvidenceType.NotAvailable;
 			var metrics = _metricsEngine.Compute(gtEvents, vigilEvents, runs, _vigilEventSource.IsConnected, evidenceType);
+
+			var validationResults = runs
+				.Select(r => GroundTruthRunValidator.ValidateRun(r, gtEvents))
+				.ToList();
+			var failedCriteria = validationResults
+				.Where(v => !v.Passed)
+				.SelectMany(v => v.FailedCriteria)
+				.ToList();
+
+			bool allFaultRunsPassed = runs
+				.Where(r => r.RunType == "Fault")
+				.All(r => r.Outcome == "FaultRecovered");
+			bool expectedFaultCount = runs.Count(r => r.RunType == "Fault") == definition.FaultRunCount
+				&& runs.Count(r => r.RunType == "Fault" && r.Outcome == "FaultRecovered") == definition.FaultRunCount;
 
 			var result = new ExperimentResult
 			{
@@ -192,8 +209,17 @@ public sealed class ExperimentRunner : IExperimentRunner
 				CompletedAtUtc = completed,
 				FinalState = ExperimentRunnerState.Completed,
 				Runs = runs,
-				Passed = true
+				Passed = failedCriteria.Count == 0 && allFaultRunsPassed && expectedFaultCount
 			};
+			result.FailedCriteria.AddRange(failedCriteria);
+			if (!allFaultRunsPassed)
+			{
+				result.FailedCriteria.Add("fault-runs-not-all-recovered");
+			}
+			if (!expectedFaultCount)
+			{
+				result.FailedCriteria.Add("fault-run-count-mismatch");
+			}
 
 			result.ExportPath = await _exporter.ExportAsync(definition, result, gtEvents, vigilEvents, metrics, token);
 			LastResult = result;
@@ -201,18 +227,12 @@ public sealed class ExperimentRunner : IExperimentRunner
 		}
 		catch (OperationCanceledException)
 		{
-			lock (_sync)
-			{
-				_state = ExperimentRunnerState.Cancelled;
-			}
+			lock (_sync) { _state = ExperimentRunnerState.Cancelled; }
 			throw;
 		}
 		catch
 		{
-			lock (_sync)
-			{
-				_state = ExperimentRunnerState.Failed;
-			}
+			lock (_sync) { _state = ExperimentRunnerState.Failed; }
 			throw;
 		}
 	}
@@ -228,13 +248,12 @@ public sealed class ExperimentRunner : IExperimentRunner
 		CancellationToken token,
 		int runIndex)
 	{
-		lock (_sync)
-		{
-			_state = ExperimentRunnerState.Running;
-		}
+		lock (_sync) { _state = ExperimentRunnerState.Running; }
 
 		int runSeed = ExperimentSeedDeriver.DeriveRunSeed(definition.BaseSeed, runIndex, "Fault");
-		double intensity = ExperimentSeedDeriver.DeriveIntensity(1.0, runIndex, definition.BaseSeed, definition.Variation);
+		double intensity = Math.Max(
+			1.0,
+			ExperimentSeedDeriver.DeriveIntensity(1.0, runIndex, definition.BaseSeed, definition.Variation));
 		var startOffset = ExperimentSeedDeriver.DeriveStartOffset(runIndex, definition.BaseSeed, definition.Variation);
 
 		_groundTruthRecorder.BeginRun(planned.RunId, "Fault", runSeed, faultRep);
@@ -250,10 +269,10 @@ public sealed class ExperimentRunner : IExperimentRunner
 			MachineId = session.MachineId,
 			ScenarioId = definition.ScenarioId,
 			Intensity = intensity,
-			TimeFactor = definition.TimeFactor,
+			TimeFactor = 1.0,
 			Seed = runSeed,
 			AutoThresholdFaultEnabled = true,
-			AutoScenarioEndEnabled = true,
+			AutoScenarioEndEnabled = false,
 			RunMode = FaultScenarioRunMode.Normal
 		}, token);
 
@@ -269,12 +288,13 @@ public sealed class ExperimentRunner : IExperimentRunner
 		};
 
 		bool recoveryStarted = false;
-		for (int i = 0; i < 2000; i++)
+		for (int i = 0; i < FaultRunMaxTicks; i++)
 		{
 			token.ThrowIfCancellationRequested();
 			await WaitIfPausedAsync(token);
 			_runtimeCoordinator.Tick(session, TimeSpan.FromMilliseconds(tickMs));
 			simClock += TimeSpan.FromMilliseconds(tickMs * definition.TimeFactor);
+			_groundTruthRecorder.UpdateExperimentClock(simClock);
 
 			var instance = session.Simulation.FaultScenarios.ActiveInstances.Values
 				.FirstOrDefault(inst => inst.ScenarioId.Equals(definition.ScenarioId, StringComparison.OrdinalIgnoreCase));
@@ -282,32 +302,19 @@ public sealed class ExperimentRunner : IExperimentRunner
 			{
 				if (recoveryStarted)
 				{
-					manifest.RecoveryCompletedAt = simClock;
-					manifest.Outcome = "FaultRecovered";
 					break;
 				}
 				continue;
 			}
 
 			_signalRecorder.Record(session, simClock);
-			manifest.DetectableAt ??= FindDetectableTime(planned.RunId);
-			manifest.ThresholdAt ??= instance.ThresholdConfirmedAtUtc != null ? simClock : null;
-			manifest.FaultAt ??= instance.MachineFaultedAtUtc != null ? simClock : null;
 
 			if (instance.ThresholdFaultTriggered && !recoveryStarted)
 			{
 				await _faultScenarioService.StopAsync(session.MachineId, definition.ScenarioId, token);
 				recoveryStarted = true;
-				lock (_sync)
-				{
-					_state = ExperimentRunnerState.Recovering;
-				}
+				lock (_sync) { _state = ExperimentRunnerState.Recovering; }
 			}
-		}
-
-		if (manifest.Outcome == "Pending")
-		{
-			manifest.Outcome = manifest.FaultAt.HasValue ? "FaultIncomplete" : "NoFaultTriggered";
 		}
 
 		runs.Add(manifest);
@@ -326,10 +333,7 @@ public sealed class ExperimentRunner : IExperimentRunner
 		CancellationToken token,
 		int runIndex)
 	{
-		lock (_sync)
-		{
-			_state = ExperimentRunnerState.Running;
-		}
+		lock (_sync) { _state = ExperimentRunnerState.Running; }
 
 		int runSeed = ExperimentSeedDeriver.DeriveRunSeed(definition.BaseSeed, runIndex, "Control");
 		string controlScenario = planned.ControlScenarioId ?? definition.ScenarioId;
@@ -341,29 +345,57 @@ public sealed class ExperimentRunner : IExperimentRunner
 		{
 			MachineId = session.MachineId,
 			ScenarioId = controlScenario,
-			Intensity = 0.8,
-			TimeFactor = definition.TimeFactor,
+			Intensity = 0.9,
+			TimeFactor = 1.0,
 			Seed = runSeed,
 			AutoThresholdFaultEnabled = false,
 			AutoScenarioEndEnabled = true,
 			RunMode = FaultScenarioRunMode.NonFaultingControlRun
 		}, token);
 
-		simClock = await RunDurationAsync(definition.DefaultControlDuration(), session, simClock, tickMs, token, ExperimentRunnerState.Running, planned.RunId);
-		if (session.Simulation.FaultScenarios.ScenarioIdToInstance.ContainsKey(controlScenario))
-		{
-			await _faultScenarioService.CancelAsync(session.MachineId, controlScenario, token);
-		}
-
-		runs.Add(new RunManifestEntry
+		var manifest = new RunManifestEntry
 		{
 			RunId = planned.RunId,
 			RunType = "Control",
 			RunSeed = runSeed,
 			RepetitionIndex = 0,
+			ScenarioStart = simClock,
 			Outcome = "NoFault"
-		});
+		};
 
+		for (int i = 0; i < ControlRunMaxTicks; i++)
+		{
+			token.ThrowIfCancellationRequested();
+			await WaitIfPausedAsync(token);
+			_runtimeCoordinator.Tick(session, TimeSpan.FromMilliseconds(tickMs));
+			simClock += TimeSpan.FromMilliseconds(tickMs * definition.TimeFactor);
+			_groundTruthRecorder.UpdateExperimentClock(simClock);
+			_signalRecorder.Record(session, simClock);
+
+			if (!session.Simulation.FaultScenarios.ScenarioIdToInstance.ContainsKey(controlScenario))
+			{
+				break;
+			}
+		}
+
+		if (session.Simulation.FaultScenarios.ScenarioIdToInstance.ContainsKey(controlScenario))
+		{
+			await _faultScenarioService.StopAsync(session.MachineId, controlScenario, token);
+			for (int i = 0; i < 1500; i++)
+			{
+				token.ThrowIfCancellationRequested();
+				await WaitIfPausedAsync(token);
+				_runtimeCoordinator.Tick(session, TimeSpan.FromMilliseconds(tickMs));
+				simClock += TimeSpan.FromMilliseconds(tickMs * definition.TimeFactor);
+				_groundTruthRecorder.UpdateExperimentClock(simClock);
+				if (!session.Simulation.FaultScenarios.ScenarioIdToInstance.ContainsKey(controlScenario))
+				{
+					break;
+				}
+			}
+		}
+
+		runs.Add(manifest);
 		_signalRecorder.CompleteRun();
 		_groundTruthRecorder.CompleteRun();
 		return simClock;
@@ -378,10 +410,7 @@ public sealed class ExperimentRunner : IExperimentRunner
 		ExperimentRunnerState stateDuring,
 		string? runId = null)
 	{
-		lock (_sync)
-		{
-			_state = stateDuring;
-		}
+		lock (_sync) { _state = stateDuring; }
 
 		int ticks = (int)Math.Max(1, duration.TotalMilliseconds / (tickMs * session.Simulation.TimeFactor));
 		for (int i = 0; i < ticks; i++)
@@ -390,6 +419,7 @@ public sealed class ExperimentRunner : IExperimentRunner
 			await WaitIfPausedAsync(token);
 			_runtimeCoordinator.Tick(session, TimeSpan.FromMilliseconds(tickMs));
 			simClock += TimeSpan.FromMilliseconds(tickMs * session.Simulation.TimeFactor);
+			_groundTruthRecorder.UpdateExperimentClock(simClock);
 			if (runId != null)
 			{
 				_signalRecorder.Record(session, simClock);
@@ -407,18 +437,13 @@ public sealed class ExperimentRunner : IExperimentRunner
 		}
 	}
 
-	private TimeSpan? FindDetectableTime(string runId)
+	private static void FinalizeRunsFromGroundTruth(List<RunManifestEntry> runs, IReadOnlyList<GroundTruthEvent> gtEvents)
 	{
-		if (_activeExperimentId == null)
+		foreach (var run in runs)
 		{
-			return null;
+			var runEvents = gtEvents.Where(e => e.RunId.Equals(run.RunId, StringComparison.OrdinalIgnoreCase)).ToList();
+			GroundTruthRunValidator.PopulateManifestFromEvents(run, runEvents);
 		}
-
-		return _groundTruthRecorder.GetEventsForExperiment(_activeExperimentId)
-			.Where(e => e.RunId.Equals(runId, StringComparison.OrdinalIgnoreCase)
-				&& e.EventType == GroundTruthEventType.DegradationBecameDetectable)
-			.Select(e => e.SimulationTimestamp)
-			.FirstOrDefault();
 	}
 
 	private static List<PlannedRun> BuildRunPlan(ExperimentDefinition definition)

@@ -1,0 +1,17 @@
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Evaluation/ExperimentRunner.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Evaluation/GroundTruth/GroundTruthEvent.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Evaluation/GroundTruth/GroundTruthRecorder.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Evaluation/GroundTruth/GroundTruthRunValidator.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Evaluation/GroundTruth/IGroundTruthRecorder.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Evaluation/Metrics/MetricsEngine.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Evaluation/Export/ExperimentExporter.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Services/FaultScenarioEngine.cs
+Werkflow.OpcUaSimulator.App/MainWindow.cs
+Werkflow.OpcUaSimulator.App/ViewModels/ExperimentsViewModel.cs
+Werkflow.OpcUaSimulator.App/ViewModels/MainViewModel.cs
+Werkflow.OpcUaSimulator.App/Views/ExperimentsView.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp5EvidenceTests.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp5VerificationHarness.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp5R1EvidenceTests.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp5R1VerificationHarness.cs
+Werkflow.OpcUaSimulator.Tests/OpcUaGroundTruthLeakageScanner.cs

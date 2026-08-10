@@ -58,7 +58,9 @@ public class MainViewModel : ObservableObject
 
 	public FaultScenariosViewModel FaultScenarios { get; }
 
-	public ObservableCollection<string> NavigationItems { get; } = new ObservableCollection<string> { "Ãœbersicht", "Maschinen", "Nodes", "Physikalische Signale", "Fehlerszenarien", "AuftrÃ¤ge", "Ereignisse", "Protokoll", "Einstellungen" };
+	public ExperimentsViewModel Experiments { get; }
+
+	public ObservableCollection<string> NavigationItems { get; } = new ObservableCollection<string> { "Übersicht", "Maschinen", "Nodes", "Physikalische Signale", "Fehlerszenarien", "Experimente", "Aufträge", "Ereignisse", "Protokoll", "Einstellungen" };
 
 	[GeneratedCode("CommunityToolkit.Mvvm.SourceGenerators.ObservablePropertyGenerator", "8.4.0.0")]
 	[ExcludeFromCodeCoverage]
@@ -223,7 +225,7 @@ public class MainViewModel : ObservableObject
 	[ExcludeFromCodeCoverage]
 	public IRelayCommand<string> NavigateCommand => navigateCommand ?? (navigateCommand = new RelayCommand<string>(Navigate));
 
-	public MainViewModel(ISimulationEngine simulationEngine, IConfigurationService configurationService, OverviewViewModel overview, MachinesViewModel machines, NodesViewModel nodes, JobsViewModel jobs, EventsViewModel eventsViewModel, LogViewModel log, SettingsViewModel settings, PhysicalSignalsViewModel physicalSignals, FaultScenariosViewModel faultScenarios)
+	public MainViewModel(ISimulationEngine simulationEngine, IConfigurationService configurationService, OverviewViewModel overview, MachinesViewModel machines, NodesViewModel nodes, JobsViewModel jobs, EventsViewModel eventsViewModel, LogViewModel log, SettingsViewModel settings, PhysicalSignalsViewModel physicalSignals, FaultScenariosViewModel faultScenarios, ExperimentsViewModel experiments)
 	{
 		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
@@ -239,6 +241,7 @@ public class MainViewModel : ObservableObject
 		Settings = settings;
 		PhysicalSignals = physicalSignals;
 		FaultScenarios = faultScenarios;
+		Experiments = experiments;
 		CurrentViewModel = Overview;
 		_simulationEngine.StateChanged += delegate
 		{
@@ -264,16 +267,17 @@ public class MainViewModel : ObservableObject
 		}
 		object currentViewModel = page switch
 		{
-			"Ãœbersicht" => Overview, 
-			"Maschinen" => Machines, 
-			"Nodes" => Nodes, 
-			"Physikalische Signale" => PhysicalSignals, 
-			"Fehlerszenarien" => FaultScenarios, 
-			"AuftrÃ¤ge" => Jobs, 
-			"Ereignisse" => Events, 
-			"Protokoll" => Log, 
-			"Einstellungen" => Settings, 
-			_ => Overview, 
+			"Übersicht" => Overview,
+			"Maschinen" => Machines,
+			"Nodes" => Nodes,
+			"Physikalische Signale" => PhysicalSignals,
+			"Fehlerszenarien" => FaultScenarios,
+			"Experimente" => Experiments,
+			"Aufträge" => Jobs,
+			"Ereignisse" => Events,
+			"Protokoll" => Log,
+			"Einstellungen" => Settings,
+			_ => Overview,
 		};
 		if (1 == 0)
 		{

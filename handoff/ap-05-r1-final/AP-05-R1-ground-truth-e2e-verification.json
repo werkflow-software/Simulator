@@ -1,0 +1,330 @@
+{
+  "VerificationRunId": "ap5r1-20260810151443-09d74bc67642415a9a207353207",
+  "StartedAtUtc": "2026-08-10T15:14:43.8955353Z",
+  "EndedAtUtc": "2026-08-10T15:14:49.2070261Z",
+  "EXP001": {
+    "ExperimentId": "EXP-001",
+    "Runs": [
+      {
+        "RunId": "normal-0",
+        "RunType": "Normal",
+        "RunSeed": -1840297914,
+        "RepetitionIndex": 0,
+        "Intensity": 0,
+        "ScenarioStart": "00:00:10",
+        "DetectableAt": null,
+        "ThresholdAt": null,
+        "FaultAt": null,
+        "RecoveryCompletedAt": "00:00:40",
+        "Outcome": "NoFault"
+      },
+      {
+        "RunId": "fault-1",
+        "RunType": "Fault",
+        "RunSeed": 1260014384,
+        "RepetitionIndex": 1,
+        "Intensity": 1,
+        "ScenarioStart": "00:00:42.5000000",
+        "DetectableAt": "00:02:55",
+        "ThresholdAt": "00:08:40",
+        "FaultAt": "00:08:40",
+        "RecoveryCompletedAt": "00:17:45",
+        "Outcome": "FaultRecovered"
+      },
+      {
+        "RunId": "control-1",
+        "RunType": "Control",
+        "RunSeed": 737847916,
+        "RepetitionIndex": 0,
+        "Intensity": 0,
+        "ScenarioStart": "00:18:02.5000000",
+        "DetectableAt": "00:20:15",
+        "ThresholdAt": null,
+        "FaultAt": null,
+        "RecoveryCompletedAt": "00:25:57.5000000",
+        "Outcome": "NoFault"
+      },
+      {
+        "RunId": "fault-2",
+        "RunType": "Fault",
+        "RunSeed": 1260014446,
+        "RepetitionIndex": 2,
+        "Intensity": 1.0432663880722906,
+        "ScenarioStart": "00:26:12.5000000",
+        "DetectableAt": "00:26:27.5000000",
+        "ThresholdAt": "00:26:27.5000000",
+        "FaultAt": "00:26:27.5000000",
+        "RecoveryCompletedAt": "00:31:02.5000000",
+        "Outcome": "FaultRecovered"
+      },
+      {
+        "RunId": "fault-3",
+        "RunType": "Fault",
+        "RunSeed": 1260014477,
+        "RepetitionIndex": 3,
+        "Intensity": 1.1018218100312267,
+        "ScenarioStart": "00:31:40",
+        "DetectableAt": "00:33:52.5000000",
+        "ThresholdAt": "00:34:35",
+        "FaultAt": "00:34:35",
+        "RecoveryCompletedAt": "00:38:35",
+        "Outcome": "FaultRecovered"
+      }
+    ],
+    "FaultRunsExpected": 3,
+    "FaultRunsActual": 3,
+    "ControlRuns": 1,
+    "NormalRuns": 1,
+    "ChronologyChecks": [
+      {
+        "Name": "normal-0-chronology",
+        "Passed": true
+      },
+      {
+        "Name": "fault-1-chronology",
+        "Passed": true
+      },
+      {
+        "Name": "control-1-chronology",
+        "Passed": true
+      },
+      {
+        "Name": "fault-2-chronology",
+        "Passed": true
+      },
+      {
+        "Name": "fault-3-chronology",
+        "Passed": true
+      }
+    ],
+    "DuplicateEventChecks": [
+      {
+        "Name": "normal-0-duplicates",
+        "Passed": true
+      },
+      {
+        "Name": "fault-1-duplicates",
+        "Passed": true
+      },
+      {
+        "Name": "control-1-duplicates",
+        "Passed": true
+      },
+      {
+        "Name": "fault-2-duplicates",
+        "Passed": true
+      },
+      {
+        "Name": "fault-3-duplicates",
+        "Passed": true
+      }
+    ],
+    "RunValidation": [
+      {
+        "Name": "normal-0",
+        "Passed": true
+      },
+      {
+        "Name": "fault-1",
+        "Passed": true
+      },
+      {
+        "Name": "control-1",
+        "Passed": true
+      },
+      {
+        "Name": "fault-2",
+        "Passed": true
+      },
+      {
+        "Name": "fault-3",
+        "Passed": true
+      }
+    ],
+    "Passed": true
+  },
+  "EXP002": {
+    "ExperimentId": "EXP-002",
+    "Runs": [
+      {
+        "RunId": "normal-0",
+        "RunType": "Normal",
+        "RunSeed": -1840200853,
+        "RepetitionIndex": 0,
+        "Intensity": 0,
+        "ScenarioStart": "00:00:10",
+        "DetectableAt": null,
+        "ThresholdAt": null,
+        "FaultAt": null,
+        "RecoveryCompletedAt": "00:00:40",
+        "Outcome": "NoFault"
+      },
+      {
+        "RunId": "fault-1",
+        "RunType": "Fault",
+        "RunSeed": 1260111445,
+        "RepetitionIndex": 1,
+        "Intensity": 1,
+        "ScenarioStart": "00:00:45",
+        "DetectableAt": "00:03:02.5000000",
+        "ThresholdAt": "01:16:45",
+        "FaultAt": "01:16:45",
+        "RecoveryCompletedAt": "01:20:45",
+        "Outcome": "FaultRecovered"
+      },
+      {
+        "RunId": "control-1",
+        "RunType": "Control",
+        "RunSeed": 737944977,
+        "RepetitionIndex": 0,
+        "Intensity": 0,
+        "ScenarioStart": "01:21:02.5000000",
+        "DetectableAt": "01:23:32.5000000",
+        "ThresholdAt": null,
+        "FaultAt": null,
+        "RecoveryCompletedAt": "01:30:15",
+        "Outcome": "NoFault"
+      },
+      {
+        "RunId": "fault-2",
+        "RunType": "Fault",
+        "RunSeed": 1260111507,
+        "RepetitionIndex": 2,
+        "Intensity": 1.0802925415012485,
+        "ScenarioStart": "01:30:35",
+        "DetectableAt": "01:32:47.5000000",
+        "ThresholdAt": "02:37:30",
+        "FaultAt": "02:37:30",
+        "RecoveryCompletedAt": "02:41:30",
+        "Outcome": "FaultRecovered"
+      }
+    ],
+    "FaultRunsExpected": 2,
+    "FaultRunsActual": 2,
+    "ControlRuns": 1,
+    "NormalRuns": 1,
+    "ChronologyChecks": [
+      {
+        "Name": "normal-0-chronology",
+        "Passed": true
+      },
+      {
+        "Name": "fault-1-chronology",
+        "Passed": true
+      },
+      {
+        "Name": "control-1-chronology",
+        "Passed": true
+      },
+      {
+        "Name": "fault-2-chronology",
+        "Passed": true
+      }
+    ],
+    "DuplicateEventChecks": [
+      {
+        "Name": "normal-0-duplicates",
+        "Passed": true
+      },
+      {
+        "Name": "fault-1-duplicates",
+        "Passed": true
+      },
+      {
+        "Name": "control-1-duplicates",
+        "Passed": true
+      },
+      {
+        "Name": "fault-2-duplicates",
+        "Passed": true
+      }
+    ],
+    "RunValidation": [
+      {
+        "Name": "normal-0",
+        "Passed": true
+      },
+      {
+        "Name": "fault-1",
+        "Passed": true
+      },
+      {
+        "Name": "control-1",
+        "Passed": true
+      },
+      {
+        "Name": "fault-2",
+        "Passed": true
+      }
+    ],
+    "Passed": true
+  },
+  "ReproducibilityChecks": {
+    "SameSeed": {
+      "RunSequenceEqual": true,
+      "RunSeedsEqual": true,
+      "IntensitiesEqual": true,
+      "StartOffsetsEqual": true,
+      "EventSequenceEqual": true,
+      "SimulationTimesEqual": true,
+      "Passed": true
+    },
+    "DifferentSeed": {
+      "RunSeedsDiffer": true,
+      "VariationCount": 3,
+      "CausalStructureEqual": true,
+      "Passed": true
+    },
+    "Passed": true
+  },
+  "LeakageChecks": {
+    "MachineId": "40c3cf8d-1939-43b4-b160-3fc862da38a4",
+    "Endpoint": "opc.tcp://127.0.0.1:48510",
+    "NodesInspected": 309,
+    "ValuesInspected": 309,
+    "ForbiddenTerms": [
+      "ScenarioId",
+      "ExperimentId",
+      "RunId",
+      "RunSeed",
+      "FaultRepetitionIndex",
+      "GroundTruth",
+      "HiddenState",
+      "Detectable",
+      "FaultScenario",
+      "laser-overheating-axis-drive",
+      "hydraulic-leak"
+    ],
+    "Matches": [],
+    "AllowedMachineErrorMessages": [],
+    "Passed": true
+  },
+  "MachineIsolationChecks": [
+    {
+      "Name": "machine-isolation",
+      "Passed": true
+    }
+  ],
+  "UiChecks": {
+    "ViewCreatable": true,
+    "ExperimentListAvailable": true,
+    "GroundTruthOnlySelectable": true,
+    "StartCommandAvailable": true,
+    "PauseResumeStopAvailable": true,
+    "Passed": true
+  },
+  "MetricsRegression": {
+    "VerificationRunId": "ap5-20260810151449-90d19477bdf84f14a9c66ba52",
+    "EvidenceType": "SyntheticTestEvidence",
+    "TruePositivePassed": true,
+    "MissedDetectionPassed": true,
+    "FalsePositivePassed": true,
+    "LeadTimePassed": true,
+    "ControlWarningPassed": true,
+    "RepetitionTrendPassed": true,
+    "VigilEvaluationAvailable": true,
+    "Passed": true
+  },
+  "Passed": true,
+  "FailedCriteria": []
+}

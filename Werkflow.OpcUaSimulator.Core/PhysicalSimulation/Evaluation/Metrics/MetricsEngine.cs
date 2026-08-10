@@ -25,7 +25,8 @@ public sealed class MetricsEngine
 				EvidenceType = EvidenceType.NotAvailable,
 				RealVigilLearningEvaluation = "NotExecuted",
 				FaultCount = runs.Count(r => r.RunType == "Fault"),
-				ControlRunCount = runs.Count(r => r.RunType == "Control")
+				ControlRunCount = runs.Count(r => r.RunType == "Control"),
+				NormalDuration = ComputeNormalDuration(groundTruthEvents, runs)
 			};
 		}
 
@@ -172,6 +173,37 @@ public sealed class MetricsEngine
 		}
 		var sorted = leads.OrderBy(l => l).ToList();
 		return sorted[sorted.Count / 2];
+	}
+
+	private static TimeSpan ComputeNormalDuration(
+		IReadOnlyList<GroundTruthEvent> groundTruthEvents,
+		IReadOnlyList<RunManifestEntry> runs)
+	{
+		var normalRun = runs.FirstOrDefault(r => r.RunType == "Normal");
+		if (normalRun == null)
+		{
+			return TimeSpan.Zero;
+		}
+
+		if (normalRun.RecoveryCompletedAt.HasValue && normalRun.ScenarioStart.HasValue)
+		{
+			return normalRun.RecoveryCompletedAt.Value - normalRun.ScenarioStart.Value;
+		}
+
+		var runEvents = groundTruthEvents
+			.Where(e => e.RunId.Equals(normalRun.RunId, StringComparison.OrdinalIgnoreCase))
+			.ToList();
+		var start = runEvents
+			.Where(e => e.EventType == GroundTruthEventType.NormalObservationStarted)
+			.Select(e => e.ExperimentSimulationTimestamp)
+			.FirstOrDefault();
+		if (start <= TimeSpan.Zero)
+		{
+			return TimeSpan.Zero;
+		}
+
+		var last = runEvents.Max(e => e.ExperimentSimulationTimestamp);
+		return last > start ? last - start : TimeSpan.Zero;
 	}
 }
 

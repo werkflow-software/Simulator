@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Evaluation.GroundTruth;
@@ -13,7 +14,16 @@ namespace Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Evaluation.Export;
 
 public sealed class ExperimentExporter
 {
-	private readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+	private readonly JsonSerializerOptions _jsonOptions = new()
+	{
+		WriteIndented = true,
+		Converters = { new JsonStringEnumConverter() }
+	};
+
+	private readonly JsonSerializerOptions _jsonLinesOptions = new()
+	{
+		Converters = { new JsonStringEnumConverter() }
+	};
 
 	public string BaseDirectory { get; init; } = Path.Combine("experiments");
 
@@ -71,9 +81,10 @@ public sealed class ExperimentExporter
 	private static async Task WriteJsonLinesAsync<T>(string path, IReadOnlyList<T> items, CancellationToken token)
 	{
 		var sb = new StringBuilder();
+		var options = new JsonSerializerOptions { Converters = { new JsonStringEnumConverter() } };
 		foreach (var item in items)
 		{
-			sb.AppendLine(JsonSerializer.Serialize(item));
+			sb.AppendLine(JsonSerializer.Serialize(item, options));
 		}
 		await File.WriteAllTextAsync(path, sb.ToString(), token);
 	}

@@ -1,0 +1,18 @@
+{
+  "SameSeed": {
+    "RunSequenceEqual": true,
+    "RunSeedsEqual": true,
+    "IntensitiesEqual": true,
+    "StartOffsetsEqual": true,
+    "EventSequenceEqual": true,
+    "SimulationTimesEqual": true,
+    "Passed": true
+  },
+  "DifferentSeed": {
+    "RunSeedsDiffer": true,
+    "VariationCount": 3,
+    "CausalStructureEqual": true,
+    "Passed": true
+  },
+  "Passed": true
+}

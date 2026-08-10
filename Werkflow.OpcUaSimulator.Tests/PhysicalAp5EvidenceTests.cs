@@ -19,8 +19,8 @@ public class PhysicalAp5EvidenceTests
 			RunId = "run-1",
 			MachineId = Guid.NewGuid(),
 			EventType = GroundTruthEventType.ScenarioStarted,
-			SimulationTimestamp = TimeSpan.FromSeconds(10),
-			RelativeTimeSinceRunStart = TimeSpan.FromSeconds(10),
+			ExperimentSimulationTimestamp = TimeSpan.FromSeconds(10),
+			RunRelativeTimestamp = TimeSpan.FromSeconds(10),
 			RealTimestampUtc = DateTimeOffset.UtcNow,
 			Seed = 42,
 			FaultRepetitionIndex = 1
@@ -125,8 +125,8 @@ public class PhysicalAp5EvidenceTests
 			RunId = r.RunId,
 			MachineId = Guid.NewGuid(),
 			EventType = GroundTruthEventType.MachineFaulted,
-			SimulationTimestamp = r.FaultAt ?? TimeSpan.Zero,
-			RelativeTimeSinceRunStart = r.FaultAt ?? TimeSpan.Zero,
+			ExperimentSimulationTimestamp = r.FaultAt ?? TimeSpan.Zero,
+			RunRelativeTimestamp = r.FaultAt ?? TimeSpan.Zero,
 			RealTimestampUtc = DateTimeOffset.UtcNow,
 			Seed = r.RunSeed,
 			FaultRepetitionIndex = r.RepetitionIndex

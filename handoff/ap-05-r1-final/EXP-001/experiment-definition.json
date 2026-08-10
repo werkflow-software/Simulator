@@ -1,0 +1,33 @@
+{
+  "ExperimentId": "EXP-001",
+  "DisplayName": "Laser Overheating Learning (Short)",
+  "ExperimentVersion": "1.0",
+  "MachineProfileId": "laser-processing-machine-300",
+  "ScenarioId": "laser-overheating-axis-drive",
+  "ExperimentType": "FaultLearningSeries",
+  "WarmupDuration": "00:00:10",
+  "NormalLearningDuration": "00:00:30",
+  "FaultRunCount": 3,
+  "ControlRunCount": 1,
+  "RecoveryDuration": "00:04:00",
+  "CooldownDuration": "00:00:15",
+  "TimeFactor": 50,
+  "BaseSeed": 101,
+  "Variation": {
+    "IntensityVariationFraction": 0.15,
+    "StartOffsetVariation": "00:00:30",
+    "DriftRateVariationFraction": 0.1,
+    "DurationVariationFraction": 0.1,
+    "BackgroundNoiseVariation": 0.05,
+    "VaryJobBetweenRuns": true,
+    "VaryNormalPhaseBetweenRuns": true
+  },
+  "StopOnFault": true,
+  "ResetBetweenRuns": true,
+  "ShuffleRuns": false,
+  "VigilMode": "GroundTruthOnly",
+  "ControlScenarioIds": [
+    "laser-overheating-axis-drive"
+  ],
+  "AdditionalFaultScenarioIds": []
+}

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Werkflow.OpcUaSimulator.Core.Interfaces;
+using Werkflow.OpcUaSimulator.Core.Models;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Evaluation.Export;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Evaluation.Experiments;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Evaluation.GroundTruth;
@@ -23,7 +24,8 @@ public static class PhysicalAp5VerificationHarness
 
 	public static ExperimentStack CreateStack(ILogService log)
 	{
-		var testStack = PhysicalTestServiceFactory.CreateFaultScenarioService(log);
+		var bridge = new TestFaultScenarioSimulationBridge();
+		var testStack = PhysicalTestServiceFactory.CreateFaultScenarioService(log, bridge);
 		var groundTruth = new GroundTruthRecorder(testStack.FaultScenarioService, testStack.EventHub);
 		var signalRecorder = new SignalRecorder(new SignalRecordingConfiguration
 		{
@@ -46,7 +48,7 @@ public static class PhysicalAp5VerificationHarness
 			metricsEngine,
 			exporter);
 
-		return new ExperimentStack(testStack, testStack.EventHub, groundTruth, signalRecorder, vigilSource, metricsEngine, exporter, runner);
+		return new ExperimentStack(testStack, testStack.EventHub, groundTruth, signalRecorder, vigilSource, metricsEngine, exporter, runner, bridge);
 	}
 
 	public static async Task<PhysicalMachineSession> CreateSessionAsync(
@@ -61,6 +63,17 @@ public static class PhysicalAp5VerificationHarness
 			: BendingHydraulicMachine300ProfileFactory.Create();
 		var session = CreateSession(stack.TestStack, profile, seed, 50.0);
 		stack.TestStack.FaultScenarioService.RegisterSession(session);
+		if (stack.Bridge != null)
+		{
+			stack.Bridge.RegisterRuntimeState(new MachineRuntimeState
+			{
+				MachineId = session.MachineId,
+				State = MachineState.Running,
+				IsProducing = true,
+				IsServerOnline = true,
+				TargetCounter = 100
+			});
+		}
 		return session;
 	}
 
@@ -121,12 +134,12 @@ public static class PhysicalAp5VerificationHarness
 		report.LeakageChecks = ValidateNoGroundTruthInEventMetadata(report.GroundTruthEvents);
 		report.ReproducibilityChecks = ["deferred-to-unit-test"];
 		report.Passed = result.Passed
-			&& report.FaultRuns >= 2
+			&& report.FaultRuns >= exp001.FaultRunCount
 			&& report.ControlRuns >= 1
 			&& report.GroundTruthEvents.Any(e => e.EventType == GroundTruthEventType.ScenarioStarted)
 			&& report.GroundTruthEvents.Any(e => e.EventType == GroundTruthEventType.DegradationBecameDetectable)
 			&& report.LeakageChecks.All(c => c.Passed);
-		report.FailedCriteria = [];
+		report.FailedCriteria = result.FailedCriteria.ToList();
 		if (!report.Passed)
 		{
 			report.FailedCriteria.Add("ground-truth-short-verification");
@@ -156,7 +169,7 @@ public static class PhysicalAp5VerificationHarness
 			{
 				EventId = "gt1", ExperimentId = experimentId, RunId = faultRunId,
 				MachineId = Guid.NewGuid(), EventType = GroundTruthEventType.MachineFaulted,
-				SimulationTimestamp = TimeSpan.FromSeconds(1000), RelativeTimeSinceRunStart = TimeSpan.FromSeconds(1000),
+				ExperimentSimulationTimestamp = TimeSpan.FromSeconds(1000), RunRelativeTimestamp = TimeSpan.FromSeconds(1000),
 				RealTimestampUtc = DateTimeOffset.UtcNow, Seed = 1, FaultRepetitionIndex = 1
 			}
 		};
@@ -247,7 +260,8 @@ public sealed record ExperimentStack(
 	IVigilEventSource VigilEventSource,
 	MetricsEngine MetricsEngine,
 	ExperimentExporter Exporter,
-	IExperimentRunner Runner);
+	IExperimentRunner Runner,
+	TestFaultScenarioSimulationBridge? Bridge = null);
 
 public sealed class Ap5GroundTruthVerificationReport
 {

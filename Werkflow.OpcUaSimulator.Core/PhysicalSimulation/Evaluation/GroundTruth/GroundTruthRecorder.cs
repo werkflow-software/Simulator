@@ -11,14 +11,19 @@ public sealed class GroundTruthRecorder : IGroundTruthRecorder, IDisposable
 	private readonly object _sync = new();
 	private readonly Dictionary<string, List<GroundTruthEvent>> _byExperiment = new(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<Guid, List<GroundTruthEvent>> _byMachine = new();
+	private readonly HashSet<GroundTruthEventType> _lifecycleEmitted = new();
+
+	private readonly IFaultScenarioService _faultScenarioService;
+	private readonly FaultScenarioEventHub _eventHub;
 
 	private string? _activeExperimentId;
 	private Guid _activeMachineId;
-	private int _baseSeed;
 	private string? _activeRunId;
-	private string? _activeRunType;
 	private int _activeRunSeed;
 	private int _activeRepetitionIndex;
+	private TimeSpan _experimentClock;
+	private TimeSpan _runStartExperimentTime;
+	private TimeSpan _scenarioStartExperimentTime;
 	private bool _subscribed;
 
 	public GroundTruthRecorder(IFaultScenarioService faultScenarioService, FaultScenarioEventHub eventHub)
@@ -27,9 +32,6 @@ public sealed class GroundTruthRecorder : IGroundTruthRecorder, IDisposable
 		_eventHub = eventHub;
 	}
 
-	private readonly IFaultScenarioService _faultScenarioService;
-	private readonly FaultScenarioEventHub _eventHub;
-
 	public void BeginExperiment(string experimentId, Guid machineId, int baseSeed)
 	{
 		lock (_sync)
@@ -37,7 +39,7 @@ public sealed class GroundTruthRecorder : IGroundTruthRecorder, IDisposable
 			EnsureSubscribed();
 			_activeExperimentId = experimentId;
 			_activeMachineId = machineId;
-			_baseSeed = baseSeed;
+			_experimentClock = TimeSpan.Zero;
 			if (!_byExperiment.ContainsKey(experimentId))
 			{
 				_byExperiment[experimentId] = [];
@@ -54,28 +56,49 @@ public sealed class GroundTruthRecorder : IGroundTruthRecorder, IDisposable
 		lock (_sync)
 		{
 			_activeRunId = runId;
-			_activeRunType = runType;
 			_activeRunSeed = runSeed;
 			_activeRepetitionIndex = faultRepetitionIndex;
+			_runStartExperimentTime = _experimentClock;
+			_scenarioStartExperimentTime = TimeSpan.Zero;
+			_lifecycleEmitted.Clear();
+		}
+	}
+
+	public void UpdateExperimentClock(TimeSpan experimentSimulationTime)
+	{
+		lock (_sync)
+		{
+			_experimentClock = experimentSimulationTime;
 		}
 	}
 
 	public void RecordEvent(
 		GroundTruthEventType eventType,
-		TimeSpan simulationTime,
-		TimeSpan relativeSinceRunStart,
+		TimeSpan experimentSimulationTime,
+		TimeSpan runRelativeTime,
 		string? scenarioId = null,
 		string? scenarioPhase = null,
 		string? severity = null,
 		double intensity = 0,
 		int seed = 0,
-		IReadOnlyDictionary<string, string>? metadata = null)
+		IReadOnlyDictionary<string, string>? metadata = null,
+		TimeSpan scenarioRelativeTime = default)
 	{
 		lock (_sync)
 		{
 			if (_activeExperimentId == null || _activeRunId == null)
 			{
 				return;
+			}
+
+			if (IsUniqueLifecycleEvent(eventType) && _lifecycleEmitted.Contains(eventType))
+			{
+				return;
+			}
+
+			if (eventType == GroundTruthEventType.ScenarioStarted)
+			{
+				_scenarioStartExperimentTime = experimentSimulationTime;
 			}
 
 			var evt = new GroundTruthEvent
@@ -86,8 +109,9 @@ public sealed class GroundTruthRecorder : IGroundTruthRecorder, IDisposable
 				MachineId = _activeMachineId,
 				ScenarioId = scenarioId,
 				EventType = eventType,
-				SimulationTimestamp = simulationTime,
-				RelativeTimeSinceRunStart = relativeSinceRunStart,
+				ExperimentSimulationTimestamp = experimentSimulationTime,
+				RunRelativeTimestamp = runRelativeTime,
+				ScenarioRelativeTimestamp = scenarioRelativeTime,
 				RealTimestampUtc = DateTimeOffset.UtcNow,
 				ScenarioPhase = scenarioPhase,
 				Severity = severity,
@@ -99,6 +123,11 @@ public sealed class GroundTruthRecorder : IGroundTruthRecorder, IDisposable
 
 			_byExperiment[_activeExperimentId].Add(evt);
 			_byMachine[_activeMachineId].Add(evt);
+
+			if (IsUniqueLifecycleEvent(eventType))
+			{
+				_lifecycleEmitted.Add(eventType);
+			}
 		}
 	}
 
@@ -107,7 +136,7 @@ public sealed class GroundTruthRecorder : IGroundTruthRecorder, IDisposable
 		lock (_sync)
 		{
 			_activeRunId = null;
-			_activeRunType = null;
+			_lifecycleEmitted.Clear();
 		}
 	}
 
@@ -115,10 +144,6 @@ public sealed class GroundTruthRecorder : IGroundTruthRecorder, IDisposable
 	{
 		lock (_sync)
 		{
-			if (_activeExperimentId != null)
-			{
-				RecordEventIfActive(GroundTruthEventType.ExperimentCompleted, TimeSpan.Zero, TimeSpan.Zero);
-			}
 			_activeExperimentId = null;
 		}
 	}
@@ -148,7 +173,8 @@ public sealed class GroundTruthRecorder : IGroundTruthRecorder, IDisposable
 		lock (_sync)
 		{
 			var events = _byExperiment.TryGetValue(experimentId, out var list)
-				? list.Where(e => e.RunId.Equals(runId, StringComparison.OrdinalIgnoreCase)).OrderBy(e => e.SimulationTimestamp).ToList()
+				? list.Where(e => e.RunId.Equals(runId, StringComparison.OrdinalIgnoreCase))
+					.OrderBy(e => e.ExperimentSimulationTimestamp).ToList()
 				: [];
 			return new GroundTruthTimeline
 			{
@@ -165,7 +191,6 @@ public sealed class GroundTruthRecorder : IGroundTruthRecorder, IDisposable
 		{
 			if (_subscribed)
 			{
-				_faultScenarioService.ScenarioEvent -= OnScenarioEvent;
 				_eventHub.EventPublished -= OnHubEvent;
 				_subscribed = false;
 			}
@@ -176,13 +201,10 @@ public sealed class GroundTruthRecorder : IGroundTruthRecorder, IDisposable
 	{
 		if (!_subscribed)
 		{
-			_faultScenarioService.ScenarioEvent += OnScenarioEvent;
 			_eventHub.EventPublished += OnHubEvent;
 			_subscribed = true;
 		}
 	}
-
-	private void OnScenarioEvent(object? sender, FaultScenarioEvent e) => MapFaultEvent(e);
 
 	private void OnHubEvent(object? sender, FaultScenarioEvent e) => MapFaultEvent(e);
 
@@ -201,30 +223,63 @@ public sealed class GroundTruthRecorder : IGroundTruthRecorder, IDisposable
 				return;
 			}
 
-			var session = _faultScenarioService.GetSession(e.MachineId);
-			TimeSpan simTime = session?.Simulation.FaultScenarios.ActiveInstances.Values
-				.FirstOrDefault(i => i.InstanceId == e.InstanceId)?.ScenarioElapsedTime ?? TimeSpan.Zero;
+			TimeSpan scenarioRelative = ResolveScenarioRelativeTime(e);
+			TimeSpan experimentTime = _experimentClock;
+			TimeSpan runRelative = experimentTime - _runStartExperimentTime;
+
+			if (mapped == GroundTruthEventType.DegradationBecameDetectable
+				&& _scenarioStartExperimentTime > TimeSpan.Zero
+				&& experimentTime < _scenarioStartExperimentTime)
+			{
+				return;
+			}
 
 			RecordEvent(
 				mapped.Value,
-				simTime,
-				simTime,
+				experimentTime,
+				runRelative,
 				e.ScenarioId,
 				e.Phase?.ToString(),
 				null,
 				0,
 				0,
-				string.IsNullOrEmpty(e.Detail) ? null : new Dictionary<string, string> { ["detail"] = e.Detail });
+				string.IsNullOrEmpty(e.Detail) ? null : new Dictionary<string, string> { ["detail"] = e.Detail },
+				scenarioRelative);
 		}
 	}
 
-	private void RecordEventIfActive(GroundTruthEventType type, TimeSpan sim, TimeSpan rel)
+	private TimeSpan ResolveScenarioRelativeTime(FaultScenarioEvent e)
 	{
-		if (_activeExperimentId != null && _activeRunId != null)
+		var session = _faultScenarioService.GetSession(e.MachineId);
+		if (session != null && e.InstanceId != Guid.Empty)
 		{
-			RecordEvent(type, sim, rel);
+			var instance = session.Simulation.FaultScenarios.ActiveInstances.Values
+				.FirstOrDefault(i => i.InstanceId == e.InstanceId);
+			if (instance != null)
+			{
+				return instance.ScenarioElapsedTime;
+			}
 		}
+
+		if (_scenarioStartExperimentTime > TimeSpan.Zero)
+		{
+			return _experimentClock - _scenarioStartExperimentTime;
+		}
+		return TimeSpan.Zero;
 	}
+
+	private static bool IsUniqueLifecycleEvent(GroundTruthEventType type) => type is
+		GroundTruthEventType.ScenarioStarted
+		or GroundTruthEventType.DegradationBecameDetectable
+		or GroundTruthEventType.ThresholdFirstReached
+		or GroundTruthEventType.ThresholdConfirmed
+		or GroundTruthEventType.MachineFaulted
+		or GroundTruthEventType.RecoveryStarted
+		or GroundTruthEventType.RecoveryCompleted
+		or GroundTruthEventType.ScenarioStopped
+		or GroundTruthEventType.NormalObservationStarted
+		or GroundTruthEventType.ExperimentStarted
+		or GroundTruthEventType.ExperimentCompleted;
 
 	private static GroundTruthEventType? MapEventType(FaultScenarioEventType type) => type switch
 	{

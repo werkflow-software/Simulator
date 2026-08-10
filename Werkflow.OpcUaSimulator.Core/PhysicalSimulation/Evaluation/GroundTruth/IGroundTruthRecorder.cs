@@ -9,16 +9,19 @@ public interface IGroundTruthRecorder
 
 	void BeginRun(string runId, string runType, int runSeed, int faultRepetitionIndex);
 
+	void UpdateExperimentClock(TimeSpan experimentSimulationTime);
+
 	void RecordEvent(
 		GroundTruthEventType eventType,
-		TimeSpan simulationTime,
-		TimeSpan relativeSinceRunStart,
+		TimeSpan experimentSimulationTime,
+		TimeSpan runRelativeTime,
 		string? scenarioId = null,
 		string? scenarioPhase = null,
 		string? severity = null,
 		double intensity = 0,
 		int seed = 0,
-		IReadOnlyDictionary<string, string>? metadata = null);
+		IReadOnlyDictionary<string, string>? metadata = null,
+		TimeSpan scenarioRelativeTime = default);
 
 	void CompleteRun();
 

@@ -15,11 +15,12 @@ public class MainWindow : Window, IComponentConnector
 
 	private bool _contentLoaded;
 
-	public MainWindow(MainViewModel viewModel, OverviewViewModel overviewViewModel, ManualControlViewModel manualControlViewModel)
+	public MainWindow(MainViewModel viewModel, OverviewViewModel overviewViewModel, ManualControlViewModel manualControlViewModel, ExperimentsViewModel experimentsViewModel)
 	{
 		InitializeComponent();
 		base.DataContext = viewModel;
 		_manualControlViewModel = manualControlViewModel;
+		Resources.Add(typeof(ExperimentsViewModel), new ExperimentsView { DataContext = experimentsViewModel });
 		overviewViewModel.ManualControlRequested += OnManualControlRequested;
 	}
 

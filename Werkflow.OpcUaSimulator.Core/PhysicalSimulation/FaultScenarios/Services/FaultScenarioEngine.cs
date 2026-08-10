@@ -175,6 +175,12 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 		TimeSpan zero = TimeSpan.Zero;
 		foreach (FaultScenarioPhaseTiming item in phases)
 		{
+			if (instance.RunMode == FaultScenarioRunMode.NonFaultingControlRun
+				&& item.Phase >= FaultScenarioPhase.Faulted)
+			{
+				continue;
+			}
+
 			TimeSpan timeSpan = ((item.Duration > TimeSpan.Zero) ? item.Duration : TimeSpan.FromTicks((long)((double)defaultDuration.Ticks * item.DurationFraction)));
 			zero += timeSpan;
 			if (scenarioElapsedTime < zero)
@@ -188,6 +194,25 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 				return;
 			}
 		}
+
+		if (instance.RunMode == FaultScenarioRunMode.NonFaultingControlRun)
+		{
+			if (instance.CurrentPhase < FaultScenarioPhase.Degraded)
+			{
+				instance.CurrentPhase = FaultScenarioPhase.Degraded;
+				PublishEvent(FaultScenarioEventType.ScenarioPhaseChanged, machineId, instance, FaultScenarioPhase.Degraded);
+			}
+			else if (instance.LifecycleState != FaultScenarioLifecycleState.Recovering
+				&& instance.LifecycleState != FaultScenarioLifecycleState.Completed
+				&& instance.CurrentPhase < FaultScenarioPhase.Recovering)
+			{
+				instance.CurrentPhase = FaultScenarioPhase.Recovering;
+				instance.LifecycleState = FaultScenarioLifecycleState.Recovering;
+				PublishEvent(FaultScenarioEventType.ScenarioPhaseChanged, machineId, instance, FaultScenarioPhase.Recovering);
+			}
+			return;
+		}
+
 		if (instance.CurrentPhase < FaultScenarioPhase.Faulted)
 		{
 			instance.CurrentPhase = FaultScenarioPhase.Faulted;
@@ -333,6 +358,14 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 
 	private void TriggerThresholdFault(FaultScenarioInstance instance, FaultThresholdRule rule, PhysicalMachineSession session, IFaultScenarioSimulationBridge? bridge)
 	{
+		if (!instance.DetectabilityEmitted)
+		{
+			instance.DetectabilityEmitted = true;
+			instance.DetectableAtUtc = DateTimeOffset.UtcNow;
+			instance.DetectableSimulationTime = instance.ScenarioElapsedTime;
+			PublishEvent(FaultScenarioEventType.DegradationBecameDetectable, session.MachineId, instance);
+		}
+
 		instance.ThresholdFaultTriggered = true;
 		instance.ThresholdConfirmedAtUtc = DateTimeOffset.UtcNow;
 		instance.MachineFaultedAtUtc = DateTimeOffset.UtcNow;
@@ -358,7 +391,23 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 
 	private static void CheckScenarioEnd(FaultScenarioInstance instance, Guid machineId)
 	{
-		if (instance.AutoScenarioEndEnabled && instance.ScenarioElapsedTime >= instance.Definition.DefaultDuration && instance.CurrentPhase >= FaultScenarioPhase.Faulted && instance.LifecycleState != FaultScenarioLifecycleState.Recovering)
+		if (!instance.AutoScenarioEndEnabled || instance.ScenarioElapsedTime < instance.Definition.DefaultDuration)
+		{
+			return;
+		}
+
+		if (instance.RunMode == FaultScenarioRunMode.NonFaultingControlRun)
+		{
+			if (instance.LifecycleState != FaultScenarioLifecycleState.Recovering
+				&& instance.LifecycleState != FaultScenarioLifecycleState.Completed)
+			{
+				instance.LifecycleState = FaultScenarioLifecycleState.Recovering;
+				instance.CurrentPhase = FaultScenarioPhase.Recovering;
+			}
+			return;
+		}
+
+		if (instance.CurrentPhase >= FaultScenarioPhase.Faulted && instance.LifecycleState != FaultScenarioLifecycleState.Recovering)
 		{
 			instance.LifecycleState = FaultScenarioLifecycleState.Recovering;
 			instance.CurrentPhase = FaultScenarioPhase.Recovering;
