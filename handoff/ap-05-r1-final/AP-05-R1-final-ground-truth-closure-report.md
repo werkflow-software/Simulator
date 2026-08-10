@@ -83,12 +83,12 @@ Synthetic Metrics Suite grün (`TruePositive`, `Missed`, `FalsePositive`, `LeadT
 
 ## 19. Commit-SHA
 
-`a2712db372e7a6abd1edab2a7e711b97a628bae8`
+`6ff0b1df77a5a577a694834837df1ef86d693242`
 
 ## 20. Tag / TagTarget
 
 - Tag: `opcua-simulator-ground-truth-evaluation-ap5-verified`
-- TagTarget-SHA: `a2712db372e7a6abd1edab2a7e711b97a628bae8`
+- TagTarget-SHA: `6ff0b1df77a5a577a694834837df1ef86d693242`
 - CommitEqualsTagTarget: `true`
 - Vorheriger AP-5-Tag `opcua-simulator-ground-truth-evaluation-ap5-complete` unverändert
 
