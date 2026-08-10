@@ -38,8 +38,16 @@ internal static class Ap4R4EvidenceValidator
         failed.AddRange(ValidatePostRecoverySafety(report).FailedCriteria);
 
         var keyRecoveryChecks = report.RecoveryDirectionChecks
-            .Where(c => c.Required && (c.SignalId == "HydraulicEfficiency" || c.SignalId == "Hydraulic.SupplyPressure"))
+            .Where(c => c.Required)
             .ToList();
+        foreach (var check in keyRecoveryChecks)
+        {
+            if (!check.TowardNormalPassed)
+            {
+                failed.Add($"recovery-toward-normal-failed:{check.SignalId}");
+            }
+        }
+
         if (!report.DistanceToNormal.RecoveryImproved)
         {
             failed.Add("distance-to-normal-not-improved");
@@ -398,6 +406,10 @@ public sealed class Ap4R4DirectionCheck
     public double MinimumMeaningfulDelta { get; set; }
     public double? DistanceToNormalStart { get; set; }
     public double? DistanceToNormalEnd { get; set; }
+    public double? NormalMin { get; set; }
+    public double? NormalMax { get; set; }
+    public bool DirectionPassed { get; set; }
+    public bool TowardNormalPassed { get; set; }
     public bool Passed { get; set; }
 }
 

@@ -1,0 +1,20 @@
+Branch:
+feature/physical-learning-simulator
+
+Commit:
+eb317a3ddca0bb36529822c79b4e76ff558855ad
+
+CommitMessage:
+Finalize AP 4 hydraulic efficiency recovery
+
+Tag:
+opcua-simulator-fault-scenarios-ap4-final-r7
+
+TagTarget:
+eb317a3ddca0bb36529822c79b4e76ff558855ad
+
+CommitEqualsTagTarget:
+true
+
+GitStatus:
+On branch feature/physical-learning-simulator. R7 commit and tag applied. Remaining unstaged: handoff ap-02/ap-04-r4/ap-04-r5 artifacts, deleted ap-03 zip, untracked scratch/ and zip archives (not part of R7 closure).

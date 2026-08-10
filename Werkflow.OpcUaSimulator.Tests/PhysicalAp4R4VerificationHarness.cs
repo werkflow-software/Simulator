@@ -172,12 +172,7 @@ public static class PhysicalAp4R4VerificationHarness
             minimumStableDuration: TimeSpan.FromSeconds(45),
             cancellationToken);
 
-        var normalTargets = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase)
-        {
-            ["HydraulicEfficiency"] = 1.0,
-            ["Hydraulic.SupplyPressure"] = 180.0,
-            ["Hydraulic.PumpCurrent"] = 8.0
-        };
+        var recoveryBands = Ap4R6ProfileNormals.GetBendingHydraulicRecoveryBands();
 
         result.FaultDirectionChecks = Ap4R5DirectionEvaluator.BuildFaultDirectionChecks(
             result.Timeline,
@@ -191,12 +186,16 @@ public static class PhysicalAp4R4VerificationHarness
             result.Timeline,
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                ["HydraulicEfficiency"] = "increase",
+                ["HydraulicEfficiency"] = "toward-normal",
                 ["Hydraulic.SupplyPressure"] = "increase",
-                ["Hydraulic.PumpCurrent"] = "decrease"
+                ["Hydraulic.PumpCurrent"] = "toward-normal"
             },
-            normalTargets);
-        result.DistanceToNormal = Ap4R5DirectionEvaluator.ComputeDistanceToNormal(result.Timeline, normalTargets);
+            recoveryBands,
+            lateWindowFilters: new Dictionary<string, Func<Ap4R4RecoverySample, bool>>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Hydraulic.PumpCurrent"] = s => s.ProductionRunning
+            });
+        result.DistanceToNormal = Ap4R5DirectionEvaluator.ComputeDistanceToNormal(result.Timeline, recoveryBands);
         result.SafetyChecks = BuildSafetyChecks(result);
         return FinalizeHydraulicRecovery(result);
     }

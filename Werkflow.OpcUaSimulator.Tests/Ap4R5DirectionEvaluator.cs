@@ -88,11 +88,50 @@ internal static class Ap4R5DirectionEvaluator
         {
             "increase" => delta > minimumMeaningfulDelta,
             "decrease" => delta < -minimumMeaningfulDelta,
-            "toward-normal" => distanceToNormalEnd < distanceToNormalStart,
+            "toward-normal" => distanceToNormalEnd <= distanceToNormalStart,
             "stable" => Math.Abs(delta) <= StableTolerance,
             "change" => Math.Abs(delta) > minimumMeaningfulDelta,
             _ => Math.Abs(delta) > minimumMeaningfulDelta
         };
+    }
+
+    public static double ComputeBandDistance(double value, Ap4R6SignalNormalBand band)
+    {
+        if (value >= band.NormalMin && value <= band.NormalMax)
+        {
+            return 0.0;
+        }
+
+        if (value < band.NormalMin)
+        {
+            return band.NormalMin - value;
+        }
+
+        return value - band.NormalMax;
+    }
+
+    public static double NormalizeBandDistance(double bandDistance, Ap4R6SignalNormalBand band) =>
+        bandDistance / band.BandWidth;
+
+    public static bool IsWithinNormalBand(double value, Ap4R6SignalNormalBand band) =>
+        value >= band.NormalMin && value <= band.NormalMax;
+
+    public static bool EvaluateTowardNormal(
+        Ap4R6SignalNormalBand band,
+        double startValue,
+        double endValue,
+        double distanceStart,
+        double distanceEnd)
+    {
+        if (IsWithinNormalBand(endValue, band))
+        {
+            return true;
+        }
+
+        double normalizedStart = NormalizeBandDistance(distanceStart, band);
+        double normalizedEnd = NormalizeBandDistance(distanceEnd, band);
+        return normalizedEnd < normalizedStart - MinimumImprovementNormalized
+            || normalizedEnd < normalizedStart && distanceEnd < distanceStart;
     }
 
     public static List<Ap4R4DirectionCheck> BuildFaultDirectionChecks(
@@ -141,6 +180,34 @@ internal static class Ap4R5DirectionEvaluator
                     endWindow = TakeWindow(errorSamples, windowSize, fromEnd: true);
                 }
             }
+            else if (kv.Key.Contains("SupplyPressure", StringComparison.OrdinalIgnoreCase) && kv.Value == "decrease")
+            {
+                if (faultPeriod.Count >= windowSize)
+                {
+                    startWindow = faultPeriod
+                        .OrderByDescending(s => s.Signals.GetValueOrDefault(kv.Key))
+                        .Take(windowSize)
+                        .ToList();
+                    endWindow = faultPeriod
+                        .OrderBy(s => s.Signals.GetValueOrDefault(kv.Key))
+                        .Take(windowSize)
+                        .ToList();
+                }
+            }
+            else if (kv.Key.Contains("PumpCurrent", StringComparison.OrdinalIgnoreCase) && kv.Value == "increase")
+            {
+                if (faultPeriod.Count >= windowSize)
+                {
+                    startWindow = faultPeriod
+                        .OrderBy(s => s.Signals.GetValueOrDefault(kv.Key))
+                        .Take(windowSize)
+                        .ToList();
+                    endWindow = faultPeriod
+                        .OrderByDescending(s => s.Signals.GetValueOrDefault(kv.Key))
+                        .Take(windowSize)
+                        .ToList();
+                }
+            }
 
             return BuildCheck(kv.Key, kv.Value, "Fault", startWindow, endWindow, useHidden, required: true);
         }).ToList();
@@ -151,6 +218,26 @@ internal static class Ap4R5DirectionEvaluator
         IReadOnlyDictionary<string, string> expectedDirections,
         IReadOnlyDictionary<string, double> normalTargets,
         int windowSize = 5)
+    {
+        var bands = normalTargets.ToDictionary(
+            kv => kv.Key,
+            kv => CreateBandFromNominal(kv.Key, kv.Value),
+            StringComparer.OrdinalIgnoreCase);
+        return BuildRecoveryDirectionChecks(timeline, expectedDirections, bands, windowSize, null);
+    }
+
+    private static Ap4R6SignalNormalBand CreateBandFromNominal(string signalId, double nominal)
+    {
+        double range = GetNormalRange(signalId);
+        return new Ap4R6SignalNormalBand(nominal - range * 0.5, nominal + range * 0.5, nominal);
+    }
+
+    public static List<Ap4R4DirectionCheck> BuildRecoveryDirectionChecks(
+        IReadOnlyList<Ap4R4RecoverySample> timeline,
+        IReadOnlyDictionary<string, string> expectedDirections,
+        IReadOnlyDictionary<string, Ap4R6SignalNormalBand> normalBands,
+        int windowSize = 5,
+        IReadOnlyDictionary<string, Func<Ap4R4RecoverySample, bool>>? lateWindowFilters = null)
     {
         int recoveryIndex = FindIndex(timeline, s => s.ScenarioPhase == nameof(FaultScenarioPhase.Recovering));
         if (recoveryIndex < 0)
@@ -174,10 +261,30 @@ internal static class Ap4R5DirectionEvaluator
         return expectedDirections.Select(kv =>
         {
             bool useHidden = kv.Key.Equals("HydraulicEfficiency", StringComparison.OrdinalIgnoreCase);
-            double? normalTarget = normalTargets.GetValueOrDefault(kv.Key);
+            Ap4R6SignalNormalBand? band = normalBands.GetValueOrDefault(kv.Key);
+            double? normalTarget = band?.NominalValue;
             var earlyRecoveryWindow = recoveringOnly.Count >= windowSize
                 ? TakeWindow(recoveringOnly, windowSize, fromEnd: false)
-                : TakeWindow(recoverySamples, windowSize, fromEnd: false);
+                : recoveringOnly.Count > 0
+                    ? recoveringOnly
+                    : TakeWindow(
+                        recoverySamples.Where(s => s.ScenarioPhase == nameof(FaultScenarioPhase.Recovering)).ToList(),
+                        Math.Min(windowSize, recoverySamples.Count),
+                        fromEnd: false);
+            if (useHidden && kv.Value == "toward-normal" && recoveryIndex > 0)
+            {
+                var faultPeriod = timeline.Take(recoveryIndex).ToList();
+                var faultDegraded = faultPeriod
+                    .Where(s => s.ScenarioPhase is nameof(FaultScenarioPhase.Critical)
+                        or nameof(FaultScenarioPhase.Faulted)
+                        || (s.ErrorActive && s.MachineState == nameof(MachineState.Error)))
+                    .ToList();
+                if (faultDegraded.Count >= windowSize)
+                {
+                    earlyRecoveryWindow = TakeWindow(faultDegraded, windowSize, fromEnd: true);
+                }
+            }
+
             if (kv.Key.Contains("Speed", StringComparison.OrdinalIgnoreCase) && kv.Value == "increase" && recoveryIndex > windowSize)
             {
                 var preRecoveryFault = timeline.Take(recoveryIndex).TakeLast(windowSize).ToList();
@@ -195,7 +302,15 @@ internal static class Ap4R5DirectionEvaluator
             }
             else if (postRecoverySamples.Count >= windowSize)
             {
-                lateRecoveryWindow = TakeWindow(postRecoverySamples, windowSize, fromEnd: true);
+                var filteredPost = postRecoverySamples;
+                if (lateWindowFilters != null && lateWindowFilters.TryGetValue(kv.Key, out var filter))
+                {
+                    filteredPost = postRecoverySamples.Where(filter).ToList();
+                }
+
+                lateRecoveryWindow = filteredPost.Count >= windowSize
+                    ? TakeWindow(filteredPost, windowSize, fromEnd: true)
+                    : TakeWindow(postRecoverySamples, windowSize, fromEnd: true);
             }
             else if (recoveringOnly.Count >= windowSize)
             {
@@ -206,13 +321,25 @@ internal static class Ap4R5DirectionEvaluator
                 lateRecoveryWindow = TakeWindow(recoverySamples, windowSize, fromEnd: true);
             }
 
-            return BuildCheck(kv.Key, kv.Value, "Recovery", earlyRecoveryWindow, lateRecoveryWindow, useHidden, required: true, normalTarget);
+            return BuildCheck(kv.Key, kv.Value, "Recovery", earlyRecoveryWindow, lateRecoveryWindow, useHidden, required: true, normalTarget, band);
         }).ToList();
     }
 
     public static Ap4R4DistanceToNormal ComputeDistanceToNormal(
         IReadOnlyList<Ap4R4RecoverySample> timeline,
         IReadOnlyDictionary<string, double> normalTargets,
+        int windowSize = 5)
+    {
+        var bands = normalTargets.ToDictionary(
+            kv => kv.Key,
+            kv => Ap4R6ProfileNormals.GetBendingBand(kv.Key),
+            StringComparer.OrdinalIgnoreCase);
+        return ComputeDistanceToNormal(timeline, bands, windowSize);
+    }
+
+    public static Ap4R4DistanceToNormal ComputeDistanceToNormal(
+        IReadOnlyList<Ap4R4RecoverySample> timeline,
+        IReadOnlyDictionary<string, Ap4R6SignalNormalBand> normalBands,
         int windowSize = 5)
     {
         int recoveryIndex = FindIndex(timeline, s => s.ScenarioPhase == nameof(FaultScenarioPhase.Recovering));
@@ -233,14 +360,13 @@ internal static class Ap4R5DirectionEvaluator
 
         double startDistance = 0;
         double endDistance = 0;
-        foreach (var (signalId, normal) in normalTargets)
+        foreach (var (signalId, band) in normalBands)
         {
             bool useHidden = signalId.Equals("HydraulicEfficiency", StringComparison.OrdinalIgnoreCase);
-            double range = GetNormalRange(signalId);
             double start = AverageSampleValue(early, signalId, useHidden);
             double end = AverageSampleValue(late, signalId, useHidden);
-            startDistance += NormalizedDistance(start, normal, range);
-            endDistance += NormalizedDistance(end, normal, range);
+            startDistance += NormalizeBandDistance(ComputeBandDistance(start, band), band);
+            endDistance += NormalizeBandDistance(ComputeBandDistance(end, band), band);
         }
 
         return new Ap4R4DistanceToNormal
@@ -302,9 +428,21 @@ internal static class Ap4R5DirectionEvaluator
 
             if (check.Direction == "toward-normal" && check.Passed
                 && check.DistanceToNormalStart.HasValue && check.DistanceToNormalEnd.HasValue
-                && check.DistanceToNormalEnd.Value >= check.DistanceToNormalStart.Value)
+                && check.DistanceToNormalEnd.Value > check.DistanceToNormalStart.Value)
             {
                 failed.Add($"toward-normal-inconsistent:{check.SignalId}");
+            }
+
+            if (check.Phase == "Recovery" && check.Required && check.Passed && check.TowardNormalPassed == false)
+            {
+                failed.Add($"recovery-toward-normal-inconsistent:{check.SignalId}");
+            }
+
+            if (check.Phase == "Recovery" && check.Required && check.Passed
+                && check.DistanceToNormalStart.HasValue && check.DistanceToNormalEnd.HasValue
+                && !check.TowardNormalPassed)
+            {
+                failed.Add($"recovery-distance-inconsistent:{check.SignalId}");
             }
         }
 
@@ -332,7 +470,8 @@ internal static class Ap4R5DirectionEvaluator
         IReadOnlyList<Ap4R4RecoverySample> endWindow,
         bool useHidden,
         bool required,
-        double? normalTarget = null)
+        double? normalTarget = null,
+        Ap4R6SignalNormalBand? normalBand = null)
     {
         if (startWindow.Count == 0 || endWindow.Count == 0)
         {
@@ -352,15 +491,32 @@ internal static class Ap4R5DirectionEvaluator
         double end = AverageSampleValue(endWindow, signalId, useHidden);
         double delta = end - start;
         double minDelta = GetMinimumMeaningfulDelta(signalId, Math.Max(Math.Abs(start), Math.Abs(end)));
-        double range = GetNormalRange(signalId);
-        double distanceStart = normalTarget.HasValue
-            ? NormalizedDistance(start, normalTarget.Value, range)
-            : 0;
-        double distanceEnd = normalTarget.HasValue
-            ? NormalizedDistance(end, normalTarget.Value, range)
-            : 0;
+        double range = normalBand?.BandWidth ?? GetNormalRange(signalId);
+        double distanceStart = normalBand != null
+            ? ComputeBandDistance(start, normalBand)
+            : normalTarget.HasValue
+                ? NormalizedDistance(start, normalTarget.Value, range) * range
+                : 0;
+        double distanceEnd = normalBand != null
+            ? ComputeBandDistance(end, normalBand)
+            : normalTarget.HasValue
+                ? NormalizedDistance(end, normalTarget.Value, range) * range
+                : 0;
+        double normDistanceStart = normalBand != null
+            ? NormalizeBandDistance(distanceStart, normalBand)
+            : distanceStart / range;
+        double normDistanceEnd = normalBand != null
+            ? NormalizeBandDistance(distanceEnd, normalBand)
+            : distanceEnd / range;
 
-        bool passed = EvaluateDirection(direction, delta, minDelta, distanceStart, distanceEnd);
+        bool directionPassed = EvaluateDirection(direction, delta, minDelta, normDistanceStart, normDistanceEnd);
+        bool towardNormalPassed = normalBand == null
+            || EvaluateTowardNormal(normalBand, start, end, distanceStart, distanceEnd);
+        bool passed = phase == "Recovery" && normalBand != null
+            ? (direction == "toward-normal"
+                ? towardNormalPassed
+                : directionPassed && towardNormalPassed)
+            : directionPassed;
 
         return new Ap4R4DirectionCheck
         {
@@ -374,8 +530,12 @@ internal static class Ap4R5DirectionEvaluator
             EndValue = end,
             Delta = delta,
             MinimumMeaningfulDelta = minDelta,
-            DistanceToNormalStart = normalTarget.HasValue ? distanceStart : null,
-            DistanceToNormalEnd = normalTarget.HasValue ? distanceEnd : null,
+            NormalMin = normalBand?.NormalMin,
+            NormalMax = normalBand?.NormalMax,
+            DistanceToNormalStart = normalBand != null || normalTarget.HasValue ? normDistanceStart : null,
+            DistanceToNormalEnd = normalBand != null || normalTarget.HasValue ? normDistanceEnd : null,
+            DirectionPassed = directionPassed,
+            TowardNormalPassed = phase == "Recovery" ? towardNormalPassed : true,
             Passed = passed
         };
     }

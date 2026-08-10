@@ -85,6 +85,7 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 				_recoveryEngine.UpdateRecoveryStableTimer(value4, session.Profile, session.Runtime, deltaTime);
 				if (_recoveryEngine.IsRecoveryComplete(value4, session.Profile, session.Runtime))
 				{
+					_recoveryEngine.FinalizeRecoveryState(value4, session.Profile, session.Runtime);
 					CompleteInstance(value4, session, bridge, clearFault: true);
 				}
 			}

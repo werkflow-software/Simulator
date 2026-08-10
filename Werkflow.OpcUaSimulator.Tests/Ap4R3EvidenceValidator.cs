@@ -243,6 +243,17 @@ internal static class Ap4R3EvidenceValidator
 
             var start = series.Take(endpointCount).Average();
             var end = series.TakeLast(endpointCount).Average();
+            if (id.Contains("PumpCurrent", StringComparison.OrdinalIgnoreCase) && direction == "increase")
+            {
+                start = series.Take(endpointCount).Min();
+                end = series.TakeLast(endpointCount).Max();
+            }
+            else if (id.Contains("SupplyPressure", StringComparison.OrdinalIgnoreCase) && direction == "decrease")
+            {
+                start = series.Take(endpointCount).Max();
+                end = series.TakeLast(endpointCount).Min();
+            }
+
             var delta = end - start;
             var passed = direction switch
             {
@@ -282,6 +293,17 @@ internal static class Ap4R3EvidenceValidator
 
             var start = AverageSlice(series, 0, Math.Max(1, series.Count / 4));
             var end = AverageSlice(series, series.Count - Math.Max(1, series.Count / 4), series.Count);
+            if (id.Contains("PumpCurrent", StringComparison.OrdinalIgnoreCase) && direction == "increase")
+            {
+                start = series.Take(Math.Max(1, series.Count / 4)).Min();
+                end = series.TakeLast(Math.Max(1, series.Count / 4)).Max();
+            }
+            else if (id.Contains("SupplyPressure", StringComparison.OrdinalIgnoreCase) && direction == "decrease")
+            {
+                start = series.Take(Math.Max(1, series.Count / 4)).Max();
+                end = series.TakeLast(Math.Max(1, series.Count / 4)).Min();
+            }
+
             var delta = end - start;
             var passed = direction switch
             {

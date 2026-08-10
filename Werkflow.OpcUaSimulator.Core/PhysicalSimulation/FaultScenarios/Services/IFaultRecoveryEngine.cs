@@ -19,4 +19,9 @@ public interface IFaultRecoveryEngine
 		PhysicalMachineProfile profile,
 		PhysicalMachineRuntime runtime,
 		TimeSpan deltaTime);
+
+	void FinalizeRecoveryState(
+		FaultScenarioInstance instance,
+		PhysicalMachineProfile profile,
+		PhysicalMachineRuntime runtime);
 }

@@ -26,6 +26,19 @@ public static class PhysicalSignalPhaseCalibration
 			double num9 = (Math.Clamp(pressLoad, 0.0, 1.0) - 0.35) * 26.0;
 			return dependencyTarget * 0.25 + num8 + num9 * 0.36;
 		}
+		if (signalId.Equals("Hydraulic.PumpCurrent", StringComparison.OrdinalIgnoreCase))
+		{
+			double hydraulicPhaseFactor = GetHydraulicPhaseFactor(phase);
+			if (hydraulicPhaseFactor <= 0.55)
+			{
+				return dependencyTarget;
+			}
+
+			double idleTarget = signal.NormalMinimum + 0.35;
+			double runTarget = signal.NominalValue;
+			double phaseTarget = idleTarget + (runTarget - idleTarget) * hydraulicPhaseFactor;
+			return dependencyTarget * 0.35 + phaseTarget * 0.65;
+		}
 		if (signalId.Equals("Process.QualityIndex", StringComparison.OrdinalIgnoreCase) || signalId.Equals("Quality.ProcessQualityIndex", StringComparison.OrdinalIgnoreCase))
 		{
 			double phaseDemand = ProcessPhaseScheduler.GetPhaseDemand(phase);

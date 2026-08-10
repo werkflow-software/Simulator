@@ -1,0 +1,14 @@
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Profiles/PhysicalProfileDependencyBuilder.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Services/FaultRecoveryEngine.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Services/FaultScenarioEngine.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Services/IFaultRecoveryEngine.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Services/PhysicalSignalPhaseCalibration.cs
+Werkflow.OpcUaSimulator.Tests/Ap4R3EvidenceValidator.cs
+Werkflow.OpcUaSimulator.Tests/Ap4R4EvidenceValidator.cs
+Werkflow.OpcUaSimulator.Tests/Ap4R5DirectionEvaluator.cs
+Werkflow.OpcUaSimulator.Tests/Ap4R6ProfileNormals.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp4R4VerificationHarness.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp4R6EvidenceTests.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp4R6VerificationHarness.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp4R7EvidenceTests.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp4R7VerificationHarness.cs

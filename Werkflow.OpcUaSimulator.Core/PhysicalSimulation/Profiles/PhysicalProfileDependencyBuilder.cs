@@ -30,7 +30,7 @@ public static class PhysicalProfileDependencyBuilder
 	{
 		return new _003C_003Ez__ReadOnlyArray<HiddenProcessStateDefinition>(new HiddenProcessStateDefinition[12]
 		{
-			H("HydraulicEfficiency", 0.65, 1.0, 0.88, 1.5, 0.01, 0.01),
+			H("HydraulicEfficiency", 0.65, 1.0, 0.88, 1.5, 0.01, 0.01, 1.0),
 			H("OilCondition", 0.6, 1.0, 0.85, 2.0, 0.008, 0.012),
 			H("ToolDeflection", 0.05, 0.5, 0.18, 0.6, 0.02, 0.015),
 			H("PressLoad", 0.2, 0.9, 0.5, 0.5, 0.03, 0.035),

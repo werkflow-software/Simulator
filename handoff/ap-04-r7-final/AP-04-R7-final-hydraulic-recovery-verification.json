@@ -1,0 +1,1559 @@
+{
+  "VerificationRunId": "ap4r7-20260810133032-9a810e981eec4da09db84d6",
+  "StartedAtUtc": "2026-08-10T13:30:32.9163941Z",
+  "EndedAtUtc": "2026-08-10T13:30:33.3344322Z",
+  "EfficiencyRecovery": {
+    "NormalMin": 0.65,
+    "NormalMax": 1,
+    "RecoveryTarget": 0.88,
+    "FaultStartValue": 0.8055103701848104,
+    "FaultEndValue": 0.5335497677250602,
+    "RecoveryStartValue": 0.8773407255880464,
+    "RecoveryMidValues": [
+      1,
+      0.98848,
+      0.984105
+    ],
+    "RecoveryEndValue": 1,
+    "PostRecoveryValues": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "DistanceToNormalStart": 0,
+    "DistanceToNormalEnd": 0,
+    "TowardNormalPassed": true,
+    "InNormalRangeAtCompletion": true,
+    "PostRecoveryStable": true,
+    "Passed": true
+  },
+  "EfficiencyTimeline": [
+    {
+      "TimestampUtc": "2026-08-10T13:30:32.9988066Z",
+      "ScenarioPhase": "Developing",
+      "LifecycleStage": "PreFault",
+      "HydraulicEfficiency": 0.9229004897567955,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 119.36380619411418,
+      "PumpCurrent": 0.5350653877136601
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.0001235Z",
+      "ScenarioPhase": "Developing",
+      "LifecycleStage": "PreFault",
+      "HydraulicEfficiency": 0.8744709564729952,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 123.64463591242144,
+      "PumpCurrent": 0.3618626030253457
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.0009949Z",
+      "ScenarioPhase": "Degraded",
+      "LifecycleStage": "PreFault",
+      "HydraulicEfficiency": 0.8115399828888008,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 125.45141960430384,
+      "PumpCurrent": 0.5727984290385818
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.001854Z",
+      "ScenarioPhase": "Degraded",
+      "LifecycleStage": "PreFault",
+      "HydraulicEfficiency": 0.7444174598424858,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 123.43339851925928,
+      "PumpCurrent": 0.9160018157246024
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.0027049Z",
+      "ScenarioPhase": "Degraded",
+      "LifecycleStage": "PreFault",
+      "HydraulicEfficiency": 0.6742229619629747,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 122.57141646343067,
+      "PumpCurrent": 0.948610078697678
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.0035654Z",
+      "ScenarioPhase": "Critical",
+      "LifecycleStage": "PreFault",
+      "HydraulicEfficiency": 0.6071275104890731,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0.042872489510926926,
+      "SupplyPressure": 121.35903026821354,
+      "PumpCurrent": 0.9255703807630511
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.0044129Z",
+      "ScenarioPhase": "Critical",
+      "LifecycleStage": "PreFault",
+      "HydraulicEfficiency": 0.5335497677250602,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0.11645023227493978,
+      "SupplyPressure": 119.31701318984646,
+      "PumpCurrent": 1.145855219075101
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.0075544Z",
+      "ScenarioPhase": "Recovering",
+      "LifecycleStage": "Faulted",
+      "HydraulicEfficiency": 0.45822362794023214,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0.19177637205976789,
+      "SupplyPressure": 118.50042735882563,
+      "PumpCurrent": 1.5889946360167762
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.0105964Z",
+      "ScenarioPhase": "Recovering",
+      "LifecycleStage": "RecoveryMid",
+      "HydraulicEfficiency": 0.94,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 126.25,
+      "PumpCurrent": 0.6429270485510349
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.0119446Z",
+      "ScenarioPhase": "Recovering",
+      "LifecycleStage": "RecoveryMid",
+      "HydraulicEfficiency": 1,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 127.0061535218442,
+      "PumpCurrent": 0.08185568158876168
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.0128859Z",
+      "ScenarioPhase": "Recovering",
+      "LifecycleStage": "RecoveryMid",
+      "HydraulicEfficiency": 1,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 127.22598918395322,
+      "PumpCurrent": 0.25055621519178584
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.0139333Z",
+      "ScenarioPhase": "Recovering",
+      "LifecycleStage": "RecoveryMid",
+      "HydraulicEfficiency": 0.98848,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 126.25,
+      "PumpCurrent": 0.5159957415253974
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.019768Z",
+      "ScenarioPhase": "Recovering",
+      "LifecycleStage": "RecoveryMid",
+      "HydraulicEfficiency": 0.984105,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 127.38715861935654,
+      "PumpCurrent": 0.6422131990311659
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.0208807Z",
+      "ScenarioPhase": "Recovering",
+      "LifecycleStage": "RecoveryMid",
+      "HydraulicEfficiency": 0.9626455,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 126.25,
+      "PumpCurrent": 0.3830452304741677
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.0217584Z",
+      "ScenarioPhase": "Recovering",
+      "LifecycleStage": "RecoveryCompleted",
+      "HydraulicEfficiency": 0.9346638030529303,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 126.25,
+      "PumpCurrent": 0.8053720970071477
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.2773797Z",
+      "ScenarioPhase": "Completed",
+      "LifecycleStage": "PostRecovery",
+      "HydraulicEfficiency": 1,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 174.0650169277168,
+      "PumpCurrent": 5.064129367461686
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.2820932Z",
+      "ScenarioPhase": "Completed",
+      "LifecycleStage": "PostRecovery",
+      "HydraulicEfficiency": 1,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 177.535043164999,
+      "PumpCurrent": 5.236501927477369
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.286519Z",
+      "ScenarioPhase": "Completed",
+      "LifecycleStage": "PostRecovery",
+      "HydraulicEfficiency": 1,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 173.81192539596597,
+      "PumpCurrent": 5.09710990303541
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.2909992Z",
+      "ScenarioPhase": "Completed",
+      "LifecycleStage": "PostRecovery",
+      "HydraulicEfficiency": 1,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 174.56418285480592,
+      "PumpCurrent": 5.114246361445924
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.2955109Z",
+      "ScenarioPhase": "Completed",
+      "LifecycleStage": "PostRecovery",
+      "HydraulicEfficiency": 1,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 173.5342727117027,
+      "PumpCurrent": 5.331531426344273
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.3000877Z",
+      "ScenarioPhase": "Completed",
+      "LifecycleStage": "PostRecovery",
+      "HydraulicEfficiency": 1,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 173.52321089664395,
+      "PumpCurrent": 5.2361181827176395
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.3046765Z",
+      "ScenarioPhase": "Completed",
+      "LifecycleStage": "PostRecovery",
+      "HydraulicEfficiency": 1,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 174.5270209303945,
+      "PumpCurrent": 5.326444598113995
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.3092162Z",
+      "ScenarioPhase": "Completed",
+      "LifecycleStage": "PostRecovery",
+      "HydraulicEfficiency": 1,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 173.06258884476853,
+      "PumpCurrent": 5.14554697840703
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.3136827Z",
+      "ScenarioPhase": "Completed",
+      "LifecycleStage": "PostRecovery",
+      "HydraulicEfficiency": 1,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 173.58120946674526,
+      "PumpCurrent": 5.020080952905019
+    },
+    {
+      "TimestampUtc": "2026-08-10T13:30:33.3181413Z",
+      "ScenarioPhase": "Completed",
+      "LifecycleStage": "PostRecovery",
+      "HydraulicEfficiency": 1,
+      "NormalMin": 0.65,
+      "NormalMax": 1,
+      "DistanceToNormal": 0,
+      "SupplyPressure": 173.37055093349133,
+      "PumpCurrent": 5.270518675907334
+    }
+  ],
+  "HydraulicResult": {
+    "ScenarioId": "hydraulic-leak",
+    "ProfileId": "bending-hydraulic-machine-300",
+    "Seed": 44,
+    "TimeFactor": 25,
+    "ExpectProductionResume": true,
+    "FaultThreshold": 120,
+    "FaultThresholdComparison": 2,
+    "SafeRecoveryThreshold": 125,
+    "SafeRecoverySourceId": "Hydraulic.SupplyPressure",
+    "SafeRecoveryComparison": 1,
+    "SafeRecoveryTolerance": 5,
+    "MinimumStableDuration": "00:00:45",
+    "ScenarioStartedAtUtc": "2026-08-10T13:30:32.9850414Z",
+    "ThresholdFirstReachedAtUtc": "2026-08-10T13:30:32.9958497Z",
+    "ThresholdConfirmedAtUtc": "2026-08-10T13:30:33.0047139Z",
+    "MachineFaultedAtUtc": "2026-08-10T13:30:33.0047255Z",
+    "RecoveryStartedAtUtc": "2026-08-10T13:30:33.0075343Z",
+    "RecoveryCompletedAtUtc": "2026-08-10T13:30:33.0228187Z",
+    "Timeline": [
+      {
+        "TimestampUtc": "2026-08-10T13:30:32.9988066Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Developing",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 119.36380619411418,
+          "Hydraulic.PumpCurrent": 0.5350653877136601,
+          "Hydraulic.OilTemperature": 44.2529102759507,
+          "Bending.PressForce": 86.81267617168028,
+          "Bending.CycleTime": 19.157507973546032
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.9229004897567955
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0001235Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Developing",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 123.64463591242144,
+          "Hydraulic.PumpCurrent": 0.3618626030253457,
+          "Hydraulic.OilTemperature": 44.2976864218236,
+          "Bending.PressForce": 84.77617991781396,
+          "Bending.CycleTime": 18.577572069118737
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.8744709564729952
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0009949Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Degraded",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 125.45141960430384,
+          "Hydraulic.PumpCurrent": 0.5727984290385818,
+          "Hydraulic.OilTemperature": 44.188441451813894,
+          "Bending.PressForce": 91.9944780300645,
+          "Bending.CycleTime": 18.596169325134028
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.8115399828888008
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.001854Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Degraded",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 123.43339851925928,
+          "Hydraulic.PumpCurrent": 0.9160018157246024,
+          "Hydraulic.OilTemperature": 44.092072789617816,
+          "Bending.PressForce": 87.7548052562627,
+          "Bending.CycleTime": 18.08170356200177
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.7444174598424858
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0027049Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Degraded",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 122.57141646343067,
+          "Hydraulic.PumpCurrent": 0.948610078697678,
+          "Hydraulic.OilTemperature": 44.14275839029517,
+          "Bending.PressForce": 89.06936813833086,
+          "Bending.CycleTime": 18.350115656539874
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.6742229619629747
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0035654Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Critical",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 121.35903026821354,
+          "Hydraulic.PumpCurrent": 0.9255703807630511,
+          "Hydraulic.OilTemperature": 44.30857842573567,
+          "Bending.PressForce": 88.88016278868369,
+          "Bending.CycleTime": 18.588091057390702
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.6071275104890731
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0044129Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Critical",
+        "LifecycleStage": "PreFault",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 119.31701318984646,
+          "Hydraulic.PumpCurrent": 1.145855219075101,
+          "Hydraulic.OilTemperature": 44.29413258326071,
+          "Bending.PressForce": 87.63259708677317,
+          "Bending.CycleTime": 18.3248704212008
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.5335497677250602
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0075544Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "Faulted",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 118.50042735882563,
+          "Hydraulic.PumpCurrent": 1.5889946360167762,
+          "Hydraulic.OilTemperature": 44.301869775256876,
+          "Bending.PressForce": 85.70650051302097,
+          "Bending.CycleTime": 18.608367738659684
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.45822362794023214
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0105964Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 126.25,
+          "Hydraulic.PumpCurrent": 0.6429270485510349,
+          "Hydraulic.OilTemperature": 44.131101113681936,
+          "Bending.PressForce": 91.2627871876825,
+          "Bending.CycleTime": 18.11735002105538
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.94
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0119446Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 127.0061535218442,
+          "Hydraulic.PumpCurrent": 0.08185568158876168,
+          "Hydraulic.OilTemperature": 44.08629543016984,
+          "Bending.PressForce": 87.62815398020864,
+          "Bending.CycleTime": 18.49186269198393
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0128859Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 127.22598918395322,
+          "Hydraulic.PumpCurrent": 0.25055621519178584,
+          "Hydraulic.OilTemperature": 44.08342743951131,
+          "Bending.PressForce": 91.94933206906232,
+          "Bending.CycleTime": 18.09854685315454
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0139333Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 126.25,
+          "Hydraulic.PumpCurrent": 0.5159957415253974,
+          "Hydraulic.OilTemperature": 44.295956728515165,
+          "Bending.PressForce": 90.50363700274623,
+          "Bending.CycleTime": 19.128848121350714
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.98848
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.019768Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 127.38715861935654,
+          "Hydraulic.PumpCurrent": 0.6422131990311659,
+          "Hydraulic.OilTemperature": 44.18702303232876,
+          "Bending.PressForce": 90.14547696849417,
+          "Bending.CycleTime": 18.702252419740958
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.984105
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0208807Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 126.25,
+          "Hydraulic.PumpCurrent": 0.3830452304741677,
+          "Hydraulic.OilTemperature": 44.219909445471835,
+          "Bending.PressForce": 87.86553558994837,
+          "Bending.CycleTime": 18.816110995913316
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.9626455
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0217584Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryCompleted",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 126.25,
+          "Hydraulic.PumpCurrent": 0.8053720970071477,
+          "Hydraulic.OilTemperature": 44.262955275458985,
+          "Bending.PressForce": 87.61722144328351,
+          "Bending.CycleTime": 18.927007540866164
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.9346638030529303
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.2773797Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 174.0650169277168,
+          "Hydraulic.PumpCurrent": 5.064129367461686,
+          "Hydraulic.OilTemperature": 44.24737531104551,
+          "Bending.PressForce": 92.60630499744408,
+          "Bending.CycleTime": 18.615754122097574
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.2820932Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 177.535043164999,
+          "Hydraulic.PumpCurrent": 5.236501927477369,
+          "Hydraulic.OilTemperature": 44.281489876548235,
+          "Bending.PressForce": 98.479118477309,
+          "Bending.CycleTime": 18.78072439045926
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.286519Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 173.81192539596597,
+          "Hydraulic.PumpCurrent": 5.09710990303541,
+          "Hydraulic.OilTemperature": 49.4832833764287,
+          "Bending.PressForce": 92.64693213818155,
+          "Bending.CycleTime": 18.482102987284527
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.2909992Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 174.56418285480592,
+          "Hydraulic.PumpCurrent": 5.114246361445924,
+          "Hydraulic.OilTemperature": 50.29479276268162,
+          "Bending.PressForce": 100.295733402616,
+          "Bending.CycleTime": 18.704788411161932
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.2955109Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 173.5342727117027,
+          "Hydraulic.PumpCurrent": 5.331531426344273,
+          "Hydraulic.OilTemperature": 43.709228466296494,
+          "Bending.PressForce": 98.76961561351052,
+          "Bending.CycleTime": 18.58771055181817
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.3000877Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 173.52321089664395,
+          "Hydraulic.PumpCurrent": 5.2361181827176395,
+          "Hydraulic.OilTemperature": 52.42692915858338,
+          "Bending.PressForce": 94.79060624301842,
+          "Bending.CycleTime": 18.386282372446402
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.3046765Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 174.5270209303945,
+          "Hydraulic.PumpCurrent": 5.326444598113995,
+          "Hydraulic.OilTemperature": 53.78878113572598,
+          "Bending.PressForce": 94.22986848191087,
+          "Bending.CycleTime": 18.345003886251728
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.3092162Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 173.06258884476853,
+          "Hydraulic.PumpCurrent": 5.14554697840703,
+          "Hydraulic.OilTemperature": 54.057369421592355,
+          "Bending.PressForce": 90.0500721156727,
+          "Bending.CycleTime": 18.58402693577889
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.3136827Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 173.58120946674526,
+          "Hydraulic.PumpCurrent": 5.020080952905019,
+          "Hydraulic.OilTemperature": 53.909430482630434,
+          "Bending.PressForce": 94.47030925326386,
+          "Bending.CycleTime": 18.362886788735945
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.3181413Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 173.37055093349133,
+          "Hydraulic.PumpCurrent": 5.270518675907334,
+          "Hydraulic.OilTemperature": 53.98618534951568,
+          "Bending.PressForce": 95.50859685845958,
+          "Bending.CycleTime": 18.559106863420208
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      }
+    ],
+    "FaultSamples": [
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0075544Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "Faulted",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 118.50042735882563,
+          "Hydraulic.PumpCurrent": 1.5889946360167762,
+          "Hydraulic.OilTemperature": 44.301869775256876,
+          "Bending.PressForce": 85.70650051302097,
+          "Bending.CycleTime": 18.608367738659684
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.45822362794023214
+        }
+      }
+    ],
+    "RecoverySamples": [
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0105964Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 126.25,
+          "Hydraulic.PumpCurrent": 0.6429270485510349,
+          "Hydraulic.OilTemperature": 44.131101113681936,
+          "Bending.PressForce": 91.2627871876825,
+          "Bending.CycleTime": 18.11735002105538
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.94
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0119446Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 127.0061535218442,
+          "Hydraulic.PumpCurrent": 0.08185568158876168,
+          "Hydraulic.OilTemperature": 44.08629543016984,
+          "Bending.PressForce": 87.62815398020864,
+          "Bending.CycleTime": 18.49186269198393
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0128859Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 127.22598918395322,
+          "Hydraulic.PumpCurrent": 0.25055621519178584,
+          "Hydraulic.OilTemperature": 44.08342743951131,
+          "Bending.PressForce": 91.94933206906232,
+          "Bending.CycleTime": 18.09854685315454
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0139333Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 126.25,
+          "Hydraulic.PumpCurrent": 0.5159957415253974,
+          "Hydraulic.OilTemperature": 44.295956728515165,
+          "Bending.PressForce": 90.50363700274623,
+          "Bending.CycleTime": 19.128848121350714
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.98848
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.019768Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 127.38715861935654,
+          "Hydraulic.PumpCurrent": 0.6422131990311659,
+          "Hydraulic.OilTemperature": 44.18702303232876,
+          "Bending.PressForce": 90.14547696849417,
+          "Bending.CycleTime": 18.702252419740958
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.984105
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0208807Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryMid",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 126.25,
+          "Hydraulic.PumpCurrent": 0.3830452304741677,
+          "Hydraulic.OilTemperature": 44.219909445471835,
+          "Bending.PressForce": 87.86553558994837,
+          "Bending.CycleTime": 18.816110995913316
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.9626455
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.0217584Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Recovering",
+        "LifecycleStage": "RecoveryCompleted",
+        "ErrorActive": true,
+        "ErrorMessage": "Hydraulikleck \u2013 Vordruck unter Mindestgrenze",
+        "MachineState": "Error",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 126.25,
+          "Hydraulic.PumpCurrent": 0.8053720970071477,
+          "Hydraulic.OilTemperature": 44.262955275458985,
+          "Bending.PressForce": 87.61722144328351,
+          "Bending.CycleTime": 18.927007540866164
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 0.9346638030529303
+        }
+      }
+    ],
+    "PostRecoverySamples": [
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.2773797Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 174.0650169277168,
+          "Hydraulic.PumpCurrent": 5.064129367461686,
+          "Hydraulic.OilTemperature": 44.24737531104551,
+          "Bending.PressForce": 92.60630499744408,
+          "Bending.CycleTime": 18.615754122097574
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.2820932Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 177.535043164999,
+          "Hydraulic.PumpCurrent": 5.236501927477369,
+          "Hydraulic.OilTemperature": 44.281489876548235,
+          "Bending.PressForce": 98.479118477309,
+          "Bending.CycleTime": 18.78072439045926
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.286519Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 173.81192539596597,
+          "Hydraulic.PumpCurrent": 5.09710990303541,
+          "Hydraulic.OilTemperature": 49.4832833764287,
+          "Bending.PressForce": 92.64693213818155,
+          "Bending.CycleTime": 18.482102987284527
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.2909992Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 174.56418285480592,
+          "Hydraulic.PumpCurrent": 5.114246361445924,
+          "Hydraulic.OilTemperature": 50.29479276268162,
+          "Bending.PressForce": 100.295733402616,
+          "Bending.CycleTime": 18.704788411161932
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.2955109Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 173.5342727117027,
+          "Hydraulic.PumpCurrent": 5.331531426344273,
+          "Hydraulic.OilTemperature": 43.709228466296494,
+          "Bending.PressForce": 98.76961561351052,
+          "Bending.CycleTime": 18.58771055181817
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.3000877Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": false,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 173.52321089664395,
+          "Hydraulic.PumpCurrent": 5.2361181827176395,
+          "Hydraulic.OilTemperature": 52.42692915858338,
+          "Bending.PressForce": 94.79060624301842,
+          "Bending.CycleTime": 18.386282372446402
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.3046765Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 174.5270209303945,
+          "Hydraulic.PumpCurrent": 5.326444598113995,
+          "Hydraulic.OilTemperature": 53.78878113572598,
+          "Bending.PressForce": 94.22986848191087,
+          "Bending.CycleTime": 18.345003886251728
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.3092162Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 173.06258884476853,
+          "Hydraulic.PumpCurrent": 5.14554697840703,
+          "Hydraulic.OilTemperature": 54.057369421592355,
+          "Bending.PressForce": 90.0500721156727,
+          "Bending.CycleTime": 18.58402693577889
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.3136827Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 173.58120946674526,
+          "Hydraulic.PumpCurrent": 5.020080952905019,
+          "Hydraulic.OilTemperature": 53.909430482630434,
+          "Bending.PressForce": 94.47030925326386,
+          "Bending.CycleTime": 18.362886788735945
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      },
+      {
+        "TimestampUtc": "2026-08-10T13:30:33.3181413Z",
+        "ScenarioId": "hydraulic-leak",
+        "ScenarioPhase": "Completed",
+        "LifecycleStage": "PostRecovery",
+        "ErrorActive": false,
+        "ErrorMessage": "",
+        "MachineState": "Running",
+        "ProductionRunning": true,
+        "ServerReachable": true,
+        "Signals": {
+          "Hydraulic.SupplyPressure": 173.37055093349133,
+          "Hydraulic.PumpCurrent": 5.270518675907334,
+          "Hydraulic.OilTemperature": 53.98618534951568,
+          "Bending.PressForce": 95.50859685845958,
+          "Bending.CycleTime": 18.559106863420208
+        },
+        "HiddenStates": {
+          "HydraulicEfficiency": 1
+        }
+      }
+    ],
+    "SignalSamples": {
+      "Hydraulic.SupplyPressure": [
+        119.36380619411418,
+        123.64463591242144,
+        125.45141960430384,
+        123.43339851925928,
+        122.57141646343067,
+        121.35903026821354,
+        119.31701318984646,
+        118.50042735882563,
+        126.25,
+        127.0061535218442,
+        127.22598918395322,
+        126.25,
+        127.38715861935654,
+        126.25,
+        126.25,
+        174.0650169277168,
+        177.535043164999,
+        173.81192539596597,
+        174.56418285480592,
+        173.5342727117027,
+        173.52321089664395,
+        174.5270209303945,
+        173.06258884476853,
+        173.58120946674526,
+        173.37055093349133
+      ],
+      "Hydraulic.PumpCurrent": [
+        0.5350653877136601,
+        0.3618626030253457,
+        0.5727984290385818,
+        0.9160018157246024,
+        0.948610078697678,
+        0.9255703807630511,
+        1.145855219075101,
+        1.5889946360167762,
+        0.6429270485510349,
+        0.08185568158876168,
+        0.25055621519178584,
+        0.5159957415253974,
+        0.6422131990311659,
+        0.3830452304741677,
+        0.8053720970071477,
+        5.064129367461686,
+        5.236501927477369,
+        5.09710990303541,
+        5.114246361445924,
+        5.331531426344273,
+        5.2361181827176395,
+        5.326444598113995,
+        5.14554697840703,
+        5.020080952905019,
+        5.270518675907334
+      ],
+      "Hydraulic.OilTemperature": [
+        44.2529102759507,
+        44.2976864218236,
+        44.188441451813894,
+        44.092072789617816,
+        44.14275839029517,
+        44.30857842573567,
+        44.29413258326071,
+        44.301869775256876,
+        44.131101113681936,
+        44.08629543016984,
+        44.08342743951131,
+        44.295956728515165,
+        44.18702303232876,
+        44.219909445471835,
+        44.262955275458985,
+        44.24737531104551,
+        44.281489876548235,
+        49.4832833764287,
+        50.29479276268162,
+        43.709228466296494,
+        52.42692915858338,
+        53.78878113572598,
+        54.057369421592355,
+        53.909430482630434,
+        53.98618534951568
+      ],
+      "Bending.PressForce": [
+        86.81267617168028,
+        84.77617991781396,
+        91.9944780300645,
+        87.7548052562627,
+        89.06936813833086,
+        88.88016278868369,
+        87.63259708677317,
+        85.70650051302097,
+        91.2627871876825,
+        87.62815398020864,
+        91.94933206906232,
+        90.50363700274623,
+        90.14547696849417,
+        87.86553558994837,
+        87.61722144328351,
+        92.60630499744408,
+        98.479118477309,
+        92.64693213818155,
+        100.295733402616,
+        98.76961561351052,
+        94.79060624301842,
+        94.22986848191087,
+        90.0500721156727,
+        94.47030925326386,
+        95.50859685845958
+      ],
+      "Bending.CycleTime": [
+        19.157507973546032,
+        18.577572069118737,
+        18.596169325134028,
+        18.08170356200177,
+        18.350115656539874,
+        18.588091057390702,
+        18.3248704212008,
+        18.608367738659684,
+        18.11735002105538,
+        18.49186269198393,
+        18.09854685315454,
+        19.128848121350714,
+        18.702252419740958,
+        18.816110995913316,
+        18.927007540866164,
+        18.615754122097574,
+        18.78072439045926,
+        18.482102987284527,
+        18.704788411161932,
+        18.58771055181817,
+        18.386282372446402,
+        18.345003886251728,
+        18.58402693577889,
+        18.362886788735945,
+        18.559106863420208
+      ]
+    },
+    "HiddenSamples": {
+      "HydraulicEfficiency": [
+        0.9229004897567955,
+        0.8744709564729952,
+        0.8115399828888008,
+        0.7444174598424858,
+        0.6742229619629747,
+        0.6071275104890731,
+        0.5335497677250602,
+        0.45822362794023214,
+        0.94,
+        1,
+        1,
+        0.98848,
+        0.984105,
+        0.9626455,
+        0.9346638030529303,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "FaultDirectionChecks": [
+      {
+        "SignalId": "HydraulicEfficiency",
+        "Direction": "decrease",
+        "Phase": "Fault",
+        "Required": true,
+        "WindowStartSampleCount": 5,
+        "WindowEndSampleCount": 5,
+        "StartValue": 0.8055103701848104,
+        "EndValue": 0.6741715365816788,
+        "Delta": -0.1313388336031316,
+        "MinimumMeaningfulDelta": 0.05,
+        "DistanceToNormalStart": null,
+        "DistanceToNormalEnd": null,
+        "NormalMin": null,
+        "NormalMax": null,
+        "DirectionPassed": true,
+        "TowardNormalPassed": true,
+        "Passed": true
+      },
+      {
+        "SignalId": "Hydraulic.SupplyPressure",
+        "Direction": "decrease",
+        "Phase": "Fault",
+        "Required": true,
+        "WindowStartSampleCount": 5,
+        "WindowEndSampleCount": 5,
+        "StartValue": 123.29198015352577,
+        "EndValue": 121.20893292697284,
+        "Delta": -2.083047226552935,
+        "MinimumMeaningfulDelta": 1,
+        "DistanceToNormalStart": null,
+        "DistanceToNormalEnd": null,
+        "NormalMin": null,
+        "NormalMax": null,
+        "DirectionPassed": true,
+        "TowardNormalPassed": true,
+        "Passed": true
+      },
+      {
+        "SignalId": "Hydraulic.PumpCurrent",
+        "Direction": "increase",
+        "Phase": "Fault",
+        "Required": true,
+        "WindowStartSampleCount": 5,
+        "WindowEndSampleCount": 5,
+        "StartValue": 0.662259723253048,
+        "EndValue": 0.9017671846598029,
+        "Delta": 0.23950746140675483,
+        "MinimumMeaningfulDelta": 0.1,
+        "DistanceToNormalStart": null,
+        "DistanceToNormalEnd": null,
+        "NormalMin": null,
+        "NormalMax": null,
+        "DirectionPassed": true,
+        "TowardNormalPassed": true,
+        "Passed": true
+      }
+    ],
+    "RecoveryDirectionChecks": [
+      {
+        "SignalId": "HydraulicEfficiency",
+        "Direction": "toward-normal",
+        "Phase": "Recovery",
+        "Required": true,
+        "WindowStartSampleCount": 5,
+        "WindowEndSampleCount": 5,
+        "StartValue": 0.8773407255880464,
+        "EndValue": 1,
+        "Delta": 0.12265927441195357,
+        "MinimumMeaningfulDelta": 0.05,
+        "DistanceToNormalStart": 0,
+        "DistanceToNormalEnd": 0,
+        "NormalMin": 0.65,
+        "NormalMax": 1,
+        "DirectionPassed": true,
+        "TowardNormalPassed": true,
+        "Passed": true
+      },
+      {
+        "SignalId": "Hydraulic.SupplyPressure",
+        "Direction": "increase",
+        "Phase": "Recovery",
+        "Required": true,
+        "WindowStartSampleCount": 5,
+        "WindowEndSampleCount": 5,
+        "StartValue": 125.04651401292463,
+        "EndValue": 173.6129162144087,
+        "Delta": 48.56640220148407,
+        "MinimumMeaningfulDelta": 1,
+        "DistanceToNormalStart": 4.995348598707537,
+        "DistanceToNormalEnd": 0.1387083785591301,
+        "NormalMin": 175,
+        "NormalMax": 185,
+        "DirectionPassed": true,
+        "TowardNormalPassed": true,
+        "Passed": true
+      },
+      {
+        "SignalId": "Hydraulic.PumpCurrent",
+        "Direction": "toward-normal",
+        "Phase": "Recovery",
+        "Required": true,
+        "WindowStartSampleCount": 5,
+        "WindowEndSampleCount": 5,
+        "StartValue": 0.6160658645747512,
+        "EndValue": 5.199741877610203,
+        "Delta": 4.5836760130354515,
+        "MinimumMeaningfulDelta": 0.1,
+        "DistanceToNormalStart": 0.1833795488788653,
+        "DistanceToNormalEnd": 0,
+        "NormalMin": 3,
+        "NormalMax": 16,
+        "DirectionPassed": true,
+        "TowardNormalPassed": true,
+        "Passed": true
+      }
+    ],
+    "SafetyChecks": [
+      {
+        "Name": "RecoveryCompletedSafe",
+        "Passed": true,
+        "Detail": ""
+      },
+      {
+        "Name": "PostRecoverySafe",
+        "Passed": true,
+        "Detail": ""
+      },
+      {
+        "Name": "MinimumStableDurationEvidence",
+        "Passed": true,
+        "Detail": "recoverySamples=7"
+      }
+    ],
+    "DistanceToNormal": {
+      "DistanceToNormalStart": 5.178728147586402,
+      "DistanceToNormalEnd": 0.1387083785591301,
+      "RecoveryImproved": true
+    },
+    "Passed": true,
+    "FailedCriteria": []
+  },
+  "SupplyPressureRegression": true,
+  "PumpCurrentRegression": true,
+  "ValidatorRegression": true,
+  "Ap4R7Passed": true,
+  "Ap4OverallPassed": true,
+  "FailedCriteria": []
+}

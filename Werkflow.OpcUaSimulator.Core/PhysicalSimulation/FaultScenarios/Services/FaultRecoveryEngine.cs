@@ -99,12 +99,36 @@ public sealed class FaultRecoveryEngine : IFaultRecoveryEngine
 				continue;
 			}
 
-			double normal = (definition.NormalMinimum + definition.NormalMaximum) * 0.5;
-			state.TargetValue += (normal - state.TargetValue) * pull;
-			state.CurrentValue += (normal - state.CurrentValue) * pull * 0.6;
-			state.TargetValue = Math.Clamp(state.TargetValue, definition.HardMinimum, definition.HardMaximum);
-			state.CurrentValue = Math.Clamp(state.CurrentValue, definition.HardMinimum, definition.HardMaximum);
+			double normal = GetRecoveryTarget(definition);
+			state.TargetValue = ApproachRecoveryValue(state.TargetValue, normal, pull, definition.NormalMinimum, definition.NormalMaximum);
+			state.CurrentValue = ApproachRecoveryValue(state.CurrentValue, normal, pull * 0.6, definition.NormalMinimum, definition.NormalMaximum);
+			if (progress >= 0.75)
+			{
+				double tighten = Math.Clamp((progress - 0.7) * 1.8, 0.15, 0.55);
+				state.TargetValue = ApproachRecoveryValue(state.TargetValue, normal, tighten, definition.NormalMinimum, definition.NormalMaximum);
+				state.CurrentValue = ApproachRecoveryValue(state.CurrentValue, normal, tighten, definition.NormalMinimum, definition.NormalMaximum);
+			}
 		}
+	}
+
+	private static double GetRecoveryTarget(HiddenProcessStateDefinition definition)
+	{
+		return Math.Clamp(definition.NominalValue, definition.NormalMinimum, definition.NormalMaximum);
+	}
+
+	private static double ApproachRecoveryValue(double current, double target, double strength, double normalMin, double normalMax)
+	{
+		double next = current + (target - current) * strength;
+		if (current <= target)
+		{
+			next = Math.Min(next, target);
+		}
+		else
+		{
+			next = Math.Max(next, target);
+		}
+
+		return Math.Clamp(next, normalMin, normalMax);
 	}
 
 	private static void ApplySafeRecoverySignalAdjustment(
@@ -171,6 +195,39 @@ public sealed class FaultRecoveryEngine : IFaultRecoveryEngine
 		{
 			instance.RecoveryStableElapsedTime = TimeSpan.Zero;
 		}
+	}
+
+	public void FinalizeRecoveryState(
+		FaultScenarioInstance instance,
+		PhysicalMachineProfile profile,
+		PhysicalMachineRuntime runtime)
+	{
+		HashSet<string> affectedHidden = instance.Definition.Effects
+			.Where(e => e.TargetType == FaultEffectTargetType.HiddenState && e.IsEnabled)
+			.Select(e => e.TargetId)
+			.ToHashSet(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, HiddenProcessStateDefinition> definitions = profile.HiddenProcessStates
+			.ToDictionary(s => s.StateId, StringComparer.OrdinalIgnoreCase);
+		foreach (string stateId in affectedHidden)
+		{
+			HiddenProcessRuntimeState? state = runtime.HiddenProcessStates.FirstOrDefault(s =>
+				s.StateId.Equals(stateId, StringComparison.OrdinalIgnoreCase));
+			if (state == null || !definitions.TryGetValue(stateId, out HiddenProcessStateDefinition? definition))
+			{
+				continue;
+			}
+
+			double target = Math.Clamp(definition.NominalValue, definition.NormalMinimum, definition.NormalMaximum);
+			state.TargetValue = target;
+			state.CurrentValue = Math.Clamp(state.CurrentValue, definition.NormalMinimum, definition.NormalMaximum);
+		}
+
+		foreach (string stateId in affectedHidden)
+		{
+			instance.HiddenStateOffsets.Remove(stateId);
+		}
+
+		instance.EffectAccumulators.Clear();
 	}
 
 	private static double ReadSafeRecoverySource(
@@ -275,9 +332,30 @@ public sealed class FaultRecoveryEngine : IFaultRecoveryEngine
 				HiddenProcessRuntimeState hiddenProcessRuntimeState = runtime.HiddenProcessStates.FirstOrDefault((HiddenProcessRuntimeState s) => s.StateId.Equals(effect.TargetId, StringComparison.OrdinalIgnoreCase));
 				if (hiddenProcessRuntimeState != null && dictionary.TryGetValue(hiddenProcessRuntimeState.StateId, out var value2))
 				{
-					double num = value * (1.0 - factor);
-					hiddenProcessRuntimeState.TargetValue = Math.Clamp(hiddenProcessRuntimeState.TargetValue - num, value2.HardMinimum, value2.HardMaximum);
-					hiddenProcessRuntimeState.CurrentValue = Math.Clamp(hiddenProcessRuntimeState.CurrentValue - num * 0.5, value2.HardMinimum, value2.HardMaximum);
+					double removal = value * (1.0 - factor);
+					double nominal = Math.Clamp(value2.NominalValue, value2.NormalMinimum, value2.NormalMaximum);
+					double restoredTarget = hiddenProcessRuntimeState.TargetValue - removal;
+					if (restoredTarget > nominal && hiddenProcessRuntimeState.TargetValue <= nominal)
+					{
+						restoredTarget = nominal;
+					}
+					else if (restoredTarget < nominal && hiddenProcessRuntimeState.TargetValue >= nominal)
+					{
+						restoredTarget = nominal;
+					}
+
+					hiddenProcessRuntimeState.TargetValue = Math.Clamp(restoredTarget, value2.NormalMinimum, value2.NormalMaximum);
+					double restoredCurrent = hiddenProcessRuntimeState.CurrentValue - removal * 0.5;
+					if (restoredCurrent > nominal && hiddenProcessRuntimeState.CurrentValue <= nominal)
+					{
+						restoredCurrent = nominal;
+					}
+					else if (restoredCurrent < nominal && hiddenProcessRuntimeState.CurrentValue >= nominal)
+					{
+						restoredCurrent = nominal;
+					}
+
+					hiddenProcessRuntimeState.CurrentValue = Math.Clamp(restoredCurrent, value2.NormalMinimum, value2.NormalMaximum);
 				}
 			}
 		}
