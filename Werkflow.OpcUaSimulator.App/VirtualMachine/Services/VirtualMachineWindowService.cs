@@ -22,11 +22,7 @@ public sealed class VirtualMachineWindowService
 
 		if (_window == null)
 		{
-			_window = new VirtualMachineHmiWindow(_viewModel, _trayNotifier)
-			{
-				Owner = owner
-			};
-			_window.Closed += (_, _) => _window = null;
+			_window = new VirtualMachineHmiWindow(_viewModel, _trayNotifier);
 		}
 
 		if (!_window.IsVisible)

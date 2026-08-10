@@ -12,15 +12,6 @@ namespace Werkflow.OpcUaSimulator.App.VirtualMachine.Views;
 
 public sealed class VirtualMachineHmiWindow : Window
 {
-	private static readonly Brush BgDark = new SolidColorBrush(Color.FromRgb(28, 32, 38));
-	private static readonly Brush PanelBg = new SolidColorBrush(Color.FromRgb(35, 40, 48));
-	private static readonly Brush HeaderBg = new SolidColorBrush(Color.FromRgb(20, 24, 30));
-	private static readonly Brush BorderBrush = new SolidColorBrush(Color.FromRgb(55, 65, 78));
-	private static readonly Brush TextPrimary = Brushes.White;
-	private static readonly Brush TextSecondary = new SolidColorBrush(Color.FromRgb(200, 210, 220));
-	private static readonly Brush Accent = new SolidColorBrush(Color.FromRgb(120, 180, 255));
-	private static readonly Brush SimPanelBg = new SolidColorBrush(Color.FromRgb(48, 38, 32));
-
 	private readonly VirtualMachineHmiViewModel _viewModel;
 	private readonly IHmiTrayNotifier _trayNotifier;
 	private readonly Grid _mainContent;
@@ -35,7 +26,7 @@ public sealed class VirtualMachineHmiWindow : Window
 		MinHeight = 720;
 		Width = 1600;
 		Height = 900;
-		Background = BgDark;
+		Background = HmiVisualTheme.BgDark;
 		DataContext = viewModel;
 
 		var root = new Grid();
@@ -122,8 +113,8 @@ public sealed class VirtualMachineHmiWindow : Window
 	{
 		var panel = new Border
 		{
-			Background = HeaderBg,
-			BorderBrush = BorderBrush,
+			Background = HmiVisualTheme.HeaderBg,
+			BorderBrush = HmiVisualTheme.Border,
 			BorderThickness = new Thickness(0, 0, 0, 1),
 			Padding = new Thickness(12, 8, 12, 8)
 		};
@@ -177,7 +168,7 @@ public sealed class VirtualMachineHmiWindow : Window
 		{
 			if (_navBar.Children[i] is Button btn)
 			{
-				btn.Background = _viewModel.SelectedTabIndex == i ? Accent : PanelBg;
+				btn.Background = _viewModel.SelectedTabIndex == i ? HmiVisualTheme.NavSelectedBg : HmiVisualTheme.NavNormalBg;
 			}
 		}
 	}
@@ -187,7 +178,7 @@ public sealed class VirtualMachineHmiWindow : Window
 		var bar = new StackPanel
 		{
 			Orientation = Orientation.Horizontal,
-			Background = HeaderBg,
+			Background = HmiVisualTheme.HeaderBg,
 			Margin = new Thickness(6, 0, 6, 6)
 		};
 
@@ -212,9 +203,9 @@ public sealed class VirtualMachineHmiWindow : Window
 			Content = label,
 			Margin = new Thickness(2, 4, 2, 4),
 			Padding = new Thickness(10, 4, 10, 4),
-			Background = _viewModel.SelectedTabIndex == index ? Accent : PanelBg,
-			Foreground = TextPrimary,
-			BorderBrush = BorderBrush,
+			Background = _viewModel.SelectedTabIndex == index ? HmiVisualTheme.NavSelectedBg : HmiVisualTheme.NavNormalBg,
+			Foreground = HmiVisualTheme.TextPrimary,
+			BorderBrush = HmiVisualTheme.Border,
 			FontSize = 12
 		};
 		button.Click += (_, _) => _viewModel.SelectedTabIndex = index;
@@ -240,8 +231,8 @@ public sealed class VirtualMachineHmiWindow : Window
 	private static Border WrapPanel(UIElement child) =>
 		new()
 		{
-			Background = PanelBg,
-			BorderBrush = BorderBrush,
+			Background = HmiVisualTheme.PanelBg,
+			BorderBrush = HmiVisualTheme.Border,
 			BorderThickness = new Thickness(1),
 			Margin = new Thickness(3),
 			Padding = new Thickness(8),
@@ -311,8 +302,8 @@ public sealed class VirtualMachineHmiWindow : Window
 
 		var simBorder = new Border
 		{
-			Background = SimPanelBg,
-			BorderBrush = new SolidColorBrush(Color.FromRgb(120, 90, 60)),
+			Background = HmiVisualTheme.SimPanelBg,
+			BorderBrush = new SolidColorBrush(Color.FromRgb(140, 110, 80)),
 			BorderThickness = new Thickness(1),
 			Margin = new Thickness(0, 12, 0, 0),
 			Padding = new Thickness(8)
@@ -328,9 +319,9 @@ public sealed class VirtualMachineHmiWindow : Window
 			MinHeight = 100,
 			MaxHeight = 140,
 			Margin = new Thickness(0, 4, 0, 4),
-			Background = PanelBg,
-			Foreground = TextPrimary,
-			BorderBrush = BorderBrush
+			Background = HmiVisualTheme.PanelBg,
+			Foreground = HmiVisualTheme.TextPrimary,
+			BorderBrush = HmiVisualTheme.Border
 		};
 		list.SelectionChanged += (_, _) => _viewModel.SetSelectedFaultScenario(
 			list.SelectedItem as Werkflow.OpcUaSimulator.App.ViewModels.FaultScenarioListItem);
@@ -363,8 +354,8 @@ public sealed class VirtualMachineHmiWindow : Window
 				Width = 280,
 				Margin = new Thickness(4),
 				Padding = new Thickness(10),
-				Background = PanelBg,
-				BorderBrush = BorderBrush,
+				Background = HmiVisualTheme.PanelBg,
+				BorderBrush = HmiVisualTheme.Border,
 				BorderThickness = new Thickness(1)
 			};
 			var stack = new StackPanel();
@@ -372,7 +363,7 @@ public sealed class VirtualMachineHmiWindow : Window
 			{
 				FontSize = 16,
 				FontWeight = FontWeights.Bold,
-				Foreground = TextPrimary,
+				Foreground = HmiVisualTheme.TextPrimary,
 				Margin = new Thickness(0, 0, 0, 4)
 			};
 			title.SetBinding(TextBlock.TextProperty, new Binding(nameof(HmiAxisPanelViewModel.AxisName))
@@ -403,10 +394,10 @@ public sealed class VirtualMachineHmiWindow : Window
 		var grid = new Grid { Margin = new Thickness(0, 2, 0, 2) };
 		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-		grid.Children.Add(new TextBlock { Text = label, Foreground = TextSecondary, FontSize = 12 });
+		grid.Children.Add(new TextBlock { Text = label, Foreground = HmiVisualTheme.TextSecondary, FontSize = 12 });
 		var val = new TextBlock
 		{
-			Foreground = TextPrimary,
+			Foreground = HmiVisualTheme.TextPrimary,
 			FontSize = 13,
 			FontWeight = FontWeights.SemiBold
 		};
@@ -447,8 +438,8 @@ public sealed class VirtualMachineHmiWindow : Window
 					? new SolidColorBrush(Color.FromRgb(80, 35, 35))
 					: tile.IsWarning
 						? new SolidColorBrush(Color.FromRgb(70, 55, 30))
-						: PanelBg,
-				BorderBrush = BorderBrush,
+						: HmiVisualTheme.PanelBg,
+				BorderBrush = HmiVisualTheme.Border,
 				BorderThickness = new Thickness(1)
 			};
 			var stack = new StackPanel();
@@ -516,13 +507,13 @@ public sealed class VirtualMachineHmiWindow : Window
 			var label = new TextBlock
 			{
 				Text = metrics[i].Label,
-				Foreground = TextSecondary,
+				Foreground = HmiVisualTheme.TextSecondary,
 				Margin = new Thickness(0, 3, 8, 3),
 				FontSize = 13
 			};
 			var value = new TextBlock
 			{
-				Foreground = TextPrimary,
+				Foreground = HmiVisualTheme.TextPrimary,
 				FontWeight = FontWeights.SemiBold,
 				FontSize = 13,
 				Margin = new Thickness(0, 3, 0, 3)
@@ -544,20 +535,20 @@ public sealed class VirtualMachineHmiWindow : Window
 		{
 			Margin = new Thickness(4),
 			Padding = new Thickness(10, 8, 10, 8),
-			Background = new SolidColorBrush(Color.FromRgb(42, 48, 58)),
-			BorderBrush = BorderBrush,
+			Background = HmiVisualTheme.MetricTileBg,
+			BorderBrush = HmiVisualTheme.Border,
 			BorderThickness = new Thickness(1)
 		};
 		var stack = new StackPanel();
 		stack.Children.Add(new TextBlock
 		{
 			Text = metric.Label,
-			Foreground = TextSecondary,
+			Foreground = HmiVisualTheme.TextSecondary,
 			FontSize = 12
 		});
 		var valueBlock = new TextBlock
 		{
-			Foreground = Accent,
+			Foreground = HmiVisualTheme.ValueAccent,
 			FontSize = 28,
 			FontWeight = FontWeights.Bold,
 			Margin = new Thickness(0, 4, 0, 0)
@@ -579,8 +570,8 @@ public sealed class VirtualMachineHmiWindow : Window
 		var grid = new Grid { Margin = new Thickness(0, 2, 0, 2) };
 		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-		var label = new TextBlock { Text = metric.Label, Foreground = TextSecondary, FontSize = 13 };
-		var value = new TextBlock { Foreground = TextPrimary, FontSize = 13, FontWeight = FontWeights.SemiBold };
+		var label = new TextBlock { Text = metric.Label, Foreground = HmiVisualTheme.TextSecondary, FontSize = 13 };
+		var value = new TextBlock { Foreground = HmiVisualTheme.TextPrimary, FontSize = 13, FontWeight = FontWeights.SemiBold };
 		value.SetBinding(TextBlock.TextProperty, new Binding(nameof(HmiMetricItem.Value)) { Source = metric });
 		Grid.SetColumn(value, 1);
 		grid.Children.Add(label);
@@ -597,9 +588,9 @@ public sealed class VirtualMachineHmiWindow : Window
 			IsReadOnly = true,
 			HeadersVisibility = DataGridHeadersVisibility.Column,
 			GridLinesVisibility = DataGridGridLinesVisibility.Horizontal,
-			Background = PanelBg,
-			Foreground = TextPrimary,
-			BorderBrush = BorderBrush,
+			Background = HmiVisualTheme.PanelBg,
+			Foreground = HmiVisualTheme.TextPrimary,
+			BorderBrush = HmiVisualTheme.Border,
 			Margin = new Thickness(0, 4, 0, 12),
 			MinHeight = 200,
 			RowHeight = 26
@@ -625,7 +616,7 @@ public sealed class VirtualMachineHmiWindow : Window
 			Text = text,
 			FontSize = size,
 			FontWeight = weight,
-			Foreground = TextPrimary,
+			Foreground = HmiVisualTheme.TextPrimary,
 			Margin = new Thickness(0, 0, 0, 2)
 		};
 
@@ -635,7 +626,7 @@ public sealed class VirtualMachineHmiWindow : Window
 		{
 			FontSize = size,
 			FontWeight = weight,
-			Foreground = TextSecondary,
+			Foreground = HmiVisualTheme.TextSecondary,
 			Margin = new Thickness(0, 2, 0, 2)
 		};
 		if (format != null)
@@ -658,7 +649,7 @@ public sealed class VirtualMachineHmiWindow : Window
 			Text = title,
 			FontSize = 14,
 			FontWeight = FontWeights.SemiBold,
-			Foreground = Accent,
+			Foreground = HmiVisualTheme.SectionTitle,
 			Margin = new Thickness(0, 8, 0, 4)
 		};
 
@@ -667,13 +658,9 @@ public sealed class VirtualMachineHmiWindow : Window
 		var button = new Button
 		{
 			Content = text,
-			Margin = new Thickness(4),
-			Padding = new Thickness(10, 5, 10, 5),
-			Background = new SolidColorBrush(Color.FromRgb(45, 55, 68)),
-			Foreground = TextPrimary,
-			BorderBrush = BorderBrush,
-			FontSize = 12
+			Margin = new Thickness(4)
 		};
+		HmiVisualTheme.ApplyButtonStyle(button);
 		button.Click += onClick;
 		return button;
 	}

@@ -67,18 +67,21 @@ public class PhysicalAp6R1StartupTests
 	}
 
 	[Fact]
-	public void AP6R1_App_CompleteStartup_DoesNotForceTrayService()
+	public void AP6R1_App_CompleteStartup_InitializesTrayService()
 	{
 		string source = ReadAppSource("App.cs");
 		string completeStartup = source.Split("CompleteStartupAsync", 2)[1].Split("private IHost CreateHost", 2)[0];
-		Assert.DoesNotContain("GetRequiredService<SimulatorTrayService>", completeStartup);
+		Assert.Contains("GetRequiredService<SimulatorTrayService>", completeStartup);
+		Assert.Contains("EnsureInitialized()", completeStartup);
 	}
 
 	[Fact]
-	public void AP6R1_MainWindow_HasNoOnClosingHide()
+	public void AP6R1_MainWindow_OnClosing_HidesToTray()
 	{
 		string source = ReadAppSource("MainWindow.cs");
-		Assert.DoesNotContain("OnClosing", source);
-		Assert.DoesNotContain("Hide()", source);
+		Assert.Contains("protected override void OnClosing", source);
+		Assert.Contains("e.Cancel = true", source);
+		Assert.Contains("Hide()", source);
+		Assert.Contains("NotifyMainWindowHidden", source);
 	}
 }

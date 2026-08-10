@@ -8,21 +8,30 @@ using System.Windows.Markup;
 using Werkflow.OpcUaSimulator.App.ViewModels;
 using Werkflow.OpcUaSimulator.App.Views;
 
+using Werkflow.OpcUaSimulator.App.VirtualMachine.Services;
+
 namespace Werkflow.OpcUaSimulator.App;
 
 public class MainWindow : Window, IComponentConnector
 {
 	private readonly MainViewModel _viewModel;
 	private readonly ManualControlViewModel _manualControlViewModel;
+	private readonly SimulatorTrayService _trayService;
 
 	private bool _contentLoaded;
 
-	public MainWindow(MainViewModel viewModel, OverviewViewModel overviewViewModel, ManualControlViewModel manualControlViewModel, ExperimentsViewModel experimentsViewModel)
+	public MainWindow(
+		MainViewModel viewModel,
+		OverviewViewModel overviewViewModel,
+		ManualControlViewModel manualControlViewModel,
+		ExperimentsViewModel experimentsViewModel,
+		SimulatorTrayService trayService)
 	{
 		InitializeComponent();
 		_viewModel = viewModel;
 		base.DataContext = viewModel;
 		_manualControlViewModel = manualControlViewModel;
+		_trayService = trayService;
 		Resources.Add(typeof(ExperimentsViewModel), new ExperimentsView { DataContext = experimentsViewModel });
 		overviewViewModel.ManualControlRequested += OnManualControlRequested;
 		Loaded += OnLoaded;
@@ -56,6 +65,14 @@ public class MainWindow : Window, IComponentConnector
 			Owner = this
 		};
 		manualControlWindow.ShowDialog();
+	}
+
+	protected override void OnClosing(CancelEventArgs e)
+	{
+		e.Cancel = true;
+		Hide();
+		ShowInTaskbar = false;
+		_trayService.NotifyMainWindowHidden();
 	}
 
 	[DebuggerNonUserCode]

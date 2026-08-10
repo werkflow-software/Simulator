@@ -38,7 +38,7 @@ public class App : Application
 			_host = CreateHost();
 			MainWindow mainWindow = _host.Services.GetRequiredService<MainWindow>();
 			MainWindow = mainWindow;
-			ShutdownMode = ShutdownMode.OnMainWindowClose;
+			ShutdownMode = ShutdownMode.OnExplicitShutdown;
 			mainWindow.Visibility = Visibility.Visible;
 			mainWindow.ShowInTaskbar = true;
 			mainWindow.WindowState = WindowState.Normal;
@@ -67,6 +67,7 @@ public class App : Application
 			_host.Services.GetRequiredService<OverviewViewModel>().Refresh();
 			_host.Services.GetRequiredService<FaultScenariosViewModel>().Refresh();
 			_host.Services.GetRequiredService<PhysicalSignalsViewModel>().ReloadMachines();
+			_host.Services.GetRequiredService<SimulatorTrayService>().EnsureInitialized();
 		}
 		catch (Exception ex)
 		{
@@ -143,6 +144,7 @@ public class App : Application
 	{
 		if (_host != null)
 		{
+			_host.Services.GetService<SimulatorTrayService>()?.Dispose();
 			ISimulationEngine simulation = _host.Services.GetService<ISimulationEngine>();
 			if (simulation != null)
 			{
