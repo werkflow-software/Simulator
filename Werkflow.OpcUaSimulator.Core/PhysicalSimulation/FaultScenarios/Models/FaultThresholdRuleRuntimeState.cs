@@ -4,7 +4,11 @@ namespace Werkflow.OpcUaSimulator.Core.PhysicalSimulation.FaultScenarios.Models;
 
 public sealed class FaultThresholdRuleRuntimeState
 {
-	public bool IsCurrentlySatisfied { get; set; }
+	public FaultThresholdObservationState ObservationState { get; set; } = FaultThresholdObservationState.Normal;
+
+	public bool IsCurrentlySatisfied =>
+		ObservationState is FaultThresholdObservationState.Satisfied
+			or FaultThresholdObservationState.Confirmed;
 
 	public bool PhysicallySatisfied { get; set; }
 
@@ -23,8 +27,6 @@ public sealed class FaultThresholdRuleRuntimeState
 	public bool HasEverBeenSatisfied { get; set; }
 
 	public bool IsConfirmed { get; set; }
-
-	public bool IsApproaching { get; set; }
 
 	public int EnterCount { get; set; }
 

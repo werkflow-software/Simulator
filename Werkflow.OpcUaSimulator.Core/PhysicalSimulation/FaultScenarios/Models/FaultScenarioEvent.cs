@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Werkflow.OpcUaSimulator.Core.PhysicalSimulation.FaultScenarios.Models;
 
@@ -19,4 +20,6 @@ public sealed class FaultScenarioEvent
 	public string? Detail { get; init; }
 
 	public double? Value { get; init; }
+
+	public Dictionary<string, string>? Metadata { get; init; }
 }

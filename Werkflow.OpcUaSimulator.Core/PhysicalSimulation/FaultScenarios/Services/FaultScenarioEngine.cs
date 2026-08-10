@@ -310,29 +310,27 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 			double value = ReadThresholdSource(rule, session);
 			FaultThresholdRuleRuntimeState state = GetRuleState(instance, rule.RuleId);
 			bool satisfied = EvaluateComparison(rule, value);
-			bool approaching = IsThresholdApproaching(rule, value);
+			bool approaching = !satisfied && IsThresholdApproaching(rule, value);
 
 			TrackPhysicalThresholdCrossing(instance, rule, state, value, satisfied);
-
-			if (canEmitThresholdEvents)
-			{
-				UpdateThresholdApproaching(instance, rule, state, approaching, satisfied);
-			}
 
 			if (!canEmitThresholdEvents)
 			{
 				continue;
 			}
 
-			if (satisfied && !state.IsCurrentlySatisfied)
+			FaultThresholdObservationState previous = state.ObservationState;
+			FaultThresholdObservationState target = ResolveTargetObservationState(satisfied, approaching, state.IsConfirmed);
+
+			if (previous != target)
 			{
-				OnThresholdEntered(instance, rule, state, value, session);
+				ApplyObservationTransition(instance, rule, state, previous, target, value, session);
+				state.ObservationState = target;
 			}
-			else if (!satisfied && state.IsCurrentlySatisfied)
-			{
-				OnThresholdExited(instance, rule, state, value, session);
-			}
-			else if (satisfied && state.IsCurrentlySatisfied && !state.IsConfirmed && !instance.ThresholdFaultTriggered)
+
+			if (state.ObservationState == FaultThresholdObservationState.Satisfied
+				&& !state.IsConfirmed
+				&& !instance.ThresholdFaultTriggered)
 			{
 				if (state.CurrentSatisfiedSinceSimulationTime.HasValue
 					&& instance.ScenarioElapsedTime - state.CurrentSatisfiedSinceSimulationTime.Value >= rule.MinimumDuration)
@@ -341,6 +339,71 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 					break;
 				}
 			}
+		}
+	}
+
+	private static FaultThresholdObservationState ResolveTargetObservationState(bool satisfied, bool approaching, bool confirmed)
+	{
+		if (confirmed)
+		{
+			return FaultThresholdObservationState.Confirmed;
+		}
+
+		if (satisfied)
+		{
+			return FaultThresholdObservationState.Satisfied;
+		}
+
+		if (approaching)
+		{
+			return FaultThresholdObservationState.Approaching;
+		}
+
+		return FaultThresholdObservationState.Normal;
+	}
+
+	private void ApplyObservationTransition(
+		FaultScenarioInstance instance,
+		FaultThresholdRule rule,
+		FaultThresholdRuleRuntimeState state,
+		FaultThresholdObservationState previous,
+		FaultThresholdObservationState target,
+		double value,
+		PhysicalMachineSession session)
+	{
+		switch (previous, target)
+		{
+		case (FaultThresholdObservationState.Normal, FaultThresholdObservationState.Approaching):
+			PublishEvent(
+				FaultScenarioEventType.ThresholdApproaching,
+				session.MachineId,
+				instance,
+				detail: rule.RuleId);
+			break;
+
+		case (FaultThresholdObservationState.Approaching, FaultThresholdObservationState.Satisfied):
+		case (FaultThresholdObservationState.Normal, FaultThresholdObservationState.Satisfied):
+			OnThresholdEntered(instance, rule, state, value, session);
+			break;
+
+		case (FaultThresholdObservationState.Satisfied, FaultThresholdObservationState.Approaching):
+			OnThresholdExited(instance, rule, state, value, session);
+			PublishEvent(
+				FaultScenarioEventType.ThresholdApproaching,
+				session.MachineId,
+				instance,
+				detail: rule.RuleId);
+			break;
+
+		case (FaultThresholdObservationState.Satisfied, FaultThresholdObservationState.Normal):
+			OnThresholdExited(instance, rule, state, value, session);
+			break;
+
+		case (FaultThresholdObservationState.Approaching, FaultThresholdObservationState.Normal):
+			break;
+
+		case (_, FaultThresholdObservationState.Confirmed):
+			break;
 		}
 	}
 
@@ -390,30 +453,6 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 		}
 	}
 
-	private void UpdateThresholdApproaching(
-		FaultScenarioInstance instance,
-		FaultThresholdRule rule,
-		FaultThresholdRuleRuntimeState state,
-		bool approaching,
-		bool satisfied)
-	{
-		if (satisfied)
-		{
-			state.IsApproaching = false;
-			return;
-		}
-
-		if (approaching && !state.IsApproaching)
-		{
-			state.IsApproaching = true;
-			PublishEvent(FaultScenarioEventType.ThresholdApproaching, instance.MachineId, instance, detail: rule.RuleId);
-		}
-		else if (!approaching && state.IsApproaching)
-		{
-			state.IsApproaching = false;
-		}
-	}
-
 	private void OnThresholdEntered(
 		FaultScenarioInstance instance,
 		FaultThresholdRule rule,
@@ -421,7 +460,6 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 		double value,
 		PhysicalMachineSession session)
 	{
-		state.IsCurrentlySatisfied = true;
 		state.CurrentSatisfiedSinceSimulationTime = instance.ScenarioElapsedTime;
 		state.LastEnteredAtUtc = DateTimeOffset.UtcNow;
 		state.LastEnteredSimulationTime = instance.ScenarioElapsedTime;
@@ -454,13 +492,11 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 		double value,
 		PhysicalMachineSession session)
 	{
-		state.IsCurrentlySatisfied = false;
 		state.CurrentSatisfiedSinceSimulationTime = null;
 		state.LastExitedAtUtc = DateTimeOffset.UtcNow;
 		state.LastExitedSimulationTime = instance.ScenarioElapsedTime;
 		state.ExitCount++;
 		instance.ThresholdExitCount = state.ExitCount;
-		state.IsApproaching = false;
 
 		PublishEvent(
 			FaultScenarioEventType.ThresholdExited,
@@ -549,6 +585,7 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 		IFaultScenarioSimulationBridge? bridge)
 	{
 		state.IsConfirmed = true;
+		state.ObservationState = FaultThresholdObservationState.Confirmed;
 		instance.ThresholdFaultTriggered = true;
 		instance.ThresholdConfirmedAtUtc = DateTimeOffset.UtcNow;
 		instance.ThresholdValueAtConfirmed = ReadThresholdSource(rule, session);
@@ -571,12 +608,19 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 		{
 			instance.ThresholdConfirmedEmitted = true;
 			string streakStart = state.CurrentSatisfiedSinceSimulationTime?.ToString("c", CultureInfo.InvariantCulture) ?? "00:00:00";
+			string minimumDuration = rule.MinimumDuration.ToString("c", CultureInfo.InvariantCulture);
+			var metadata = new Dictionary<string, string>
+			{
+				["MinimumDuration"] = minimumDuration,
+				["ConfirmedStreakStartedAt"] = streakStart
+			};
 			PublishEvent(
 				FaultScenarioEventType.ThresholdConfirmed,
 				session.MachineId,
 				instance,
 				value: instance.ThresholdValueAtConfirmed,
-				detail: $"{rule.MinimumDuration.ToString("c", CultureInfo.InvariantCulture)}|{streakStart}");
+				detail: rule.RuleId,
+				metadata: metadata);
 		}
 
 		if (!instance.MachineFaultedEventEmitted)
@@ -655,11 +699,24 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 		FaultScenarioInstance instance,
 		FaultScenarioPhase? phase = null,
 		double? value = null,
-		string? detail = null)
+		string? detail = null,
+		IReadOnlyDictionary<string, string>? metadata = null)
 	{
 		if (_eventSink == null)
 		{
 			return;
+		}
+
+		Dictionary<string, string>? eventMetadata = null;
+		if (metadata != null)
+		{
+			eventMetadata = new Dictionary<string, string>(metadata);
+		}
+
+		if (!string.IsNullOrEmpty(detail))
+		{
+			eventMetadata ??= new Dictionary<string, string>();
+			eventMetadata["detail"] = detail;
 		}
 
 		_eventSink.Publish(new FaultScenarioEvent
@@ -670,7 +727,8 @@ public sealed class FaultScenarioEngine : IFaultScenarioEngine
 			InstanceId = instance.InstanceId,
 			Phase = phase ?? instance.CurrentPhase,
 			Value = value,
-			Detail = detail
+			Detail = detail,
+			Metadata = eventMetadata
 		});
 	}
 }

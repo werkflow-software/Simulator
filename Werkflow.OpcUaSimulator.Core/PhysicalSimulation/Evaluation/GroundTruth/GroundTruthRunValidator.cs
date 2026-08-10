@@ -513,6 +513,12 @@ public static class GroundTruthRunValidator
 			return TimeSpan.Zero;
 		}
 
+		if (confirmedEvent.Metadata.TryGetValue("MinimumDuration", out var minimumDuration)
+			&& TimeSpan.TryParse(minimumDuration, CultureInfo.InvariantCulture, out var parsedMinimum))
+		{
+			return parsedMinimum;
+		}
+
 		string? detail = confirmedEvent.Metadata.TryGetValue("detail", out var metaDetail) ? metaDetail : null;
 		if (detail != null && detail.Contains('|', StringComparison.Ordinal))
 		{
@@ -536,6 +542,19 @@ public static class GroundTruthRunValidator
 		}
 
 		TimeSpan confirmedTime = confirmed.ExperimentSimulationTimestamp;
+		if (confirmed.Metadata.TryGetValue("ConfirmedStreakStartedAt", out var scenarioStreakStr)
+			&& TimeSpan.TryParse(scenarioStreakStr, CultureInfo.InvariantCulture, out var scenarioStreak))
+		{
+			var matchingEnter = events
+				.Where(e => e.EventType == GroundTruthEventType.ThresholdEntered
+					&& e.ExperimentSimulationTimestamp < confirmedTime)
+				.FirstOrDefault(e => e.ScenarioRelativeTimestamp == scenarioStreak);
+			if (matchingEnter != null)
+			{
+				return matchingEnter.ExperimentSimulationTimestamp;
+			}
+		}
+
 		var enters = events
 			.Where(e => e.EventType == GroundTruthEventType.ThresholdEntered
 				&& e.ExperimentSimulationTimestamp < confirmedTime)

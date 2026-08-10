@@ -234,6 +234,8 @@ public sealed class GroundTruthRecorder : IGroundTruthRecorder, IDisposable
 				return;
 			}
 
+			var metadata = BuildEventMetadata(e);
+
 			RecordEvent(
 				mapped.Value,
 				experimentTime,
@@ -243,9 +245,24 @@ public sealed class GroundTruthRecorder : IGroundTruthRecorder, IDisposable
 				null,
 				0,
 				0,
-				string.IsNullOrEmpty(e.Detail) ? null : new Dictionary<string, string> { ["detail"] = e.Detail },
+				metadata,
 				scenarioRelative);
 		}
+	}
+
+	private static Dictionary<string, string>? BuildEventMetadata(FaultScenarioEvent e)
+	{
+		if (e.Metadata != null && e.Metadata.Count > 0)
+		{
+			return new Dictionary<string, string>(e.Metadata);
+		}
+
+		if (!string.IsNullOrEmpty(e.Detail))
+		{
+			return new Dictionary<string, string> { ["detail"] = e.Detail };
+		}
+
+		return null;
 	}
 
 	private TimeSpan ResolveScenarioRelativeTime(FaultScenarioEvent e)

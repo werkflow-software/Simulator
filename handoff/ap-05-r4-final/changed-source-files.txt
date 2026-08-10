@@ -1,0 +1,9 @@
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Models/FaultThresholdObservationState.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Models/FaultThresholdRuleRuntimeState.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Models/FaultScenarioEvent.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Services/FaultScenarioEngine.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Evaluation/GroundTruth/GroundTruthEventHygieneValidator.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Evaluation/GroundTruth/GroundTruthRecorder.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Evaluation/GroundTruth/GroundTruthRunValidator.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp5R4VerificationHarness.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp5R4EvidenceTests.cs

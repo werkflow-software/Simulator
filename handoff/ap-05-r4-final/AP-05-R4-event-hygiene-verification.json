@@ -1,0 +1,71 @@
+{
+  "VerificationRunId": "ap5r4-20260810193614-700d869a7d7549d5845448115a6",
+  "StartedAtUtc": "2026-08-10T19:36:14.9317556Z",
+  "EndedAtUtc": "2026-08-10T19:36:14.9319667Z",
+  "HydraulicLeak": {
+    "ExperimentId": "R4-HYD",
+    "FaultRuns": [
+      {
+        "RunId": "fault-1",
+        "ThresholdApproachingCount": 67,
+        "ThresholdEnteredCount": 43,
+        "ThresholdExitedCount": 42,
+        "ThresholdConfirmedCount": 1,
+        "DuplicateApproachingCount": 0,
+        "InvalidTransitionCount": 0,
+        "ConfirmedStreakDuration": "00:00:15",
+        "MinimumDuration": "00:00:15",
+        "DetectableBeforeFirstReached": true,
+        "EventStateReconstructionPassed": true,
+        "HygienePassed": true,
+        "Passed": true
+      }
+    ],
+    "Passed": true,
+    "EventStateReconstructionPassed": true
+  },
+  "Laser": {
+    "ExperimentId": "R4-LAS",
+    "FaultRuns": [
+      {
+        "RunId": "fault-1",
+        "ThresholdApproachingCount": 1,
+        "ThresholdEnteredCount": 1,
+        "ThresholdExitedCount": 0,
+        "ThresholdConfirmedCount": 1,
+        "DuplicateApproachingCount": 0,
+        "InvalidTransitionCount": 0,
+        "ConfirmedStreakDuration": "00:00:15",
+        "MinimumDuration": "00:00:15",
+        "DetectableBeforeFirstReached": true,
+        "EventStateReconstructionPassed": true,
+        "HygienePassed": true,
+        "Passed": true
+      }
+    ],
+    "Passed": true,
+    "EventStateReconstructionPassed": true
+  },
+  "EventStateReconstruction": {
+    "Passed": true
+  },
+  "ThresholdContinuityRegression": true,
+  "DetectabilityRegression": true,
+  "ControlRegression": true,
+  "NormalRegression": true,
+  "MetricsRegression": {
+    "VerificationRunId": "ap5-20260810193614-598a2fc5d1f54f34abc964aae",
+    "EvidenceType": "SyntheticTestEvidence",
+    "TruePositivePassed": true,
+    "MissedDetectionPassed": true,
+    "FalsePositivePassed": true,
+    "LeadTimePassed": true,
+    "ControlWarningPassed": true,
+    "RepetitionTrendPassed": true,
+    "VigilEvaluationAvailable": true,
+    "Passed": true
+  },
+  "AP5R4Passed": true,
+  "AP5OverallPassed": true,
+  "FailedCriteria": []
+}
