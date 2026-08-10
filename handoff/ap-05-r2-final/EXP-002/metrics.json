@@ -1,0 +1,22 @@
+{
+  "VigilEvaluationAvailable": false,
+  "EvidenceType": "NotAvailable",
+  "RealVigilLearningEvaluation": "NotExecuted",
+  "FaultCount": 2,
+  "DetectedFaultCount": 0,
+  "MissedFaultCount": 0,
+  "DetectionRate": null,
+  "WarningCount": 0,
+  "TruePositiveWarnings": 0,
+  "FalsePositiveWarnings": 0,
+  "FalsePositiveRate": null,
+  "MeanLeadTime": null,
+  "MedianLeadTime": null,
+  "MinLeadTime": null,
+  "MaxLeadTime": null,
+  "ControlRunCount": 1,
+  "ControlRunsWithWarning": 0,
+  "NormalDuration": "00:00:30",
+  "WarningsPerNormalHour": null,
+  "PerRepetitionLeadTimes": []
+}

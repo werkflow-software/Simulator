@@ -1,0 +1,13 @@
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Models/FaultScenarioEventType.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Models/FaultScenarioInstance.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Services/FaultScenarioEngine.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Evaluation/GroundTruth/GroundTruthRecorder.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Evaluation/GroundTruth/GroundTruthRunValidator.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Evaluation/Metrics/MetricsEngine.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Evaluation/Experiments/ExperimentRunner.cs
+Werkflow.OpcUaSimulator.App/FaultScenarios/Bending/hydraulic-leak.json
+Werkflow.OpcUaSimulator.App/FaultScenarios/Shared/laser-overheating-axis-drive.json
+Werkflow.OpcUaSimulator.Tests/PhysicalAp5R1VerificationHarness.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp5R1EvidenceTests.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp5R2VerificationHarness.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp5R2EvidenceTests.cs

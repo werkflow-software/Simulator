@@ -116,23 +116,23 @@ public sealed class ExperimentRunner : IExperimentRunner
 			lock (_sync) { _state = ExperimentRunnerState.NormalLearning; }
 
 			string normalRunId = $"normal-{runIndex}";
+			TimeSpan normalRunStartedAt = simClock;
 			var normalRun = new RunManifestEntry
 			{
 				RunId = normalRunId,
 				RunType = "Normal",
 				RunSeed = ExperimentSeedDeriver.DeriveRunSeed(definition.BaseSeed, runIndex, "Normal"),
 				RepetitionIndex = 0,
+				RunStartedAt = normalRunStartedAt,
 				Outcome = "NoFault"
 			};
-			TimeSpan normalStart = simClock;
 			_groundTruthRecorder.BeginRun(normalRunId, "Normal", normalRun.RunSeed, 0);
 			_groundTruthRecorder.UpdateExperimentClock(simClock);
 			_groundTruthRecorder.RecordEvent(GroundTruthEventType.NormalObservationStarted, simClock, TimeSpan.Zero);
 			_signalRecorder.BeginRun(normalRunId);
 			simClock = await RunDurationAsync(
 				definition.NormalLearningDuration, session, simClock, tickMs, token, ExperimentRunnerState.NormalLearning, normalRunId);
-			normalRun.ScenarioStart = normalStart;
-			normalRun.RecoveryCompletedAt = simClock;
+			normalRun.RunCompletedAt = simClock;
 			_signalRecorder.CompleteRun();
 			runs.Add(normalRun);
 			_groundTruthRecorder.CompleteRun();
@@ -186,7 +186,10 @@ public sealed class ExperimentRunner : IExperimentRunner
 			var metrics = _metricsEngine.Compute(gtEvents, vigilEvents, runs, _vigilEventSource.IsConnected, evidenceType);
 
 			var validationResults = runs
-				.Select(r => GroundTruthRunValidator.ValidateRun(r, gtEvents))
+				.Select(r => GroundTruthRunValidator.ValidateRun(
+					r,
+					gtEvents,
+					definition.ExperimentType == ExperimentType.FaultLearningSeries))
 				.ToList();
 			var failedCriteria = validationResults
 				.Where(v => !v.Passed)
@@ -258,6 +261,7 @@ public sealed class ExperimentRunner : IExperimentRunner
 
 		_groundTruthRecorder.BeginRun(planned.RunId, "Fault", runSeed, faultRep);
 		_signalRecorder.BeginRun(planned.RunId);
+		TimeSpan faultRunStartedAt = simClock;
 
 		if (startOffset > TimeSpan.Zero)
 		{
@@ -283,6 +287,7 @@ public sealed class ExperimentRunner : IExperimentRunner
 			RunSeed = runSeed,
 			RepetitionIndex = faultRep,
 			Intensity = intensity,
+			RunStartedAt = faultRunStartedAt,
 			ScenarioStart = simClock,
 			Outcome = "Pending"
 		};
@@ -317,6 +322,7 @@ public sealed class ExperimentRunner : IExperimentRunner
 			}
 		}
 
+		manifest.RunCompletedAt = simClock;
 		runs.Add(manifest);
 		_signalRecorder.CompleteRun();
 		_groundTruthRecorder.CompleteRun();
@@ -340,6 +346,7 @@ public sealed class ExperimentRunner : IExperimentRunner
 
 		_groundTruthRecorder.BeginRun(planned.RunId, "Control", runSeed, 0);
 		_signalRecorder.BeginRun(planned.RunId);
+		TimeSpan controlRunStartedAt = simClock;
 
 		await _faultScenarioService.StartAsync(new FaultScenarioStartRequest
 		{
@@ -359,6 +366,7 @@ public sealed class ExperimentRunner : IExperimentRunner
 			RunType = "Control",
 			RunSeed = runSeed,
 			RepetitionIndex = 0,
+			RunStartedAt = controlRunStartedAt,
 			ScenarioStart = simClock,
 			Outcome = "NoFault"
 		};
@@ -395,6 +403,7 @@ public sealed class ExperimentRunner : IExperimentRunner
 			}
 		}
 
+		manifest.RunCompletedAt = simClock;
 		runs.Add(manifest);
 		_signalRecorder.CompleteRun();
 		_groundTruthRecorder.CompleteRun();

@@ -288,6 +288,7 @@ public sealed class GroundTruthRecorder : IGroundTruthRecorder, IDisposable
 		FaultScenarioEventType.DegradationBecameDetectable => GroundTruthEventType.DegradationBecameDetectable,
 		FaultScenarioEventType.ThresholdApproaching => GroundTruthEventType.ThresholdApproaching,
 		FaultScenarioEventType.ThresholdReached => GroundTruthEventType.ThresholdFirstReached,
+		FaultScenarioEventType.ThresholdConfirmed => GroundTruthEventType.ThresholdConfirmed,
 		FaultScenarioEventType.MachineFaulted => GroundTruthEventType.MachineFaulted,
 		FaultScenarioEventType.RecoveryStarted => GroundTruthEventType.RecoveryStarted,
 		FaultScenarioEventType.RecoveryCompleted => GroundTruthEventType.RecoveryCompleted,

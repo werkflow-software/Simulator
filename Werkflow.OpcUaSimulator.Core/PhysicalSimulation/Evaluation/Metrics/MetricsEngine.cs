@@ -95,7 +95,12 @@ public sealed class MetricsEngine
 			.ToList();
 
 		TimeSpan normalDuration = TimeSpan.FromTicks(
-			normalRuns.Sum(r => (r.RecoveryCompletedAt ?? r.FaultAt ?? TimeSpan.Zero).Ticks));
+			normalRuns.Sum(r =>
+			{
+				var start = r.RunStartedAt ?? r.ScenarioStart ?? TimeSpan.Zero;
+				var end = r.RunCompletedAt ?? r.RecoveryCompletedAt ?? r.FaultAt ?? TimeSpan.Zero;
+				return Math.Max(0, (end - start).Ticks);
+			}));
 
 		return new EvaluationMetrics
 		{
@@ -185,6 +190,11 @@ public sealed class MetricsEngine
 			return TimeSpan.Zero;
 		}
 
+		if (normalRun.RunCompletedAt.HasValue && normalRun.RunStartedAt.HasValue)
+		{
+			return normalRun.RunCompletedAt.Value - normalRun.RunStartedAt.Value;
+		}
+
 		if (normalRun.RecoveryCompletedAt.HasValue && normalRun.ScenarioStart.HasValue)
 		{
 			return normalRun.RecoveryCompletedAt.Value - normalRun.ScenarioStart.Value;
@@ -221,11 +231,29 @@ public sealed class RunManifestEntry
 
 	public TimeSpan? ScenarioStart { get; set; }
 
+	public TimeSpan? ScenarioStartedAt { get; set; }
+
+	public TimeSpan? RunStartedAt { get; set; }
+
+	public TimeSpan? RunCompletedAt { get; set; }
+
 	public TimeSpan? DetectableAt { get; set; }
+
+	public TimeSpan? ThresholdApproachingAt { get; set; }
 
 	public TimeSpan? ThresholdAt { get; set; }
 
+	public TimeSpan? ThresholdFirstReachedAt { get; set; }
+
+	public TimeSpan? ThresholdConfirmedAt { get; set; }
+
+	public TimeSpan? ThresholdMinimumDuration { get; set; }
+
 	public TimeSpan? FaultAt { get; set; }
+
+	public TimeSpan? FirstFaultedPhaseAt { get; set; }
+
+	public TimeSpan? RecoveryStartedAt { get; set; }
 
 	public TimeSpan? RecoveryCompletedAt { get; set; }
 

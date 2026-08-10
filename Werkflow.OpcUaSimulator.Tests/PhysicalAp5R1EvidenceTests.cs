@@ -65,7 +65,7 @@ public class PhysicalAp5R1EvidenceTests
 		var engine = new MetricsEngine();
 		var runs = new List<RunManifestEntry>
 		{
-			new() { RunId = "normal-0", RunType = "Normal", RunSeed = 1, RepetitionIndex = 0, ScenarioStart = TimeSpan.FromSeconds(10), RecoveryCompletedAt = TimeSpan.FromSeconds(40) }
+			new() { RunId = "normal-0", RunType = "Normal", RunSeed = 1, RepetitionIndex = 0, RunStartedAt = TimeSpan.FromSeconds(10), RunCompletedAt = TimeSpan.FromSeconds(40) }
 		};
 		var metrics = engine.Compute([], [], runs, false, EvidenceType.NotAvailable);
 		Assert.Equal(TimeSpan.FromSeconds(30), metrics.NormalDuration);

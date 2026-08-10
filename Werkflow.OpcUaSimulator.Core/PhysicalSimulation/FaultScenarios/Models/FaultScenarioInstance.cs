@@ -103,6 +103,8 @@ public sealed class FaultScenarioInstance
 
 	public bool ThresholdFirstReachedEmitted { get; set; }
 
+	public bool ThresholdConfirmedEmitted { get; set; }
+
 	public bool MachineFaultedEventEmitted { get; set; }
 
 	public bool RecoveryCompletedEventEmitted { get; set; }

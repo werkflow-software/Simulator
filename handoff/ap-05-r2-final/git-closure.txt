@@ -1,0 +1,4 @@
+﻿Commit-SHA: cfa47861fcb9d5c0a853da0180938a68cf917445
+Tag: opcua-simulator-ground-truth-evaluation-ap5-final
+TagTarget-SHA: cfa47861fcb9d5c0a853da0180938a68cf917445
+CommitEqualsTagTarget: true

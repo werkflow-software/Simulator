@@ -138,7 +138,10 @@ public static class PhysicalAp5R1VerificationHarness
 		int variationCount = 0;
 		if (faultA?.RunSeed != faultC?.RunSeed) variationCount++;
 		if (faultA?.Intensity != faultC?.Intensity) variationCount++;
-		if (faultA?.ScenarioStart != faultC?.ScenarioStart) variationCount++;
+		if (faultA?.ScenarioStartedAt != faultC?.ScenarioStartedAt) variationCount++;
+		if (faultA?.ThresholdFirstReachedAt != faultC?.ThresholdFirstReachedAt) variationCount++;
+		if (faultA?.DetectableAt != faultC?.DetectableAt) variationCount++;
+		if (faultA?.FaultAt != faultC?.FaultAt) variationCount++;
 
 		var differentSeed = new Ap5DifferentSeedReproducibilityResult
 		{

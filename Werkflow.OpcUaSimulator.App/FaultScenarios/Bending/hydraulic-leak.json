@@ -14,6 +14,12 @@
   "defaultIntensity": 1.0,
   "minimumIntensity": 0.25,
   "maximumIntensity": 1.5,
+  "detectability": {
+    "minimumProgress": 0.05,
+    "minimumEffectMagnitude": 0.08,
+    "minimumDuration": "00:00:02",
+    "minimumOutOfBandSignalCount": 1
+  },
   "phases": [
     { "phase": "initiating", "durationFraction": 0.10 },
     { "phase": "developing", "durationFraction": 0.20 },
