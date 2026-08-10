@@ -67,4 +67,6 @@ public interface ISimulationEngine
 	void SetCounterFrozen(Guid machineId, bool frozen);
 
 	Task SetMachineStateManualAsync(Guid machineId, MachineState state, CancellationToken cancellationToken = default(CancellationToken));
+
+	Task AssignJobIfMissingAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken));
 }

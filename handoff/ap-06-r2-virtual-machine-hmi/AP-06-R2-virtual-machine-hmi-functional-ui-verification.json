@@ -1,0 +1,137 @@
+{
+  "verificationRunId": "ap6r2-20260810210247-dca55d98c44143dabe2f9c2b102",
+  "startedAtUtc": "2026-08-10T21:02:47.339069Z",
+  "endedAtUtc": "2026-08-10T21:02:50.3304398Z",
+  "runtimeBinding": {
+    "liveSignalCount": 309,
+    "expectedPhysicalSignals": 309,
+    "jobVisible": true,
+    "partVisible": true,
+    "representativeSignals": [
+      {
+        "semantic": "XPosition",
+        "signalId": "Axis01.Position",
+        "hmiValue": "597.03 mm",
+        "runtimeValue": "597,032175162966",
+        "bound": true
+      },
+      {
+        "semantic": "YPosition",
+        "signalId": "Axis02.Position",
+        "hmiValue": "635.37 mm",
+        "runtimeValue": "635,3662462106441",
+        "bound": true
+      },
+      {
+        "semantic": "ZPosition",
+        "signalId": "Axis03.Position",
+        "hmiValue": "620.89 mm",
+        "runtimeValue": "620,8916674469149",
+        "bound": true
+      },
+      {
+        "semantic": "MotorCurrent",
+        "signalId": "Axis01.MotorCurrent",
+        "hmiValue": "4.71 A",
+        "runtimeValue": "4,709145016037948",
+        "bound": true
+      },
+      {
+        "semantic": "MotorTemperature",
+        "signalId": "Axis01.MotorTemperature",
+        "hmiValue": "33.53 \u00B0C",
+        "runtimeValue": "33,52863191715953",
+        "bound": true
+      },
+      {
+        "semantic": "CoolingTemperature",
+        "signalId": "Cooling.PrimaryCircuit.Temperature",
+        "hmiValue": "23.61 \u00B0C",
+        "runtimeValue": "23,60680060058993",
+        "bound": true
+      },
+      {
+        "semantic": "PowerDemand",
+        "signalId": "Process.PowerDemand",
+        "hmiValue": "3.05 kW",
+        "runtimeValue": "3,045342956048109",
+        "bound": true
+      },
+      {
+        "semantic": "VibrationRms",
+        "signalId": "Mechanical.VibrationRms",
+        "hmiValue": "1.22 mm/s",
+        "runtimeValue": "1,2161687872866962",
+        "bound": true
+      },
+      {
+        "semantic": "ActualCounter",
+        "signalId": "",
+        "hmiValue": "12",
+        "runtimeValue": "12",
+        "bound": true
+      },
+      {
+        "semantic": "MachineState",
+        "signalId": "",
+        "hmiValue": "Produziert",
+        "runtimeValue": "Produziert",
+        "bound": true
+      }
+    ]
+  },
+  "overview": {
+    "keyValuesVisible": 15,
+    "emptyMainArea": false
+  },
+  "commands": {
+    "startStateValid": true,
+    "stopStateValid": true,
+    "pauseStateValid": true,
+    "resumeStateValid": true
+  },
+  "tabs": {
+    "axesSignalCount": 54,
+    "motorsSignalCount": 34,
+    "temperatureSignalCount": 29,
+    "processSignalCount": 67,
+    "coolingSignalCount": 18,
+    "powerSignalCount": 42,
+    "vibrationSignalCount": 7,
+    "productionSignalCount": 30,
+    "otherSignalCount": 309
+  },
+  "opcUaRuntimeConsistency": {
+    "passed": true
+  },
+  "windowLifecycleRegression": {
+    "passed": true,
+    "singleInstance": true,
+    "closeToTray": true,
+    "explicitShutdownRequired": true
+  },
+  "ap5Regression": {
+    "machineId": "95515891-f86b-406e-b98b-e39d1bf0825d",
+    "endpoint": "opc.tcp://127.0.0.1:48510",
+    "nodesInspected": 309,
+    "valuesInspected": 309,
+    "forbiddenTerms": [
+      "ScenarioId",
+      "ExperimentId",
+      "RunId",
+      "RunSeed",
+      "FaultRepetitionIndex",
+      "GroundTruth",
+      "HiddenState",
+      "Detectable",
+      "FaultScenario",
+      "laser-overheating-axis-drive",
+      "hydraulic-leak"
+    ],
+    "matches": [],
+    "allowedMachineErrorMessages": [],
+    "passed": true
+  },
+  "ap6R2Passed": true,
+  "failedCriteria": []
+}

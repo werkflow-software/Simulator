@@ -489,6 +489,18 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 		return Task.CompletedTask;
 	}
 
+	public Task AssignJobIfMissingAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken))
+	{
+		MachineConfiguration machine = GetMachine(machineId);
+		MachineRuntimeState runtime = GetRuntime(machineId);
+		if (string.IsNullOrWhiteSpace(runtime.JobName) || runtime.TargetCounter <= 0)
+		{
+			AssignJobToMachine(machine, runtime);
+		}
+		NotifyMachineChanged(runtime);
+		return Task.CompletedTask;
+	}
+
 	private async Task StartMachineInternalAsync(MachineConfiguration machine, bool assignJob, CancellationToken cancellationToken)
 	{
 		MachineRuntimeState runtime = GetRuntime(machine.Id);
