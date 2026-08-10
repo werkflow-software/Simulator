@@ -1,0 +1,14 @@
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Evaluation/
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Models/FaultDetectabilityDefinition.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Services/FaultScenarioEventHub.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Services/IFaultScenarioEventSink.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Services/FaultScenarioEngine.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Services/FaultScenarioService.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Services/JsonFaultScenarioRepository.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Models/FaultScenarioDefinition.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/FaultScenarios/Models/FaultScenarioInstance.cs
+Werkflow.OpcUaSimulator.App/ViewModels/ExperimentsViewModel.cs
+Werkflow.OpcUaSimulator.App/App.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp5VerificationHarness.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalAp5EvidenceTests.cs
+Werkflow.OpcUaSimulator.Tests/PhysicalTestServiceFactory.cs

@@ -1,0 +1,20 @@
+Branch:
+feature/physical-learning-simulator
+
+Commit:
+1219a4143d60c5341b38ebe2b784a42d44462a83
+
+CommitMessage:
+Implement AP 5 ground truth and VIGIL evaluation framework
+
+Tag:
+opcua-simulator-ground-truth-evaluation-ap5-complete
+
+TagTarget:
+1219a4143d60c5341b38ebe2b784a42d44462a83
+
+CommitEqualsTagTarget:
+true
+
+GitStatus:
+AP 5 committed. AP 4 unchanged (eb317a3 / opcua-simulator-fault-scenarios-ap4-final-r7).

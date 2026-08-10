@@ -20,6 +20,8 @@ public sealed class FaultScenarioService : IFaultScenarioService
 
 	private readonly IFaultScenarioSimulationBridge? _bridge;
 
+	private readonly IFaultScenarioEventSink? _eventSink;
+
 	private readonly object _sync = new object();
 
 	private readonly Dictionary<Guid, PhysicalMachineSession> _sessions = new Dictionary<Guid, PhysicalMachineSession>();
@@ -28,13 +30,20 @@ public sealed class FaultScenarioService : IFaultScenarioService
 
 	public event EventHandler<FaultScenarioEvent>? ScenarioEvent;
 
-	public FaultScenarioService(IFaultScenarioRepository repository, IFaultScenarioValidator validator, IFaultScenarioRuntimeFactory runtimeFactory, IFaultRecoveryEngine recoveryEngine, IFaultScenarioSimulationBridge? bridge = null)
+	public FaultScenarioService(
+		IFaultScenarioRepository repository,
+		IFaultScenarioValidator validator,
+		IFaultScenarioRuntimeFactory runtimeFactory,
+		IFaultRecoveryEngine recoveryEngine,
+		IFaultScenarioSimulationBridge? bridge = null,
+		IFaultScenarioEventSink? eventSink = null)
 	{
 		_repository = repository;
 		_validator = validator;
 		_runtimeFactory = runtimeFactory;
 		_recoveryEngine = recoveryEngine;
 		_bridge = bridge;
+		_eventSink = eventSink;
 	}
 
 	public async Task InitializeAsync(CancellationToken cancellationToken = default(CancellationToken))
@@ -348,13 +357,15 @@ public sealed class FaultScenarioService : IFaultScenarioService
 
 	private void RaiseEvent(FaultScenarioEventType type, Guid machineId, string scenarioId, Guid instanceId = default(Guid), string? detail = null)
 	{
-		this.ScenarioEvent?.Invoke(this, new FaultScenarioEvent
+		var evt = new FaultScenarioEvent
 		{
 			EventType = type,
 			MachineId = machineId,
 			ScenarioId = scenarioId,
 			InstanceId = instanceId,
 			Detail = detail
-		});
+		};
+		_eventSink?.Publish(evt);
+		this.ScenarioEvent?.Invoke(this, evt);
 	}
 }

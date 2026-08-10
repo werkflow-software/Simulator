@@ -1,0 +1,67 @@
+{
+  "ExperimentId": "EXP-002",
+  "ExperimentVersion": "1.0",
+  "ExperimentType": "FaultLearningSeries",
+  "MachineProfileId": "bending-hydraulic-machine-300",
+  "ProfileHash": "0f8f7190dfe62a05ae4c5523e132e1f834e1aa6957b7e1f1fc000921ec7bc5a9",
+  "ScenarioId": "hydraulic-leak",
+  "ScenarioHash": "02fb367d7fb64b0b6f5c5522a5ce397beb4eed55305be1fdeacd4d4b4f8b2eb0",
+  "BaseSeed": 202,
+  "StartedAtUtc": "2026-08-10T14:18:46.9053877Z",
+  "CompletedAtUtc": "2026-08-10T14:18:48.371193Z",
+  "TimeFactor": 50,
+  "Runs": [
+    {
+      "RunId": "normal-0",
+      "RunType": "Normal",
+      "RunSeed": 1898058381,
+      "RepetitionIndex": 0,
+      "Intensity": 0,
+      "ScenarioStart": null,
+      "DetectableAt": null,
+      "ThresholdAt": null,
+      "FaultAt": null,
+      "RecoveryCompletedAt": null,
+      "Outcome": "NoFault"
+    },
+    {
+      "RunId": "fault-1",
+      "RunType": "Fault",
+      "RunSeed": 1406085421,
+      "RepetitionIndex": 1,
+      "Intensity": 0.9118930992958569,
+      "ScenarioStart": "00:00:50",
+      "DetectableAt": "00:00:00",
+      "ThresholdAt": null,
+      "FaultAt": null,
+      "RecoveryCompletedAt": null,
+      "Outcome": "NoFaultTriggered"
+    },
+    {
+      "RunId": "control-1",
+      "RunType": "Control",
+      "RunSeed": 977278822,
+      "RepetitionIndex": 0,
+      "Intensity": 0,
+      "ScenarioStart": null,
+      "DetectableAt": null,
+      "ThresholdAt": null,
+      "FaultAt": null,
+      "RecoveryCompletedAt": null,
+      "Outcome": "NoFault"
+    },
+    {
+      "RunId": "fault-2",
+      "RunType": "Fault",
+      "RunSeed": 1406085483,
+      "RepetitionIndex": 2,
+      "Intensity": 1.0947822553779847,
+      "ScenarioStart": "01:25:07.5000000",
+      "DetectableAt": "00:00:00",
+      "ThresholdAt": null,
+      "FaultAt": null,
+      "RecoveryCompletedAt": null,
+      "Outcome": "NoFaultTriggered"
+    }
+  ]
+}

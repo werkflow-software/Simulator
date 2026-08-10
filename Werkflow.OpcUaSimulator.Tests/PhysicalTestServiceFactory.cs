@@ -10,10 +10,11 @@ using Werkflow.OpcUaSimulator.OpcUa.PhysicalSignals.Mapping;
 
 namespace Werkflow.OpcUaSimulator.Tests;
 
-internal sealed record FaultScenarioTestStack(
+public sealed record FaultScenarioTestStack(
     PhysicalSignalPublishingCoordinator Coordinator,
     IFaultScenarioService FaultScenarioService,
     PhysicalRuntimeCoordinator RuntimeCoordinator,
+    FaultScenarioEventHub EventHub,
     TestFaultScenarioSimulationBridge? Bridge = null);
 
 internal static class PhysicalTestServiceFactory
@@ -38,7 +39,8 @@ internal static class PhysicalTestServiceFactory
     {
         var faultEffectCalculator = new FaultEffectCalculator();
         var faultRecoveryEngine = new FaultRecoveryEngine();
-        var faultScenarioEngine = new FaultScenarioEngine(faultEffectCalculator, faultRecoveryEngine);
+        var eventHub = new FaultScenarioEventHub();
+        var faultScenarioEngine = new FaultScenarioEngine(faultEffectCalculator, faultRecoveryEngine, eventHub);
         var engine = new PhysicalSimulationEngine(
             new HiddenProcessStateEngine(),
             new SignalCalculationEngine(),
@@ -52,7 +54,8 @@ internal static class PhysicalTestServiceFactory
             new FaultScenarioValidator(),
             new FaultScenarioRuntimeFactory(),
             faultRecoveryEngine,
-            bridge);
+            bridge,
+            eventHub);
 
         var coordinator = new PhysicalSignalPublishingCoordinator(
             new PhysicalMachineSessionFactory(
@@ -65,7 +68,7 @@ internal static class PhysicalTestServiceFactory
             log,
             faultScenarioService);
 
-        return new FaultScenarioTestStack(coordinator, faultScenarioService, runtimeCoordinator, bridge);
+        return new FaultScenarioTestStack(coordinator, faultScenarioService, runtimeCoordinator, eventHub, bridge);
     }
 
     public static FaultScenarioTestStack CreateFaultScenarioServiceWithServer(ILogService log, IMachineServerService serverService)

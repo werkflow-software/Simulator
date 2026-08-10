@@ -56,4 +56,6 @@ public sealed class FaultScenarioDefinition
 	public bool SupportsNonFaultingControlRun { get; set; }
 
 	public int Priority { get; set; } = 5;
+
+	public FaultDetectabilityDefinition? Detectability { get; set; }
 }

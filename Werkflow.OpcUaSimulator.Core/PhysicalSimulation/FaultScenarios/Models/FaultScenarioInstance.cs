@@ -90,4 +90,20 @@ public sealed class FaultScenarioInstance
 	public double? ThresholdValueAtConfirmed { get; set; }
 
 	public string? ActiveThresholdRuleId { get; set; }
+
+	public bool DetectabilityEmitted { get; set; }
+
+	public DateTimeOffset? DetectableAtUtc { get; set; }
+
+	public TimeSpan? DetectableSimulationTime { get; set; }
+
+	public TimeSpan? DetectabilityConditionStarted { get; set; }
+
+	public bool ThresholdApproachingEmitted { get; set; }
+
+	public bool ThresholdFirstReachedEmitted { get; set; }
+
+	public bool MachineFaultedEventEmitted { get; set; }
+
+	public bool RecoveryCompletedEventEmitted { get; set; }
 }

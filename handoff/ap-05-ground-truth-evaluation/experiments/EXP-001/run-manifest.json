@@ -1,0 +1,80 @@
+{
+  "ExperimentId": "EXP-001",
+  "ExperimentVersion": "1.0",
+  "ExperimentType": "FaultLearningSeries",
+  "MachineProfileId": "laser-processing-machine-300",
+  "ProfileHash": "292ebb61111263c425093b7ce3659607a6d5de4c983e0d51910fd1d964d89f20",
+  "ScenarioId": "laser-overheating-axis-drive",
+  "ScenarioHash": "899285537b68f44d14753f105a0692d31e26e3d6b26f7c0d154a22c202895049",
+  "BaseSeed": 101,
+  "StartedAtUtc": "2026-08-10T14:20:46.7074398Z",
+  "CompletedAtUtc": "2026-08-10T14:20:47.8557159Z",
+  "TimeFactor": 50,
+  "Runs": [
+    {
+      "RunId": "normal-0",
+      "RunType": "Normal",
+      "RunSeed": -1331675866,
+      "RepetitionIndex": 0,
+      "Intensity": 0,
+      "ScenarioStart": null,
+      "DetectableAt": null,
+      "ThresholdAt": null,
+      "FaultAt": null,
+      "RecoveryCompletedAt": null,
+      "Outcome": "NoFault"
+    },
+    {
+      "RunId": "fault-1",
+      "RunType": "Fault",
+      "RunSeed": -1942163876,
+      "RepetitionIndex": 1,
+      "Intensity": 0.9588905171532606,
+      "ScenarioStart": "00:00:45",
+      "DetectableAt": "00:00:00",
+      "ThresholdAt": null,
+      "FaultAt": null,
+      "RecoveryCompletedAt": null,
+      "Outcome": "NoFaultTriggered"
+    },
+    {
+      "RunId": "control-1",
+      "RunType": "Control",
+      "RunSeed": -383282118,
+      "RepetitionIndex": 0,
+      "Intensity": 0,
+      "ScenarioStart": null,
+      "DetectableAt": null,
+      "ThresholdAt": null,
+      "FaultAt": null,
+      "RecoveryCompletedAt": null,
+      "Outcome": "NoFault"
+    },
+    {
+      "RunId": "fault-2",
+      "RunType": "Fault",
+      "RunSeed": -1942163814,
+      "RepetitionIndex": 2,
+      "Intensity": 1.1417796732353884,
+      "ScenarioStart": "01:25:00",
+      "DetectableAt": "00:00:00",
+      "ThresholdAt": "01:25:05",
+      "FaultAt": "01:25:05",
+      "RecoveryCompletedAt": "01:25:10",
+      "Outcome": "FaultRecovered"
+    },
+    {
+      "RunId": "fault-3",
+      "RunType": "Fault",
+      "RunSeed": -1942163783,
+      "RepetitionIndex": 3,
+      "Intensity": 1.0832242512764523,
+      "ScenarioStart": "01:25:42.5000000",
+      "DetectableAt": "00:00:00",
+      "ThresholdAt": "01:25:47.5000000",
+      "FaultAt": "01:25:47.5000000",
+      "RecoveryCompletedAt": "01:25:52.5000000",
+      "Outcome": "FaultRecovered"
+    }
+  ]
+}

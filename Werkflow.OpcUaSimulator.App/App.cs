@@ -122,6 +122,7 @@ public class App : Application
 			services.AddSingleton<SettingsViewModel>();
 			services.AddSingleton<ManualControlViewModel>();
 			services.AddSingleton<FaultScenariosViewModel>();
+			services.AddSingleton<ExperimentsViewModel>();
 			services.AddSingleton<MainViewModel>();
 			services.AddSingleton<MainWindow>();
 		})

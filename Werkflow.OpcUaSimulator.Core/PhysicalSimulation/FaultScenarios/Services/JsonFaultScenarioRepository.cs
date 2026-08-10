@@ -66,6 +66,19 @@ public sealed class JsonFaultScenarioRepository : IFaultScenarioRepository
 		public bool SupportsNonFaultingControlRun { get; set; }
 
 		public int Priority { get; set; }
+
+		public DetectabilityDto? Detectability { get; set; }
+	}
+
+	private sealed class DetectabilityDto
+	{
+		public double MinimumProgress { get; set; }
+
+		public double MinimumEffectMagnitude { get; set; }
+
+		public string? MinimumDuration { get; set; }
+
+		public int MinimumOutOfBandSignalCount { get; set; }
 	}
 
 	private sealed class PhaseDto
@@ -313,7 +326,16 @@ public sealed class JsonFaultScenarioRepository : IFaultScenarioRepository
 			Tags = (dto.Tags ?? new List<string>()),
 			Metadata = (dto.Metadata ?? new Dictionary<string, string>()),
 			SupportsNonFaultingControlRun = dto.SupportsNonFaultingControlRun,
-			Priority = ((dto.Priority > 0) ? dto.Priority : CategoryPriority(ParseEnum(dto.Category, FaultScenarioCategory.Mechanical)))
+			Priority = ((dto.Priority > 0) ? dto.Priority : CategoryPriority(ParseEnum(dto.Category, FaultScenarioCategory.Mechanical))),
+			Detectability = dto.Detectability == null
+				? new FaultDetectabilityDefinition()
+				: new FaultDetectabilityDefinition
+				{
+					MinimumProgress = dto.Detectability.MinimumProgress > 0 ? dto.Detectability.MinimumProgress : 0.35,
+					MinimumEffectMagnitude = dto.Detectability.MinimumEffectMagnitude > 0 ? dto.Detectability.MinimumEffectMagnitude : 0.2,
+					MinimumDuration = ParseTime(dto.Detectability.MinimumDuration, TimeSpan.FromSeconds(30)),
+					MinimumOutOfBandSignalCount = dto.Detectability.MinimumOutOfBandSignalCount > 0 ? dto.Detectability.MinimumOutOfBandSignalCount : 2
+				}
 		};
 	}
 
