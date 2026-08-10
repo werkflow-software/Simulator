@@ -62,12 +62,12 @@ Siehe `AP-05-R2-ground-truth-lifecycle-verification.json`.
 
 ## 19. Commit-SHA
 
-`cfa47861fcb9d5c0a853da0180938a68cf917445`
+`2b6e819784c36247e342cda883da1e49152d3f6e`
 
 ## 20. Tag / TagTarget
 
 - Tag: `opcua-simulator-ground-truth-evaluation-ap5-final`
-- TagTarget-SHA: `cfa47861fcb9d5c0a853da0180938a68cf917445`
+- TagTarget-SHA: `2b6e819784c36247e342cda883da1e49152d3f6e`
 - Vorherige Tags (`ap5-verified`, `ap5-complete`) unverändert
 
 ## 22. AP5R2Passed
