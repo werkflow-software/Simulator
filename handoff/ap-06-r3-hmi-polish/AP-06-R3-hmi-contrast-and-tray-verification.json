@@ -1,7 +1,7 @@
 {
-  "verificationRunId": "ap6r3-20260810212412-4cb177f2fdf647d0a7bb584a8b9",
-  "startedAtUtc": "2026-08-10T21:24:12.4889339Z",
-  "endedAtUtc": "2026-08-10T21:24:15.2189612Z",
+  "verificationRunId": "ap6r3-20260810212535-008a6bb4b7c74b44b3e8c6674d0",
+  "startedAtUtc": "2026-08-10T21:25:35.4805312Z",
+  "endedAtUtc": "2026-08-10T21:25:38.3895817Z",
   "contrast": {
     "primaryTextReadable": true,
     "buttonTextReadable": true,
@@ -24,9 +24,9 @@
     "machineStillRunningAfterX": true
   },
   "ap6R2Regression": {
-    "verificationRunId": "ap6r2-20260810212412-4b3897c6c29c4d0fb0b6251eea2",
-    "startedAtUtc": "2026-08-10T21:24:12.5537176Z",
-    "endedAtUtc": "2026-08-10T21:24:15.2189517Z",
+    "verificationRunId": "ap6r2-20260810212535-024c018acaeb4df5a46a5b31dda",
+    "startedAtUtc": "2026-08-10T21:25:35.6828043Z",
+    "endedAtUtc": "2026-08-10T21:25:38.3894586Z",
     "runtimeBinding": {
       "liveSignalCount": 309,
       "expectedPhysicalSignals": 309,
@@ -136,7 +136,7 @@
       "explicitShutdownRequired": true
     },
     "ap5Regression": {
-      "machineId": "55b56f47-6860-4fe7-93c3-19cb74bb2de7",
+      "machineId": "1ab03efb-4965-4252-b684-520b22fa936e",
       "endpoint": "opc.tcp://127.0.0.1:48510",
       "nodesInspected": 309,
       "valuesInspected": 309,
