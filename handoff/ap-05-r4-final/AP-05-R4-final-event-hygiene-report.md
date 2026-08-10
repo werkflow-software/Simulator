@@ -82,13 +82,13 @@ Ergebnis: **Build erfolgreich, 212 Tests bestanden**
 
 ## 15. Commit-SHA
 
-`d515bf7b7b77b3a3823e2f35d8c1fe847e5c4e60`
+`55c7837d93e0d85de9124906a3d39177c65a5e75`
 
 ## 16. Tag / TagTarget
 
 Tag: `opcua-simulator-ground-truth-evaluation-ap5-final-r4`
 
-TagTargetSHA: `d515bf7b7b77b3a3823e2f35d8c1fe847e5c4e60`
+TagTargetSHA: `55c7837d93e0d85de9124906a3d39177c65a5e75`
 
 CommitEqualsTagTarget: **true**
 
