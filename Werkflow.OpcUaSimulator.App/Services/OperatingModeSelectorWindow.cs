@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Werkflow.OpcUaSimulator.App;
+using Werkflow.OpcUaSimulator.App.VirtualMachine.Views;
 
 namespace Werkflow.OpcUaSimulator.App.Services;
 
@@ -21,7 +22,7 @@ public sealed class OperatingModeSelectorWindow : Window
 		MinHeight = 380;
 		WindowStartupLocation = WindowStartupLocation.CenterScreen;
 		ResizeMode = ResizeMode.NoResize;
-		Background = new SolidColorBrush(Color.FromRgb(34, 38, 44));
+		Background = HmiVisualTheme.BgDark;
 		Content = BuildContent();
 	}
 
@@ -52,7 +53,7 @@ public sealed class OperatingModeSelectorWindow : Window
 		{
 			Text = "Betriebsmodus wählen",
 			FontSize = 14,
-			Foreground = new SolidColorBrush(Color.FromRgb(180, 188, 198)),
+			Foreground = HmiVisualTheme.TextSecondary,
 			HorizontalAlignment = HorizontalAlignment.Center,
 			Margin = new Thickness(0, 0, 0, 20)
 		});
@@ -82,11 +83,9 @@ public sealed class OperatingModeSelectorWindow : Window
 			Content = "Beenden",
 			Margin = new Thickness(0, 16, 0, 0),
 			Padding = new Thickness(16, 8, 16, 8),
-			HorizontalAlignment = HorizontalAlignment.Center,
-			Background = new SolidColorBrush(Color.FromRgb(52, 58, 66)),
-			Foreground = new SolidColorBrush(Color.FromRgb(200, 206, 214)),
-			BorderBrush = new SolidColorBrush(Color.FromRgb(72, 80, 90))
+			HorizontalAlignment = HorizontalAlignment.Center
 		};
+		HmiVisualTheme.ApplyButtonStyle(exitButton);
 		exitButton.Click += (_, _) => Application.Current.Shutdown();
 		root.Children.Add(exitButton);
 
@@ -107,7 +106,7 @@ public sealed class OperatingModeSelectorWindow : Window
 		{
 			Text = subtitle,
 			FontSize = 13,
-			Foreground = new SolidColorBrush(Color.FromRgb(170, 180, 192)),
+			Foreground = HmiVisualTheme.TextSecondary,
 			Margin = new Thickness(0, 4, 0, 0)
 		});
 
@@ -117,11 +116,9 @@ public sealed class OperatingModeSelectorWindow : Window
 			Margin = new Thickness(0, 0, 0, 12),
 			Padding = new Thickness(18, 14, 18, 14),
 			HorizontalContentAlignment = HorizontalAlignment.Left,
-			Background = new SolidColorBrush(Color.FromRgb(46, 54, 64)),
-			Foreground = Brushes.White,
-			BorderBrush = new SolidColorBrush(Color.FromRgb(72, 82, 96)),
 			Cursor = System.Windows.Input.Cursors.Hand
 		};
+		HmiVisualTheme.ApplyButtonStyle(button);
 		button.Click += async (_, _) => await onClick();
 		return button;
 	}

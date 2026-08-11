@@ -9,7 +9,7 @@ public static class HmiSemanticRegistry
 		[HmiSemantic.XPosition] = ["Axis01.Position"],
 		[HmiSemantic.YPosition] = ["Axis02.Position"],
 		[HmiSemantic.ZPosition] = ["Axis03.Position"],
-		[HmiSemantic.FeedRate] = ["Process.FeedRate", "Axis01.Speed"],
+		[HmiSemantic.FeedRate] = ["Process.FeedRate"],
 		[HmiSemantic.MotorCurrent] = ["Axis01.MotorCurrent", "Drive.Axis01.Current"],
 		[HmiSemantic.MotorTemperature] = ["Axis01.MotorTemperature"],
 		[HmiSemantic.CoolingTemperature] = [

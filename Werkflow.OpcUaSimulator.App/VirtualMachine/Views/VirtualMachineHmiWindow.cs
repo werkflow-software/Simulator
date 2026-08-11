@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -7,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using Werkflow.OpcUaSimulator.App.VirtualMachine.Models;
 using Werkflow.OpcUaSimulator.App.VirtualMachine.Services;
 using Werkflow.OpcUaSimulator.App.VirtualMachine.ViewModels;
+using Werkflow.OpcUaSimulator.Core.VirtualMachine;
 
 namespace Werkflow.OpcUaSimulator.App.VirtualMachine.Views;
 
@@ -76,13 +78,13 @@ public sealed class VirtualMachineHmiWindow : Window
 			content = BuildAxisTab();
 			break;
 		case 2:
-			content = BuildMotorTab();
+			content = BuildMetricTab(_viewModel.ProcessMetrics, "Prozess");
 			break;
 		case 3:
-			content = BuildTemperatureTab();
+			content = BuildMetricTab(_viewModel.ProductionMetrics, "Produktion");
 			break;
 		case 4:
-			content = BuildMetricTab(_viewModel.ProcessMetrics, "Prozess");
+			content = BuildTemperatureTab();
 			break;
 		case 5:
 			content = BuildMetricTab(_viewModel.CoolingMetrics, "Kühlung");
@@ -94,12 +96,9 @@ public sealed class VirtualMachineHmiWindow : Window
 			content = BuildMetricTab(_viewModel.VibrationMetrics, "Vibration");
 			break;
 		case 8:
-			content = BuildMetricTab(_viewModel.ProductionMetrics, "Produktion");
-			break;
-		case 9:
 			content = BuildDiagnosticsTab();
 			break;
-		case 10:
+		case 9:
 			content = BuildOtherSignalsTab();
 			break;
 		default:
@@ -111,55 +110,79 @@ public sealed class VirtualMachineHmiWindow : Window
 
 	private UIElement BuildHeader()
 	{
+		var outer = new StackPanel { Background = HmiVisualTheme.HeaderBg };
+
 		var panel = new Border
 		{
-			Background = HmiVisualTheme.HeaderBg,
-			BorderBrush = HmiVisualTheme.Border,
+			BorderBrush = HmiVisualTheme.PanelBorder,
 			BorderThickness = new Thickness(0, 0, 0, 1),
-			Padding = new Thickness(12, 8, 12, 8)
+			Padding = new Thickness(12, 8, 12, 6)
 		};
 
 		var grid = new Grid();
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < 7; i++)
 		{
 			grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 		}
 		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-		var title = MakeHeaderText(_viewModel.MachineTitle, 20, FontWeights.Bold);
+		var title = MakeHeaderText(_viewModel.MachineTitle, 18, FontWeights.Bold);
 		grid.Children.Add(title);
 
-		var state = MakeBoundBlock("MachineStateText", 15, FontWeights.SemiBold);
-		Grid.SetColumn(state, 1);
+		var mode = MakeBoundBlock("ModeText", 12, FontWeights.Normal, "Betriebsart: {0}");
+		Grid.SetColumn(mode, 1);
+		grid.Children.Add(mode);
+
+		var state = MakeBoundBlock("MachineStateText", 13, FontWeights.SemiBold, "Maschine: {0}");
+		Grid.SetColumn(state, 2);
 		grid.Children.Add(state);
 
-		var opc = MakeBoundBlock("OpcUaStatus", 14, FontWeights.Normal, "OPC UA: {0}");
-		Grid.SetColumn(opc, 2);
-		grid.Children.Add(opc);
+		var phase = MakeBoundBlock("ProcessPhaseText", 13, FontWeights.Bold, "Phase: {0}");
+		Grid.SetColumn(phase, 3);
+		grid.Children.Add(phase);
 
-		var job = MakeBoundBlock("JobName", 14, FontWeights.Normal, "Job: {0}");
-		Grid.SetColumn(job, 3);
+		var job = MakeBoundBlock("JobName", 12, FontWeights.Normal, "Job: {0}");
+		Grid.SetColumn(job, 4);
 		grid.Children.Add(job);
 
-		var part = MakeBoundBlock("PartName", 14, FontWeights.Normal, "Teil: {0}");
-		Grid.SetColumn(part, 4);
-		grid.Children.Add(part);
-
-		var counter = MakeBoundBlock("CounterText", 14, FontWeights.Normal, "Zähler: {0}");
+		var counter = MakeBoundBlock("CounterText", 12, FontWeights.Normal, "Ist/Soll: {0}");
 		Grid.SetColumn(counter, 5);
 		grid.Children.Add(counter);
 
+		var opc = MakeBoundBlock("OpcUaStatus", 12, FontWeights.SemiBold, "OPC UA: {0}");
+		Grid.SetColumn(opc, 6);
+		grid.Children.Add(opc);
+
 		var right = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
-		right.Children.Add(MakeBoundBlock("ClockText", 14, FontWeights.Normal));
+		right.Children.Add(MakeBoundBlock("ClockText", 13, FontWeights.Normal));
 		right.Children.Add(MakeButton("Vollbild", (_, _) =>
 			WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized));
 		right.Children.Add(MakeButton("Maschine beenden", async (_, _) => await _viewModel.ShutdownMachineCommand.ExecuteAsync(null)));
-		Grid.SetColumn(right, 6);
+		Grid.SetColumn(right, 7);
 		grid.Children.Add(right);
 
 		panel.Child = grid;
-		Grid.SetRow(panel, 0);
-		return panel;
+		outer.Children.Add(panel);
+
+		var statusBar = new Border
+		{
+			Height = 22,
+			Background = HmiVisualTheme.StatusBarIdle,
+			Padding = new Thickness(12, 2, 12, 2)
+		};
+		var statusText = MakeBoundBlock("ProcessPhaseText", 12, FontWeights.SemiBold, "Prozess: {0}");
+		statusText.Foreground = HmiVisualTheme.TextOnDark;
+		statusBar.Child = statusText;
+		_viewModel.PropertyChanged += (_, e) =>
+		{
+			if (e.PropertyName is nameof(VirtualMachineHmiViewModel.StatusTone) or nameof(VirtualMachineHmiViewModel.ProcessPhaseText))
+			{
+				statusBar.Background = HmiVisualTheme.PhaseBannerBrush(_viewModel.StatusTone);
+			}
+		};
+		outer.Children.Add(statusBar);
+
+		return outer;
 	}
 
 	private void UpdateNavHighlight()
@@ -183,8 +206,8 @@ public sealed class VirtualMachineHmiWindow : Window
 		};
 
 		string[] labels = [
-			"Übersicht", "Achsen", "Antriebe", "Temperaturen", "Prozess",
-			"Kühlung", "Elektrik", "Vibration", "Produktion", "Diagnose", "Weitere Signale"
+			"Übersicht", "Achsen", "Prozess", "Produktion", "Temperaturen",
+			"Kühlung", "Elektrik", "Vibration", "Fehler / Diagnose", "Weitere Signale"
 		];
 
 		for (int i = 0; i < labels.Length; i++)
@@ -203,11 +226,12 @@ public sealed class VirtualMachineHmiWindow : Window
 			Content = label,
 			Margin = new Thickness(2, 4, 2, 4),
 			Padding = new Thickness(10, 4, 10, 4),
-			Background = _viewModel.SelectedTabIndex == index ? HmiVisualTheme.NavSelectedBg : HmiVisualTheme.NavNormalBg,
 			Foreground = HmiVisualTheme.TextPrimary,
-			BorderBrush = HmiVisualTheme.Border,
+			BorderBrush = HmiVisualTheme.PanelBorder,
 			FontSize = 12
 		};
+		HmiVisualTheme.ApplyButtonStyle(button);
+		button.Background = _viewModel.SelectedTabIndex == index ? HmiVisualTheme.NavSelectedBg : HmiVisualTheme.NavNormalBg;
 		button.Click += (_, _) => _viewModel.SelectedTabIndex = index;
 		return button;
 	}
@@ -215,24 +239,191 @@ public sealed class VirtualMachineHmiWindow : Window
 	private UIElement BuildOverviewLayout()
 	{
 		var grid = new Grid();
-		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(220) });
+		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(240) });
 		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(280) });
+		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(300) });
 
-		grid.Children.Add(WrapPanel(BuildLeftControlColumn()));
-		grid.Children.Add(WrapPanel(BuildCenterMetricsColumn()));
+		grid.Children.Add(WrapPanel(BuildLeftAxisColumn()));
+		grid.Children.Add(WrapPanel(BuildCenterProcessColumn()));
 		Grid.SetColumn(grid.Children[^1], 1);
-		grid.Children.Add(WrapPanel(BuildRightDiagnosticsColumn()));
+		grid.Children.Add(WrapPanel(BuildRightControlColumn()));
 		Grid.SetColumn(grid.Children[^1], 2);
 
 		return grid;
+	}
+
+	private UIElement BuildLeftAxisColumn()
+	{
+		var stack = new StackPanel();
+		stack.Children.Add(MakeSectionTitle("Achswerte"));
+		stack.Children.Add(BuildAxisInsetRow("X", 0));
+		stack.Children.Add(BuildAxisInsetRow("Y", 1));
+		stack.Children.Add(BuildAxisInsetRow("Z", 2));
+		stack.Children.Add(MakeBoundBlock("XSpeedText", 13, FontWeights.Normal, "Vx: {0}"));
+		stack.Children.Add(MakeBoundBlock("YSpeedText", 13, FontWeights.Normal, "Vy: {0}"));
+		stack.Children.Add(MakeBoundBlock("PathSpeedText", 13, FontWeights.Normal, "Bahngeschw.: {0}"));
+		stack.Children.Add(MakeBoundBlock("FocusText", 13, FontWeights.Normal, "Fokus: {0}"));
+		stack.Children.Add(BuildLargeValueTile("Vorschub", 3));
+		return stack;
+	}
+
+	private UIElement BuildCenterProcessColumn()
+	{
+		var stack = new StackPanel();
+
+		var banner = new Border
+		{
+			Background = HmiVisualTheme.PhaseBannerBrush(_viewModel.StatusTone),
+			Padding = new Thickness(16, 12, 16, 12),
+			Margin = new Thickness(0, 0, 0, 8),
+			CornerRadius = new CornerRadius(4)
+		};
+		var bannerStack = new StackPanel();
+		bannerStack.Children.Add(new TextBlock
+		{
+			Text = "AKTUELLE PHASE",
+			Foreground = HmiVisualTheme.TextOnDark,
+			FontSize = 12
+		});
+		var phaseBlock = MakeBoundBlock("ProcessPhaseText", 32, FontWeights.Bold);
+		phaseBlock.Foreground = HmiVisualTheme.TextOnDark;
+		bannerStack.Children.Add(phaseBlock);
+		banner.Child = bannerStack;
+		stack.Children.Add(banner);
+
+		stack.Children.Add(MakeSectionTitle("Prozessindikatoren"));
+		stack.Children.Add(BuildIndicatorRow("Laser aktiv", "LaserActiveText"));
+		stack.Children.Add(BuildIndicatorRow("Schnitt aktiv", "CuttingActiveText"));
+		stack.Children.Add(BuildIndicatorRow("Positionierung aktiv", "PositioningActiveText"));
+
+		stack.Children.Add(MakeSectionTitle("Maschinenzustand"));
+		stack.Children.Add(MakeBoundBlock("MachineStateText", 16, FontWeights.SemiBold, "Status: {0}"));
+		stack.Children.Add(MakeBoundBlock("ProcessPhaseEnglish", 14, FontWeights.Normal, "Phase (EN): {0}"));
+		stack.Children.Add(MakeBoundBlock("NextActionText", 14, FontWeights.Normal, "Nächste Aktion: {0}"));
+
+		stack.Children.Add(MakeSectionTitle("Produktion"));
+		stack.Children.Add(MakeBoundBlock("JobName", 14, FontWeights.Normal, "Auftrag: {0}"));
+		stack.Children.Add(MakeBoundBlock("PartName", 14, FontWeights.Normal, "Teil: {0}"));
+		stack.Children.Add(MakeBoundBlock("CounterText", 14, FontWeights.Normal, "Ist/Soll: {0}"));
+		stack.Children.Add(MakeBoundBlock("RemainingCounterText", 14, FontWeights.Normal, "Rest: {0}"));
+		stack.Children.Add(MakeBoundBlock("NextJobText", 13, FontWeights.Normal, "Nächster Job: {0}"));
+		stack.Children.Add(MakeBoundBlock("JobChangeText", 13, FontWeights.Normal, "{0}"));
+		stack.Children.Add(MakeBoundBlock("JobChangeRemainingText", 13, FontWeights.Normal, "{0}"));
+
+		var metricGrid = new Grid { Margin = new Thickness(0, 8, 0, 0) };
+		for (int c = 0; c < 3; c++)
+		{
+			metricGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+		}
+		int[] overviewIndices = [4, 5, 6, 7, 8];
+		for (int i = 0; i < overviewIndices.Length && overviewIndices[i] < _viewModel.OverviewMetrics.Count; i++)
+		{
+			var tile = BuildLargeMetricTile(_viewModel.OverviewMetrics[overviewIndices[i]]);
+			Grid.SetColumn(tile, i % 3);
+			Grid.SetRow(tile, i / 3);
+			metricGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+			metricGrid.Children.Add(tile);
+		}
+		stack.Children.Add(metricGrid);
+
+		return stack;
+	}
+
+	private UIElement BuildRightControlColumn()
+	{
+		var stack = new StackPanel();
+		stack.Children.Add(MakeSectionTitle("Bedienung"));
+		var prodControls = new WrapPanel();
+		prodControls.Children.Add(MakeCommandButton("Start", _viewModel.StartProductionCommand));
+		prodControls.Children.Add(MakeCommandButton("Stop", _viewModel.StopProductionCommand));
+		prodControls.Children.Add(MakeCommandButton("Pause", _viewModel.PauseProductionCommand));
+		prodControls.Children.Add(MakeCommandButton("Resume", _viewModel.ResumeProductionCommand));
+		prodControls.Children.Add(MakeCommandButton("Reset", _viewModel.ResetMachineCommand));
+		stack.Children.Add(prodControls);
+
+		stack.Children.Add(MakeCommandButton("Nächsten Job laden", _viewModel.ChangeJobCommand));
+		stack.Children.Add(MakeCommandButton("Maschine starten", _viewModel.StartMachineCommand));
+		stack.Children.Add(MakeCommandButton("Normalbetrieb", _viewModel.NormalOperationCommand));
+
+		stack.Children.Add(MakeSectionTitle("Simulation"));
+		stack.Children.Add(MakeBoundBlock("SimulationSpeedText", 13, FontWeights.Normal, "Zeitfaktor: {0}"));
+		var speedRow = new WrapPanel();
+		speedRow.Children.Add(MakeCommandButton("1x", _viewModel.SetSimulationSpeed1xCommand));
+		speedRow.Children.Add(MakeCommandButton("2x", _viewModel.SetSimulationSpeed2xCommand));
+		speedRow.Children.Add(MakeCommandButton("5x", _viewModel.SetSimulationSpeed5xCommand));
+		speedRow.Children.Add(MakeCommandButton("10x", _viewModel.SetSimulationSpeed10xCommand));
+		stack.Children.Add(speedRow);
+
+		stack.Children.Add(BuildRightDiagnosticsColumn());
+		return stack;
+	}
+
+	private static Grid BuildIndicatorRow(string label, string bindingProperty)
+	{
+		var grid = new Grid { Margin = new Thickness(0, 3, 0, 3) };
+		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(80) });
+		grid.Children.Add(new TextBlock { Text = label, Foreground = HmiVisualTheme.TextSecondary, FontSize = 13 });
+		var val = new TextBlock { Foreground = HmiVisualTheme.TextPrimary, FontWeight = FontWeights.Bold, FontSize = 14, HorizontalAlignment = HorizontalAlignment.Right };
+		val.SetBinding(TextBlock.TextProperty, new Binding(bindingProperty));
+		Grid.SetColumn(val, 1);
+		grid.Children.Add(val);
+		return grid;
+	}
+
+	private Border BuildAxisInsetRow(string axis, int overviewMetricIndex)
+	{
+		var border = new Border
+		{
+			Background = HmiVisualTheme.InsetBg,
+			BorderBrush = HmiVisualTheme.InsetBorder,
+			BorderThickness = new Thickness(1),
+			Margin = new Thickness(0, 4, 0, 4),
+			Padding = new Thickness(10, 6, 10, 6)
+		};
+		var grid = new Grid();
+		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(28) });
+		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+		var label = new TextBlock { Text = axis, Foreground = HmiVisualTheme.TextOnDark, FontWeight = FontWeights.Bold, FontSize = 16 };
+		var val = new TextBlock { Foreground = HmiVisualTheme.TextOnDark, FontWeight = FontWeights.Bold, FontSize = 22, HorizontalAlignment = HorizontalAlignment.Right };
+		if (overviewMetricIndex < _viewModel.OverviewMetrics.Count)
+		{
+			val.SetBinding(TextBlock.TextProperty, new Binding($"[{overviewMetricIndex}].Value") { Source = _viewModel.OverviewMetrics });
+		}
+		Grid.SetColumn(val, 1);
+		grid.Children.Add(label);
+		grid.Children.Add(val);
+		border.Child = grid;
+		return border;
+	}
+
+	private Border BuildLargeValueTile(string label, int overviewMetricIndex)
+	{
+		var border = new Border
+		{
+			Background = HmiVisualTheme.MetricTileBg,
+			BorderBrush = HmiVisualTheme.PanelBorder,
+			BorderThickness = new Thickness(1),
+			Padding = new Thickness(10, 8, 10, 8),
+			Margin = new Thickness(0, 4, 0, 4)
+		};
+		var stack = new StackPanel();
+		stack.Children.Add(new TextBlock { Text = label, Foreground = HmiVisualTheme.TextSecondary, FontSize = 12 });
+		var valueBlock = new TextBlock { Foreground = HmiVisualTheme.ValueAccent, FontSize = 24, FontWeight = FontWeights.Bold };
+		if (overviewMetricIndex < _viewModel.OverviewMetrics.Count)
+		{
+			valueBlock.SetBinding(TextBlock.TextProperty, new Binding($"[{overviewMetricIndex}].Value") { Source = _viewModel.OverviewMetrics });
+		}
+		stack.Children.Add(valueBlock);
+		border.Child = stack;
+		return border;
 	}
 
 	private static Border WrapPanel(UIElement child) =>
 		new()
 		{
 			Background = HmiVisualTheme.PanelBg,
-			BorderBrush = HmiVisualTheme.Border,
+			BorderBrush = HmiVisualTheme.PanelBorder,
 			BorderThickness = new Thickness(1),
 			Margin = new Thickness(3),
 			Padding = new Thickness(8),
@@ -267,7 +458,9 @@ public sealed class VirtualMachineHmiWindow : Window
 		stack.Children.Add(MakeSectionTitle("Aufträge"));
 		stack.Children.Add(MakeBoundBlock("NextJobText", 13, FontWeights.Normal, "Nächster: {0}"));
 		stack.Children.Add(MakeBoundBlock("JobPoolText", 13, FontWeights.Normal, "Pool: {0}"));
-		stack.Children.Add(MakeCommandButton("Auftrag wechseln", _viewModel.ChangeJobCommand));
+		stack.Children.Add(MakeBoundBlock("JobChangeText", 13, FontWeights.Normal, "{0}"));
+		stack.Children.Add(MakeBoundBlock("JobChangeRemainingText", 13, FontWeights.Normal, "{0}"));
+		stack.Children.Add(MakeCommandButton("Nächsten Job laden", _viewModel.ChangeJobCommand));
 
 		stack.Children.Add(MakeSectionTitle("Simulation"));
 		stack.Children.Add(MakeBoundBlock("SimulationSpeedText", 13, FontWeights.Normal, "Zeitfaktor: {0}"));
@@ -333,11 +526,9 @@ public sealed class VirtualMachineHmiWindow : Window
 			DisplayMemberPath = "DisplayName",
 			MinHeight = 100,
 			MaxHeight = 140,
-			Margin = new Thickness(0, 4, 0, 4),
-			Background = HmiVisualTheme.PanelBg,
-			Foreground = HmiVisualTheme.TextPrimary,
-			BorderBrush = HmiVisualTheme.Border
+			Margin = new Thickness(0, 4, 0, 4)
 		};
+		HmiVisualTheme.ApplyListBoxStyle(list);
 		list.SelectionChanged += (_, _) => _viewModel.SetSelectedFaultScenario(
 			list.SelectedItem as Werkflow.OpcUaSimulator.App.ViewModels.FaultScenarioListItem);
 		simStack.Children.Add(list);
@@ -390,7 +581,7 @@ public sealed class VirtualMachineHmiWindow : Window
 				Margin = new Thickness(4),
 				Padding = new Thickness(10),
 				Background = HmiVisualTheme.PanelBg,
-				BorderBrush = HmiVisualTheme.Border,
+				BorderBrush = HmiVisualTheme.PanelBorder,
 				BorderThickness = new Thickness(1)
 			};
 			var stack = new StackPanel();
@@ -474,7 +665,7 @@ public sealed class VirtualMachineHmiWindow : Window
 					: tile.IsWarning
 						? new SolidColorBrush(Color.FromRgb(70, 55, 30))
 						: HmiVisualTheme.PanelBg,
-				BorderBrush = HmiVisualTheme.Border,
+				BorderBrush = HmiVisualTheme.PanelBorder,
 				BorderThickness = new Thickness(1)
 			};
 			var stack = new StackPanel();
@@ -571,7 +762,7 @@ public sealed class VirtualMachineHmiWindow : Window
 			Margin = new Thickness(4),
 			Padding = new Thickness(10, 8, 10, 8),
 			Background = HmiVisualTheme.MetricTileBg,
-			BorderBrush = HmiVisualTheme.Border,
+			BorderBrush = HmiVisualTheme.PanelBorder,
 			BorderThickness = new Thickness(1)
 		};
 		var stack = new StackPanel();
@@ -625,7 +816,7 @@ public sealed class VirtualMachineHmiWindow : Window
 			GridLinesVisibility = DataGridGridLinesVisibility.Horizontal,
 			Background = HmiVisualTheme.PanelBg,
 			Foreground = HmiVisualTheme.TextPrimary,
-			BorderBrush = HmiVisualTheme.Border,
+			BorderBrush = HmiVisualTheme.PanelBorder,
 			Margin = new Thickness(0, 4, 0, 12),
 			MinHeight = 200,
 			RowHeight = 26
@@ -661,7 +852,7 @@ public sealed class VirtualMachineHmiWindow : Window
 		{
 			FontSize = size,
 			FontWeight = weight,
-			Foreground = HmiVisualTheme.TextSecondary,
+			Foreground = HmiVisualTheme.TextPrimary,
 			Margin = new Thickness(0, 2, 0, 2)
 		};
 		if (format != null)

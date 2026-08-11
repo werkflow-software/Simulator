@@ -33,10 +33,23 @@ public static class LaserToolpathGenerator
 				PierceDurationSeconds = pierceSeconds
 			},
 			new LaserToolpathSegment { Kind = LaserToolpathSegmentKind.CutLine, TargetX = offsetX + width, TargetY = offsetY, CutSpeedMmPerS = cutSpeed },
-			new LaserToolpathSegment { Kind = LaserToolpathSegmentKind.CutLine, TargetX = offsetX + width, TargetY = offsetY + height, CutSpeedMmPerS = cutSpeed * 0.82 },
-			new LaserToolpathSegment { Kind = LaserToolpathSegmentKind.CutLine, TargetX = offsetX, TargetY = offsetY + height, CutSpeedMmPerS = cutSpeed * 0.9 },
-			new LaserToolpathSegment { Kind = LaserToolpathSegmentKind.CutLine, TargetX = offsetX, TargetY = offsetY, CutSpeedMmPerS = cutSpeed }
+			new LaserToolpathSegment { Kind = LaserToolpathSegmentKind.CutLine, TargetX = offsetX + width, TargetY = offsetY + height, CutSpeedMmPerS = cutSpeed * 0.82, IsCornerEntry = true },
+			new LaserToolpathSegment { Kind = LaserToolpathSegmentKind.CutLine, TargetX = offsetX, TargetY = offsetY + height, CutSpeedMmPerS = cutSpeed * 0.9, IsCornerEntry = true },
+			new LaserToolpathSegment { Kind = LaserToolpathSegmentKind.CutLine, TargetX = offsetX, TargetY = offsetY, CutSpeedMmPerS = cutSpeed, IsCornerEntry = true }
 		};
+
+		if (width > 220 && height > 160)
+		{
+			double diagX = offsetX + width * 0.55;
+			double diagY = offsetY + height * 0.45;
+			segments.Insert(3, new LaserToolpathSegment
+			{
+				Kind = LaserToolpathSegmentKind.CutLine,
+				TargetX = diagX,
+				TargetY = diagY,
+				CutSpeedMmPerS = cutSpeed * 0.78
+			});
+		}
 
 		return new LaserToolpathPlan
 		{

@@ -52,5 +52,19 @@ public class LaserKinematicsPlausibilityTests
 		Assert.True(session.Simulation.Kinematics.MaxY - session.Simulation.Kinematics.MinY > 200.0);
 		Assert.True(maxFeed > 100.0);
 		Assert.Contains(session.Simulation.Kinematics.MotionPhase, new[] { LaserMotionPhase.Cutting, LaserMotionPhase.RapidPositioning, LaserMotionPhase.Piercing });
+
+		bool simultaneousObserved = false;
+		for (int i = 0; i < 400; i++)
+		{
+			engine.Tick(session, TimeSpan.FromMilliseconds(100));
+			double vx = session.Simulation.Kinematics.Vx;
+			double vy = session.Simulation.Kinematics.Vy;
+			if (Math.Abs(vx) > 5.0 && Math.Abs(vy) > 5.0)
+			{
+				simultaneousObserved = true;
+				break;
+			}
+		}
+		Assert.True(simultaneousObserved);
 	}
 }

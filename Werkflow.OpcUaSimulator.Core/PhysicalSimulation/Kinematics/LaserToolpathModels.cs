@@ -18,6 +18,9 @@ public sealed class LaserToolpathSegment
 	public double PierceDurationSeconds { get; init; } = 2.5;
 
 	public double CutSpeedMmPerS { get; init; } = 12.0;
+
+	/// <summary>First portion of segment uses reduced speed after direction change.</summary>
+	public bool IsCornerEntry { get; init; }
 }
 
 public sealed class LaserToolpathPlan

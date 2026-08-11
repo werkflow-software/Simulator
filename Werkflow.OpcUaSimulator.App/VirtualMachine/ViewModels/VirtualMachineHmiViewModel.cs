@@ -8,10 +8,12 @@ using CommunityToolkit.Mvvm.Input;
 using Werkflow.OpcUaSimulator.App;
 using Werkflow.OpcUaSimulator.App.ViewModels;
 using Werkflow.OpcUaSimulator.App.VirtualMachine.Models;
+using Werkflow.OpcUaSimulator.Core.Defaults;
 using Werkflow.OpcUaSimulator.Core.Interfaces;
 using Werkflow.OpcUaSimulator.Core.Models;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.FaultScenarios.Models;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.FaultScenarios.Services;
+using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Kinematics;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 using Werkflow.OpcUaSimulator.Core.VirtualMachine;
 
@@ -58,6 +60,20 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	private string _simulationSpeedText = "1x";
 	private string _randomSeedText = "—";
 	private string _productionSpeedText = "—";
+	private string _jobChangeText = "—";
+	private string _jobChangeRemainingText = "—";
+	private string _processPhaseText = "—";
+	private string _processPhaseEnglish = "—";
+	private string _laserActiveText = "NEIN";
+	private string _cuttingActiveText = "NEIN";
+	private string _positioningActiveText = "NEIN";
+	private string _nextActionText = "—";
+	private string _pathSpeedText = "—";
+	private string _xSpeedText = "—";
+	private string _ySpeedText = "—";
+	private string _focusText = "—";
+	private string _statusTone = "idle";
+	private string _remainingCounterText = "—";
 
 	public ObservableCollection<HmiMetricItem> OverviewMetrics { get; } = [];
 	public ObservableCollection<HmiAxisPanelViewModel> AxisPanels { get; } = [];
@@ -97,6 +113,20 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	public string SimulationSpeedText => _simulationSpeedText;
 	public string RandomSeedText => _randomSeedText;
 	public string ProductionSpeedText => _productionSpeedText;
+	public string JobChangeText => _jobChangeText;
+	public string JobChangeRemainingText => _jobChangeRemainingText;
+	public string ProcessPhaseText => _processPhaseText;
+	public string ProcessPhaseEnglish => _processPhaseEnglish;
+	public string LaserActiveText => _laserActiveText;
+	public string CuttingActiveText => _cuttingActiveText;
+	public string PositioningActiveText => _positioningActiveText;
+	public string NextActionText => _nextActionText;
+	public string PathSpeedText => _pathSpeedText;
+	public string XSpeedText => _xSpeedText;
+	public string YSpeedText => _ySpeedText;
+	public string FocusText => _focusText;
+	public string StatusTone => _statusTone;
+	public string RemainingCounterText => _remainingCounterText;
 
 	public int SelectedTabIndex
 	{
@@ -537,8 +567,34 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 			_counterText = $"{_runtime.ActualCounter} / {_runtime.TargetCounter}";
 			_errorActive = _runtime.ErrorActive;
 			_errorMessage = string.IsNullOrWhiteSpace(_runtime.ErrorMessage) ? "—" : _runtime.ErrorMessage;
-			_modeText = _runtime.IsProducing ? "Produktion" : "Bereit";
-			_statusBadge = _runtime.ErrorActive ? "FEHLER" : _runtime.State.ToGermanLabel().ToUpperInvariant();
+			_modeText = _runtime.IsJobChangeActive
+				? "Jobwechsel / Einrichten"
+				: _runtime.IsProducing ? "Produktion" : "Bereit";
+			_statusBadge = _runtime.ErrorActive
+				? "FEHLER"
+				: _runtime.IsJobChangeActive
+					? "EINRICHTEN"
+					: _runtime.State.ToGermanLabel().ToUpperInvariant();
+			if (_runtime.IsJobChangeActive)
+			{
+				_jobChangeText = $"Nächster Job: {_runtime.NextJobNamePreview} / {_runtime.NextPartNamePreview}";
+				if (_runtime.JobChangeEndsAtUtc.HasValue)
+				{
+					double remainingSeconds = Math.Max(0, (_runtime.JobChangeEndsAtUtc.Value - DateTime.UtcNow).TotalSeconds);
+					int minutes = (int)remainingSeconds / 60;
+					int seconds = (int)remainingSeconds % 60;
+					_jobChangeRemainingText = $"Restzeit: {minutes:D2}:{seconds:D2}";
+				}
+				else
+				{
+					_jobChangeRemainingText = $"Pause: {_runtime.JobChangePauseSeconds / 60}:{_runtime.JobChangePauseSeconds % 60:D2}";
+				}
+			}
+			else
+			{
+				_jobChangeText = "—";
+				_jobChangeRemainingText = "—";
+			}
 		}
 
 		OnPropertyChanged(nameof(OpcUaStatus));
@@ -552,6 +608,8 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		OnPropertyChanged(nameof(ErrorMessage));
 		OnPropertyChanged(nameof(ModeText));
 		OnPropertyChanged(nameof(StatusBadge));
+		OnPropertyChanged(nameof(JobChangeText));
+		OnPropertyChanged(nameof(JobChangeRemainingText));
 
 		UpdateJobPoolSummary();
 		_simulationSpeedText = $"{_configurationService.Configuration.Settings.SimulationSpeedFactor:0.#}x";
@@ -572,10 +630,82 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		PhysicalMachineSession? session = _coordinator.GetSession(_machine.Id);
 		if (session != null)
 		{
+			RefreshProcessMotionState(session);
 			RefreshBoundSignals(session);
 		}
 
+		NotifyProcessStateProperties();
 		NotifyCommandStates();
+	}
+
+	private void RefreshProcessMotionState(PhysicalMachineSession session)
+	{
+		LaserKinematicsState kinematics = session.Simulation.Kinematics;
+		if (kinematics.IsEnabled)
+		{
+			_processPhaseText = LaserMotionPhaseLabels.ToGerman(kinematics.MotionPhase);
+			_processPhaseEnglish = LaserMotionPhaseLabels.ToEnglish(kinematics.MotionPhase);
+			bool laser = kinematics.MotionPhase is LaserMotionPhase.Piercing or LaserMotionPhase.Cutting;
+			bool cutting = kinematics.MotionPhase == LaserMotionPhase.Cutting;
+			bool positioning = kinematics.MotionPhase is LaserMotionPhase.RapidPositioning
+				or LaserMotionPhase.Repositioning or LaserMotionPhase.JobChange;
+			_laserActiveText = laser ? "JA" : "NEIN";
+			_cuttingActiveText = cutting ? "JA" : "NEIN";
+			_positioningActiveText = positioning ? "JA" : "NEIN";
+			_nextActionText = kinematics.NextActionHint;
+			_pathSpeedText = $"{kinematics.PathSpeedMmPerS:0} mm/s";
+			_statusTone = ResolveStatusTone(kinematics.MotionPhase, _errorActive);
+		}
+		else
+		{
+			_processPhaseText = session.Simulation.CurrentPhase.ToString();
+			_processPhaseEnglish = session.Simulation.CurrentPhase.ToString();
+			_laserActiveText = "NEIN";
+			_cuttingActiveText = "NEIN";
+			_positioningActiveText = "NEIN";
+			_nextActionText = "—";
+			_pathSpeedText = "—";
+			_statusTone = _errorActive ? "error" : "idle";
+		}
+
+		if (_runtime != null)
+		{
+			_remainingCounterText = Math.Max(0, _runtime.TargetCounter - _runtime.ActualCounter).ToString();
+		}
+	}
+
+	private static string ResolveStatusTone(LaserMotionPhase phase, bool errorActive)
+	{
+		if (errorActive)
+		{
+			return "error";
+		}
+
+		return phase switch
+		{
+			LaserMotionPhase.Cutting => "cutting",
+			LaserMotionPhase.Piercing => "running",
+			LaserMotionPhase.RapidPositioning or LaserMotionPhase.Repositioning => "running",
+			LaserMotionPhase.Setup or LaserMotionPhase.JobChange or LaserMotionPhase.NozzleChange => "setup",
+			LaserMotionPhase.Idle => "idle",
+			_ => "idle"
+		};
+	}
+
+	private void NotifyProcessStateProperties()
+	{
+		OnPropertyChanged(nameof(ProcessPhaseText));
+		OnPropertyChanged(nameof(ProcessPhaseEnglish));
+		OnPropertyChanged(nameof(LaserActiveText));
+		OnPropertyChanged(nameof(CuttingActiveText));
+		OnPropertyChanged(nameof(PositioningActiveText));
+		OnPropertyChanged(nameof(NextActionText));
+		OnPropertyChanged(nameof(PathSpeedText));
+		OnPropertyChanged(nameof(XSpeedText));
+		OnPropertyChanged(nameof(YSpeedText));
+		OnPropertyChanged(nameof(FocusText));
+		OnPropertyChanged(nameof(StatusTone));
+		OnPropertyChanged(nameof(RemainingCounterText));
 	}
 
 	private void UpdateJobPoolSummary()
@@ -586,16 +716,23 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		}
 
 		var config = _configurationService.Configuration;
-		int pending = config.Jobs.Count(j => j.Status == JobState.Pending);
-		_jobPoolText = $"{pending} offen / {config.Jobs.Count} gesamt";
+		_jobPoolText = $"{FixedSimulationCatalog.JobCount} Jobs im festen Pool";
 
-		SimulationJob? nextJob = _jobDispatcher.GetNextJobForMachine(
-			_machine.Id,
-			config,
-			new Random(_simulationEngine.CurrentSeed));
-		_nextJobText = nextJob == null
-			? "—"
-			: $"{nextJob.JobName} / {nextJob.PartName} ({nextJob.TargetQuantity})";
+		if (_runtime != null && _runtime.IsJobChangeActive)
+		{
+			_nextJobText = $"{_runtime.NextJobNamePreview} / {_runtime.NextPartNamePreview} ({_runtime.NextTargetQuantityPreview})";
+		}
+		else if (_runtime != null && _runtime.CurrentJobCatalogIndex >= 0)
+		{
+			int nextIndex = FixedSimulationCatalog.GetNextCatalogIndex(_runtime.CurrentJobCatalogIndex);
+			var nextDef = FixedSimulationCatalog.GetDefinition(nextIndex);
+			_nextJobText = $"{nextDef.JobName} / {nextDef.PartName} ({nextDef.TargetQuantity})";
+		}
+		else
+		{
+			var first = FixedSimulationCatalog.GetDefinition(0);
+			_nextJobText = $"{first.JobName} / {first.PartName} ({first.TargetQuantity})";
+		}
 		OnPropertyChanged(nameof(JobPoolText));
 		OnPropertyChanged(nameof(NextJobText));
 	}
@@ -617,6 +754,10 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		RefreshMotorGroups(enabled, runtimeById);
 		RefreshTemperatureTiles(enabled, runtimeById);
 		RefreshOtherSignals(enabled, runtimeById);
+
+		_xSpeedText = FormatSignalValue(runtimeById, "Axis01.Speed", "mm/s");
+		_ySpeedText = FormatSignalValue(runtimeById, "Axis02.Speed", "mm/s");
+		_focusText = FormatSignalValue(runtimeById, "Process.FocusPosition", "mm");
 
 		LiveSignalCount = liveCount;
 		OnPropertyChanged(nameof(LiveSignalCount));
@@ -761,6 +902,19 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 				GroupKey = def.Category.ToString()
 			});
 		}
+	}
+
+	private static string FormatSignalValue(
+		IReadOnlyDictionary<string, SignalRuntimeState> runtimeById,
+		string signalId,
+		string unit)
+	{
+		if (!runtimeById.TryGetValue(signalId, out SignalRuntimeState? state))
+		{
+			return "—";
+		}
+
+		return $"{state.CurrentValue:0.##} {unit}".Trim();
 	}
 
 	private static string FormatBySuffix(IEnumerable<SignalDefinition> group, string suffix, IReadOnlyDictionary<string, SignalRuntimeState> runtimeById)

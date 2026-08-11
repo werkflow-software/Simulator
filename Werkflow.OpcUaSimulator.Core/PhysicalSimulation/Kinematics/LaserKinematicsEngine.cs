@@ -37,6 +37,11 @@ public static class LaserKinematicsEngine
 		kinematics.NozzleChangeActive = false;
 		kinematics.NozzleChangeElapsedSeconds = 0.0;
 		kinematics.MovingToService = false;
+		kinematics.Vz = 0.0;
+		kinematics.PathSpeedMmPerS = 0.0;
+		kinematics.LaserPowerKw = 0.0;
+		kinematics.DistanceAlongSegmentMm = 0.0;
+		kinematics.NextActionHint = "Bereit";
 		kinematics.MinX = kinematics.X;
 		kinematics.MaxX = kinematics.X;
 		kinematics.MinY = kinematics.Y;
@@ -181,15 +186,16 @@ public static class LaserKinematicsEngine
 	{
 		if (kinematics.MovingToService)
 		{
-			bool arrived = MoveTowardPoint(
+			kinematics.NextActionHint = "Fahrt zur Serviceposition";
+			MoveTowardPointWithZ(
 				kinematics,
 				VirtualMachineKinematicsConfig.NozzleServiceX,
 				VirtualMachineKinematicsConfig.NozzleServiceY,
+				VirtualMachineKinematicsConfig.ZService,
 				VirtualMachineKinematicsConfig.RapidSpeedMmPerS,
 				dt);
-			kinematics.Z = ApproachZ(kinematics.Z, VirtualMachineKinematicsConfig.ZService, dt);
 			kinematics.MotionPhase = LaserMotionPhase.JobChange;
-			if (arrived)
+			if (AtPoint(kinematics, VirtualMachineKinematicsConfig.NozzleServiceX, VirtualMachineKinematicsConfig.NozzleServiceY))
 			{
 				kinematics.MovingToService = false;
 				if (kinematics.NozzleChangeRequired)
@@ -212,7 +218,10 @@ public static class LaserKinematicsEngine
 			kinematics.NozzleChangeElapsedSeconds += dt;
 			kinematics.Vx = 0.0;
 			kinematics.Vy = 0.0;
+			kinematics.Vz = 0.0;
+			kinematics.NextActionHint = "Düsenwechsel";
 			kinematics.MotionPhase = LaserMotionPhase.NozzleChange;
+			MoveZ(kinematics, VirtualMachineKinematicsConfig.ZService, dt);
 			if (kinematics.NozzleChangeElapsedSeconds >= VirtualMachineKinematicsConfig.NozzleChangeDurationSeconds)
 			{
 				kinematics.NozzleChangeActive = false;
@@ -224,7 +233,73 @@ public static class LaserKinematicsEngine
 
 		kinematics.Vx = 0.0;
 		kinematics.Vy = 0.0;
+		kinematics.Vz = 0.0;
+		kinematics.NextActionHint = "Einrichten / Jobwechsel";
 		kinematics.MotionPhase = LaserMotionPhase.Setup;
+	}
+
+	private static double GetEffectiveCutSpeed(LaserKinematicsState kinematics, LaserToolpathSegment segment)
+	{
+		double speed = segment.CutSpeedMmPerS;
+		if (segment.IsCornerEntry)
+		{
+			double cornerRamp = Math.Clamp(kinematics.DistanceAlongSegmentMm / 45.0, 0.0, 1.0);
+			speed *= 0.45 + cornerRamp * 0.55;
+		}
+
+		double segDx = segment.TargetX - kinematics.SegmentStartX;
+		double segDy = segment.TargetY - kinematics.SegmentStartY;
+		double segLen = Math.Sqrt(segDx * segDx + segDy * segDy);
+		if (segLen < 120.0)
+		{
+			speed *= 0.72 + segLen / 120.0 * 0.28;
+		}
+
+		return Math.Max(3.0, speed);
+	}
+
+	private static bool AtPoint(LaserKinematicsState kinematics, double targetX, double targetY)
+	{
+		double dx = targetX - kinematics.X;
+		double dy = targetY - kinematics.Y;
+		return Math.Sqrt(dx * dx + dy * dy) <= PositionTolerance;
+	}
+
+	private static void MoveTowardPointWithZ(
+		LaserKinematicsState kinematics,
+		double targetX,
+		double targetY,
+		double targetZ,
+		double maxSpeed,
+		double dt)
+	{
+		MoveTowardPoint(kinematics, targetX, targetY, maxSpeed, dt);
+		MoveZ(kinematics, targetZ, dt);
+	}
+
+	private static void MoveZ(LaserKinematicsState kinematics, double targetZ, double dt)
+	{
+		double delta = targetZ - kinematics.Z;
+		if (Math.Abs(delta) <= 0.02)
+		{
+			kinematics.Z = targetZ;
+			kinematics.Vz = 0.0;
+			return;
+		}
+
+		double maxVz = 35.0;
+		double desiredVz = Math.Sign(delta) * Math.Min(maxVz, Math.Abs(delta) / dt);
+		kinematics.Vz = ApproachScalar(kinematics.Vz, desiredVz, 120.0, dt);
+		double step = kinematics.Vz * dt;
+		if (Math.Abs(step) >= Math.Abs(delta))
+		{
+			kinematics.Z = targetZ;
+			kinematics.Vz = 0.0;
+		}
+		else
+		{
+			kinematics.Z += step;
+		}
 	}
 
 	private static void TickProduction(PhysicalSimulationContext context, LaserKinematicsState kinematics, int seed, double dt)
@@ -247,36 +322,54 @@ public static class LaserKinematicsEngine
 		}
 
 		LaserToolpathSegment segment = kinematics.CurrentPlan.Segments[kinematics.SegmentIndex];
+		if (kinematics.DistanceAlongSegmentMm <= 0.0)
+		{
+			kinematics.SegmentStartX = kinematics.X;
+			kinematics.SegmentStartY = kinematics.Y;
+		}
+
 		switch (segment.Kind)
 		{
 		case LaserToolpathSegmentKind.RapidMove:
 			kinematics.MotionPhase = LaserMotionPhase.RapidPositioning;
-			kinematics.Z = ApproachZ(kinematics.Z, VirtualMachineKinematicsConfig.ZRapid, dt);
-			if (MoveTowardPoint(kinematics, segment.TargetX, segment.TargetY, VirtualMachineKinematicsConfig.RapidSpeedMmPerS, dt))
+			kinematics.NextActionHint = "Rapid zur Startposition";
+			MoveTowardPointWithZ(
+				kinematics,
+				segment.TargetX,
+				segment.TargetY,
+				VirtualMachineKinematicsConfig.ZRapid,
+				VirtualMachineKinematicsConfig.RapidSpeedMmPerS,
+				dt);
+			if (AtPoint(kinematics, segment.TargetX, segment.TargetY))
 			{
 				kinematics.SegmentIndex++;
+				kinematics.DistanceAlongSegmentMm = 0.0;
 			}
 			break;
 		case LaserToolpathSegmentKind.Pierce:
 			kinematics.MotionPhase = LaserMotionPhase.Piercing;
+			kinematics.NextActionHint = "Einstechen";
 			kinematics.Vx = 0.0;
 			kinematics.Vy = 0.0;
-			kinematics.Z = ApproachZ(kinematics.Z, GetCutZ(context.Job.MaterialThicknessMm) - 0.8, dt);
+			MoveZ(kinematics, GetPierceZ(context.Job.MaterialThicknessMm), dt);
 			kinematics.PierceElapsedSeconds += dt;
 			if (kinematics.PierceElapsedSeconds >= segment.PierceDurationSeconds)
 			{
 				kinematics.PierceElapsedSeconds = 0.0;
 				kinematics.SegmentIndex++;
+				kinematics.DistanceAlongSegmentMm = 0.0;
 			}
 			break;
 		case LaserToolpathSegmentKind.CutLine:
 			kinematics.MotionPhase = LaserMotionPhase.Cutting;
-			kinematics.Z = ApproachZ(kinematics.Z, GetCutZ(context.Job.MaterialThicknessMm), dt);
-			double cutSpeed = segment.CutSpeedMmPerS;
+			kinematics.NextActionHint = $"Kontur / Teil {kinematics.PartIndex + 1}";
+			MoveZ(kinematics, GetCutZ(context.Job.MaterialThicknessMm), dt);
+			double cutSpeed = GetEffectiveCutSpeed(kinematics, segment);
 			kinematics.CutFeedMmPerMin = cutSpeed * 60.0;
 			if (MoveTowardPoint(kinematics, segment.TargetX, segment.TargetY, cutSpeed, dt))
 			{
 				kinematics.SegmentIndex++;
+				kinematics.DistanceAlongSegmentMm = 0.0;
 			}
 			break;
 		}
@@ -288,6 +381,7 @@ public static class LaserKinematicsEngine
 		kinematics.PartIndex++;
 		kinematics.SegmentIndex = 0;
 		kinematics.PierceElapsedSeconds = 0.0;
+		kinematics.DistanceAlongSegmentMm = 0.0;
 		if (kinematics.PartIndex >= context.Job.TargetQuantity)
 		{
 			kinematics.MotionPhase = LaserMotionPhase.Idle;
@@ -305,7 +399,11 @@ public static class LaserKinematicsEngine
 	{
 		kinematics.Vx = 0.0;
 		kinematics.Vy = 0.0;
+		kinematics.Vz = 0.0;
 		kinematics.CutFeedMmPerMin = 0.0;
+		kinematics.PathSpeedMmPerS = 0.0;
+		kinematics.LaserPowerKw = 0.15;
+		kinematics.NextActionHint = "Leerlauf";
 	}
 
 	private static void LoadPartPlan(PhysicalSimulationContext context, int seed)
@@ -359,13 +457,12 @@ public static class LaserKinematicsEngine
 
 		kinematics.X += kinematics.Vx * dt;
 		kinematics.Y += kinematics.Vy * dt;
+		kinematics.DistanceAlongSegmentMm += newSpeed * dt;
+		kinematics.PathSpeedMmPerS = newSpeed;
 		return false;
 	}
 
-	private static double ApproachZ(double current, double target, double dt)
-	{
-		return current + (target - current) * Math.Min(1.0, dt / 0.35);
-	}
+	private static double GetPierceZ(double thicknessMm) => GetCutZ(thicknessMm) - 0.6;
 
 	private static double ApproachScalar(double current, double target, double maxAccel, double dt)
 	{
@@ -390,11 +487,21 @@ public static class LaserKinematicsEngine
 
 	private static void ApplySignals(PhysicalMachineRuntime runtime, LaserKinematicsState kinematics)
 	{
-		double speed = Math.Sqrt(kinematics.Vx * kinematics.Vx + kinematics.Vy * kinematics.Vy);
-		bool motionActive = speed > 0.5
+		double pathSpeed = Math.Sqrt(kinematics.Vx * kinematics.Vx + kinematics.Vy * kinematics.Vy);
+		kinematics.PathSpeedMmPerS = pathSpeed;
+		bool motionActive = pathSpeed > 0.5
+			|| Math.Abs(kinematics.Vz) > 0.2
 			|| kinematics.MotionPhase is LaserMotionPhase.Piercing or LaserMotionPhase.Cutting;
-		double feed = kinematics.MotionPhase == LaserMotionPhase.Cutting ? kinematics.CutFeedMmPerMin : 0.0;
+		bool cutting = kinematics.MotionPhase == LaserMotionPhase.Cutting;
+		bool positioning = kinematics.MotionPhase is LaserMotionPhase.RapidPositioning
+			or LaserMotionPhase.Repositioning or LaserMotionPhase.JobChange;
+		bool laserActive = kinematics.MotionPhase is LaserMotionPhase.Piercing or LaserMotionPhase.Cutting;
+		double feed = cutting ? kinematics.CutFeedMmPerMin : 0.0;
 		double focus = kinematics.Z - VirtualMachineKinematicsConfig.ZCutBase;
+		double basePower = 2.5 + kinematics.CutFeedMmPerMin / 600.0;
+		kinematics.LaserPowerKw = laserActive
+			? (kinematics.MotionPhase == LaserMotionPhase.Piercing ? basePower * 1.15 : basePower * 0.92)
+			: (positioning ? 0.8 : 0.15);
 
 		foreach (SignalRuntimeState signal in runtime.Signals)
 		{
@@ -436,8 +543,8 @@ public static class LaserKinematicsEngine
 				break;
 			case "Axis03.Speed":
 			case "Axis03.TargetSpeed":
-				signal.CurrentValue = 0.0;
-				signal.TargetValue = 0.0;
+				signal.CurrentValue = Math.Abs(kinematics.Vz);
+				signal.TargetValue = Math.Abs(kinematics.Vz);
 				break;
 			case "Axis01.MotionActive":
 			case "Axis02.MotionActive":
@@ -463,6 +570,15 @@ public static class LaserKinematicsEngine
 					signal.CurrentValue = Math.Max(signal.CurrentValue, kinematics.PierceElapsedSeconds);
 				}
 				break;
+			case "Process.LaserPowerActual":
+			case "Process.LaserPowerSetpoint":
+				signal.CurrentValue = kinematics.LaserPowerKw;
+				signal.TargetValue = kinematics.LaserPowerKw;
+				break;
+			case "Process.PowerDemand":
+				signal.CurrentValue = kinematics.LaserPowerKw + pathSpeed * 0.004 + (motionActive ? 1.2 : 0.4);
+				signal.TargetValue = signal.CurrentValue;
+				break;
 			}
 
 			signal.LastUpdatedAt = DateTimeOffset.UtcNow;
@@ -471,7 +587,7 @@ public static class LaserKinematicsEngine
 
 	private static void ApplyFrictionTarget(PhysicalMachineRuntime runtime, LaserKinematicsState kinematics)
 	{
-		double speed = Math.Sqrt(kinematics.Vx * kinematics.Vx + kinematics.Vy * kinematics.Vy);
+		double speed = kinematics.PathSpeedMmPerS;
 		double ratio = Math.Clamp(speed / VirtualMachineKinematicsConfig.RapidSpeedMmPerS, 0.0, 1.0);
 		double friction = 0.12 + ratio * 0.45;
 		if (kinematics.MotionPhase == LaserMotionPhase.Cutting)

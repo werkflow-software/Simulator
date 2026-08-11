@@ -11,7 +11,8 @@ public sealed class LaserKinematicsState
 		"Axis01.Speed", "Axis02.Speed", "Axis03.Speed",
 		"Axis01.TargetSpeed", "Axis02.TargetSpeed", "Axis03.TargetSpeed",
 		"Axis01.MotionActive", "Axis02.MotionActive", "Axis03.MotionActive",
-		"Process.FeedRate", "Process.CuttingSpeed", "Process.FocusPosition", "Process.PierceTime"
+		"Process.FeedRate", "Process.CuttingSpeed", "Process.FocusPosition", "Process.PierceTime",
+		"Process.LaserPowerActual", "Process.LaserPowerSetpoint", "Process.PowerDemand"
 	};
 
 	public bool IsEnabled { get; set; }
@@ -47,6 +48,20 @@ public sealed class LaserKinematicsState
 	public bool MovingToService { get; set; }
 
 	public double CutFeedMmPerMin { get; set; }
+
+	public double Vz { get; set; }
+
+	public double PathSpeedMmPerS { get; set; }
+
+	public double LaserPowerKw { get; set; }
+
+	public double DistanceAlongSegmentMm { get; set; }
+
+	public double SegmentStartX { get; set; }
+
+	public double SegmentStartY { get; set; }
+
+	public string NextActionHint { get; set; } = "—";
 
 	public double MinX { get; set; } = double.MaxValue;
 
