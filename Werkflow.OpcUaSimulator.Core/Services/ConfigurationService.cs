@@ -27,6 +27,8 @@ public sealed class ConfigurationService : IConfigurationService
 
 	public AppConfiguration Configuration { get; private set; } = new AppConfiguration();
 
+	public ApplicationOperatingMode OperatingMode { get; private set; } = ApplicationOperatingMode.ClassicSimulator;
+
 	public string ConfigurationDirectory { get; }
 
 	public event EventHandler? ConfigurationChanged;
@@ -38,8 +40,9 @@ public sealed class ConfigurationService : IConfigurationService
 		ConfigurationDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Werkflow", "OpcUaSimulator");
 	}
 
-	public async Task InitializeAsync(CancellationToken cancellationToken = default(CancellationToken))
+	public async Task InitializeAsync(ApplicationOperatingMode operatingMode, CancellationToken cancellationToken = default(CancellationToken))
 	{
+		OperatingMode = operatingMode;
 		Directory.CreateDirectory(ConfigurationDirectory);
 		AppConfiguration appConfiguration = new AppConfiguration();
 		AppConfiguration appConfiguration2 = appConfiguration;
@@ -51,7 +54,11 @@ public sealed class ConfigurationService : IConfigurationService
 		AppConfiguration appConfiguration5 = appConfiguration;
 		appConfiguration5.Events = await LoadAsync("error-messages.json", FixedSimulationCatalog.CreateDefaultEvents, cancellationToken);
 		Configuration = appConfiguration;
-		if (Configuration.Machines.Count < 4)
+		if (operatingMode == ApplicationOperatingMode.VirtualMachine)
+		{
+			ApplyVirtualMachineMachineFilter();
+		}
+		else if (Configuration.Machines.Count < 4)
 		{
 			Configuration.Machines = DefaultMachines.Create();
 		}
@@ -138,6 +145,20 @@ public sealed class ConfigurationService : IConfigurationService
 			FileName = ConfigurationDirectory,
 			UseShellExecute = true
 		});
+	}
+
+	private void ApplyVirtualMachineMachineFilter()
+	{
+		MachineConfiguration? virtualMachine = Configuration.Machines
+			.FirstOrDefault(m => m.Id == VirtualMachineContract.MachineId || m.Port == VirtualMachineContract.Port);
+		if (virtualMachine == null)
+		{
+			virtualMachine = DefaultMachines.Create().First(m => m.Port == VirtualMachineContract.Port);
+		}
+
+		virtualMachine.IsActive = true;
+		NormalizeMachine(virtualMachine);
+		Configuration.Machines = new List<MachineConfiguration> { virtualMachine };
 	}
 
 	private static void NormalizeMachine(MachineConfiguration machine)

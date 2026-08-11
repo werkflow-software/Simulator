@@ -69,4 +69,6 @@ public interface ISimulationEngine
 	Task SetMachineStateManualAsync(Guid machineId, MachineState state, CancellationToken cancellationToken = default(CancellationToken));
 
 	Task AssignJobIfMissingAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken));
+
+	Task ChangeJobAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken));
 }

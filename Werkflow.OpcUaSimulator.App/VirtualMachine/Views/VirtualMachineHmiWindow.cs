@@ -253,7 +253,7 @@ public sealed class VirtualMachineHmiWindow : Window
 		prodControls.Children.Add(MakeCommandButton("Stop", _viewModel.StopProductionCommand));
 		prodControls.Children.Add(MakeCommandButton("Pause", _viewModel.PauseProductionCommand));
 		prodControls.Children.Add(MakeCommandButton("Resume", _viewModel.ResumeProductionCommand));
-		prodControls.Children.Add(MakeCommandButton("Reset", _viewModel.ResetMachineCommand));
+		prodControls.Children.Add(MakeCommandButton("Neuen Maschinenlauf starten", _viewModel.ResetMachineCommand));
 		stack.Children.Add(prodControls);
 
 		stack.Children.Add(MakeSectionTitle("Betriebszustand"));
@@ -263,7 +263,22 @@ public sealed class VirtualMachineHmiWindow : Window
 		stack.Children.Add(MakeBoundBlock("JobName", 14, FontWeights.Normal, "Job: {0}"));
 		stack.Children.Add(MakeBoundBlock("PartName", 14, FontWeights.Normal, "Teil: {0}"));
 		stack.Children.Add(MakeBoundBlock("CounterText", 14, FontWeights.Normal, "Ist/Soll: {0}"));
-		stack.Children.Add(MakeMetricRowFromOverview(11)); // cycle from overview if present - use counter
+
+		stack.Children.Add(MakeSectionTitle("Aufträge"));
+		stack.Children.Add(MakeBoundBlock("NextJobText", 13, FontWeights.Normal, "Nächster: {0}"));
+		stack.Children.Add(MakeBoundBlock("JobPoolText", 13, FontWeights.Normal, "Pool: {0}"));
+		stack.Children.Add(MakeCommandButton("Auftrag wechseln", _viewModel.ChangeJobCommand));
+
+		stack.Children.Add(MakeSectionTitle("Simulation"));
+		stack.Children.Add(MakeBoundBlock("SimulationSpeedText", 13, FontWeights.Normal, "Zeitfaktor: {0}"));
+		stack.Children.Add(MakeBoundBlock("RandomSeedText", 13, FontWeights.Normal, "Seed: {0}"));
+		stack.Children.Add(MakeBoundBlock("ProductionSpeedText", 13, FontWeights.Normal, "Prod.-Geschw.: {0}"));
+		var speedRow = new WrapPanel();
+		speedRow.Children.Add(MakeCommandButton("1x", _viewModel.SetSimulationSpeed1xCommand));
+		speedRow.Children.Add(MakeCommandButton("2x", _viewModel.SetSimulationSpeed2xCommand));
+		speedRow.Children.Add(MakeCommandButton("5x", _viewModel.SetSimulationSpeed5xCommand));
+		speedRow.Children.Add(MakeCommandButton("10x", _viewModel.SetSimulationSpeed10xCommand));
+		stack.Children.Add(speedRow);
 
 		return stack;
 	}
@@ -326,6 +341,26 @@ public sealed class VirtualMachineHmiWindow : Window
 		list.SelectionChanged += (_, _) => _viewModel.SetSelectedFaultScenario(
 			list.SelectedItem as Werkflow.OpcUaSimulator.App.ViewModels.FaultScenarioListItem);
 		simStack.Children.Add(list);
+
+		simStack.Children.Add(MakeSectionTitle("Intensität / Zeitfaktor"));
+		var intensitySlider = new Slider
+		{
+			Minimum = 0.1,
+			Maximum = 2.0,
+			Value = _viewModel.FaultIntensity,
+			Margin = new Thickness(0, 4, 0, 4)
+		};
+		intensitySlider.ValueChanged += (_, e) => _viewModel.SetFaultIntensity(e.NewValue);
+		simStack.Children.Add(intensitySlider);
+		var timeFactorSlider = new Slider
+		{
+			Minimum = 1,
+			Maximum = 50,
+			Value = _viewModel.FaultTimeFactor,
+			Margin = new Thickness(0, 4, 0, 8)
+		};
+		timeFactorSlider.ValueChanged += (_, e) => _viewModel.SetFaultTimeFactor(e.NewValue);
+		simStack.Children.Add(timeFactorSlider);
 
 		var faultControls = new WrapPanel();
 		faultControls.Children.Add(MakeCommandButton("Start", _viewModel.StartFaultScenarioCommand));

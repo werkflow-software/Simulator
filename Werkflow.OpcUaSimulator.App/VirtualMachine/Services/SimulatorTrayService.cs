@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Windows;
 using System.Windows.Forms;
+using Werkflow.OpcUaSimulator.App.Services;
 using Werkflow.OpcUaSimulator.App.VirtualMachine.ViewModels;
 using Werkflow.OpcUaSimulator.Core.Interfaces;
 
@@ -14,23 +15,27 @@ public sealed class SimulatorTrayService : IHmiTrayNotifier, IDisposable
 	private readonly Func<VirtualMachineWindowService> _virtualMachineWindowServiceFactory;
 	private readonly VirtualMachineHmiViewModel _hmiViewModel;
 	private readonly IDialogService _dialogService;
+	private readonly IApplicationSessionContext _sessionContext;
 	private NotifyIcon? _notifyIcon;
 	private bool _disposed;
 
 	public SimulatorTrayService(
 		Func<VirtualMachineWindowService> virtualMachineWindowServiceFactory,
 		VirtualMachineHmiViewModel hmiViewModel,
-		IDialogService dialogService)
+		IDialogService dialogService,
+		IApplicationSessionContext sessionContext)
 	{
 		_virtualMachineWindowServiceFactory = virtualMachineWindowServiceFactory;
 		_hmiViewModel = hmiViewModel;
 		_dialogService = dialogService;
+		_sessionContext = sessionContext;
 	}
 
 	public void EnsureInitialized()
 	{
 		if (_notifyIcon != null)
 		{
+			RebuildMenu();
 			return;
 		}
 
@@ -41,13 +46,42 @@ public sealed class SimulatorTrayService : IHmiTrayNotifier, IDisposable
 			Visible = true
 		};
 
+		_notifyIcon.DoubleClick += (_, _) =>
+		{
+			if (_sessionContext.IsVirtualMachine)
+			{
+				OpenVirtualMachine();
+			}
+			else
+			{
+				OpenMainWindow();
+			}
+		};
+
+		RebuildMenu();
+	}
+
+	private void RebuildMenu()
+	{
+		if (_notifyIcon == null)
+		{
+			return;
+		}
+
 		var menu = new ContextMenuStrip();
-		menu.Items.Add("Virtuelle Maschine öffnen", null, (_, _) => OpenVirtualMachine());
-		menu.Items.Add("Simulator öffnen", null, (_, _) => OpenMainWindow());
-		menu.Items.Add("Maschine beenden", null, async (_, _) => await ShutdownMachineAsync());
-		menu.Items.Add("Beenden", null, (_, _) => ExitApplication());
+		if (_sessionContext.IsVirtualMachine)
+		{
+			menu.Items.Add("Virtuelle Maschine öffnen", null, (_, _) => OpenVirtualMachine());
+			menu.Items.Add("Maschine beenden", null, async (_, _) => await ShutdownMachineAsync());
+			menu.Items.Add("Anwendung beenden", null, (_, _) => ExitApplication());
+		}
+		else
+		{
+			menu.Items.Add("Simulator öffnen", null, (_, _) => OpenMainWindow());
+			menu.Items.Add("Beenden", null, (_, _) => ExitApplication());
+		}
+
 		_notifyIcon.ContextMenuStrip = menu;
-		_notifyIcon.DoubleClick += (_, _) => OpenVirtualMachine();
 	}
 
 	public void NotifyHmiHidden()

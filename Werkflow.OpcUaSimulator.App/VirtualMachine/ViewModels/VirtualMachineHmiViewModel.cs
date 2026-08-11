@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Werkflow.OpcUaSimulator.App;
 using Werkflow.OpcUaSimulator.App.ViewModels;
 using Werkflow.OpcUaSimulator.App.VirtualMachine.Models;
 using Werkflow.OpcUaSimulator.Core.Interfaces;
@@ -24,6 +25,8 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	private readonly IMachineServerService _machineServerService;
 	private readonly IFaultScenarioService _faultScenarioService;
 	private readonly IDialogService _dialogService;
+	private readonly IJobDispatcher _jobDispatcher;
+	private readonly ApplicationSessionCoordinator _sessionCoordinator;
 	private readonly DispatcherTimer _refreshTimer;
 
 	private MachineConfiguration? _machine;
@@ -50,6 +53,11 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	private double _faultTimeFactor = 25.0;
 	private string _faultRuntimeStatus = "—";
 	private string _statusBadge = "BEREIT";
+	private string _nextJobText = "—";
+	private string _jobPoolText = "—";
+	private string _simulationSpeedText = "1x";
+	private string _randomSeedText = "—";
+	private string _productionSpeedText = "—";
 
 	public ObservableCollection<HmiMetricItem> OverviewMetrics { get; } = [];
 	public ObservableCollection<HmiAxisPanelViewModel> AxisPanels { get; } = [];
@@ -84,6 +92,11 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	public double FaultTimeFactor => _faultTimeFactor;
 	public string FaultRuntimeStatus => _faultRuntimeStatus;
 	public string StatusBadge => _statusBadge;
+	public string NextJobText => _nextJobText;
+	public string JobPoolText => _jobPoolText;
+	public string SimulationSpeedText => _simulationSpeedText;
+	public string RandomSeedText => _randomSeedText;
+	public string ProductionSpeedText => _productionSpeedText;
 
 	public int SelectedTabIndex
 	{
@@ -103,6 +116,11 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	public IAsyncRelayCommand ResumeFaultScenarioCommand { get; }
 	public IAsyncRelayCommand StopFaultScenarioCommand { get; }
 	public IAsyncRelayCommand NormalOperationCommand { get; }
+	public IAsyncRelayCommand ChangeJobCommand { get; }
+	public IAsyncRelayCommand SetSimulationSpeed1xCommand { get; }
+	public IAsyncRelayCommand SetSimulationSpeed2xCommand { get; }
+	public IAsyncRelayCommand SetSimulationSpeed5xCommand { get; }
+	public IAsyncRelayCommand SetSimulationSpeed10xCommand { get; }
 
 	public VirtualMachineHmiViewModel(
 		ISimulationEngine simulationEngine,
@@ -110,7 +128,9 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		IPhysicalSignalPublishingCoordinator coordinator,
 		IMachineServerService machineServerService,
 		IFaultScenarioService faultScenarioService,
-		IDialogService dialogService)
+		IDialogService dialogService,
+		IJobDispatcher jobDispatcher,
+		ApplicationSessionCoordinator sessionCoordinator)
 	{
 		_simulationEngine = simulationEngine;
 		_configurationService = configurationService;
@@ -118,6 +138,8 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		_machineServerService = machineServerService;
 		_faultScenarioService = faultScenarioService;
 		_dialogService = dialogService;
+		_jobDispatcher = jobDispatcher;
+		_sessionCoordinator = sessionCoordinator;
 
 		StartMachineCommand = new AsyncRelayCommand(StartMachineAsync, () => CanStartMachine);
 		StartProductionCommand = new AsyncRelayCommand(StartProductionAsync, CanStartProduction);
@@ -131,6 +153,11 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		ResumeFaultScenarioCommand = new AsyncRelayCommand(ResumeFaultScenarioAsync, () => SelectedFaultScenario != null);
 		StopFaultScenarioCommand = new AsyncRelayCommand(StopFaultScenarioAsync, () => SelectedFaultScenario != null);
 		NormalOperationCommand = new AsyncRelayCommand(NormalOperationAsync, () => _machine != null);
+		ChangeJobCommand = new AsyncRelayCommand(ChangeJobAsync, () => _machine != null && _isMachineRunning);
+		SetSimulationSpeed1xCommand = new AsyncRelayCommand(() => SetSimulationSpeedAsync(1.0));
+		SetSimulationSpeed2xCommand = new AsyncRelayCommand(() => SetSimulationSpeedAsync(2.0));
+		SetSimulationSpeed5xCommand = new AsyncRelayCommand(() => SetSimulationSpeedAsync(5.0));
+		SetSimulationSpeed10xCommand = new AsyncRelayCommand(() => SetSimulationSpeedAsync(10.0));
 
 		_refreshTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
 		_refreshTimer.Tick += (_, _) => Refresh();
@@ -390,6 +417,24 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 
 		await _simulationEngine.PauseProductionAsync(_machine.Id);
 		await _simulationEngine.StopMachineServerAsync(_machine.Id);
+		await _sessionCoordinator.EndSessionAndReturnToSelectorAsync();
+	}
+
+	private async Task ChangeJobAsync()
+	{
+		if (_machine == null)
+		{
+			return;
+		}
+
+		await _simulationEngine.ChangeJobAsync(_machine.Id);
+		Refresh();
+	}
+
+	private async Task SetSimulationSpeedAsync(double factor)
+	{
+		_configurationService.Configuration.Settings.SimulationSpeedFactor = factor;
+		await _configurationService.SaveSettingsAsync();
 		Refresh();
 	}
 
@@ -508,6 +553,14 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		OnPropertyChanged(nameof(ModeText));
 		OnPropertyChanged(nameof(StatusBadge));
 
+		UpdateJobPoolSummary();
+		_simulationSpeedText = $"{_configurationService.Configuration.Settings.SimulationSpeedFactor:0.#}x";
+		_randomSeedText = _simulationEngine.CurrentSeed.ToString();
+		_productionSpeedText = _machine.ProductionSpeedFactor.ToString("0.#");
+		OnPropertyChanged(nameof(SimulationSpeedText));
+		OnPropertyChanged(nameof(RandomSeedText));
+		OnPropertyChanged(nameof(ProductionSpeedText));
+
 		var active = _faultScenarioService.GetActiveScenarios(_machine.Id).FirstOrDefault();
 		_hasActiveTestScenario = active != null;
 		_activeTestScenario = active?.ScenarioId ?? "";
@@ -523,6 +576,28 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		}
 
 		NotifyCommandStates();
+	}
+
+	private void UpdateJobPoolSummary()
+	{
+		if (_machine == null)
+		{
+			return;
+		}
+
+		var config = _configurationService.Configuration;
+		int pending = config.Jobs.Count(j => j.Status == JobState.Pending);
+		_jobPoolText = $"{pending} offen / {config.Jobs.Count} gesamt";
+
+		SimulationJob? nextJob = _jobDispatcher.GetNextJobForMachine(
+			_machine.Id,
+			config,
+			new Random(_simulationEngine.CurrentSeed));
+		_nextJobText = nextJob == null
+			? "—"
+			: $"{nextJob.JobName} / {nextJob.PartName} ({nextJob.TargetQuantity})";
+		OnPropertyChanged(nameof(JobPoolText));
+		OnPropertyChanged(nameof(NextJobText));
 	}
 
 	private void RefreshBoundSignals(PhysicalMachineSession session)
@@ -735,5 +810,6 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		ResumeFaultScenarioCommand.NotifyCanExecuteChanged();
 		StopFaultScenarioCommand.NotifyCanExecuteChanged();
 		NormalOperationCommand.NotifyCanExecuteChanged();
+		ChangeJobCommand.NotifyCanExecuteChanged();
 	}
 }

@@ -36,38 +36,9 @@ public class App : Application
 		try
 		{
 			_host = CreateHost();
-			MainWindow mainWindow = _host.Services.GetRequiredService<MainWindow>();
-			MainWindow = mainWindow;
 			ShutdownMode = ShutdownMode.OnExplicitShutdown;
-			mainWindow.Visibility = Visibility.Visible;
-			mainWindow.ShowInTaskbar = true;
-			mainWindow.WindowState = WindowState.Normal;
-			mainWindow.Show();
-			mainWindow.Activate();
-			mainWindow.Focus();
-			_ = CompleteStartupAsync();
-		}
-		catch (Exception ex)
-		{
-			MessageBox.Show(ex.ToString(), "Werkflow OPC UA Simulator – Startup-Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
-			Shutdown(-1);
-		}
-	}
-
-	private async Task CompleteStartupAsync()
-	{
-		try
-		{
-			await _host!.StartAsync();
-			IConfigurationService configurationService = _host.Services.GetRequiredService<IConfigurationService>();
-			await configurationService.InitializeAsync();
-			IFaultScenarioService faultScenarioService = _host.Services.GetRequiredService<IFaultScenarioService>();
-			await faultScenarioService.InitializeAsync();
-
-			_host.Services.GetRequiredService<OverviewViewModel>().Refresh();
-			_host.Services.GetRequiredService<FaultScenariosViewModel>().Refresh();
-			_host.Services.GetRequiredService<PhysicalSignalsViewModel>().ReloadMachines();
-			_host.Services.GetRequiredService<SimulatorTrayService>().EnsureInitialized();
+			ApplicationSessionCoordinator sessionCoordinator = _host.Services.GetRequiredService<ApplicationSessionCoordinator>();
+			sessionCoordinator.ShowModeSelector();
 		}
 		catch (Exception ex)
 		{
@@ -83,6 +54,8 @@ public class App : Application
 			builder.AddDebug();
 		}).ConfigureServices(delegate(IServiceCollection services)
 		{
+			services.AddSingleton<IApplicationSessionContext, ApplicationSessionContext>();
+			services.AddSingleton<ApplicationSessionCoordinator>();
 			services.AddSingleton<ILogService, LogService>();
 			services.AddSingleton<IJobGenerator, JobGenerator>();
 			services.AddSingleton<IConfigurationService, ConfigurationService>();

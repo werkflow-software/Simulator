@@ -506,6 +506,28 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 		return Task.CompletedTask;
 	}
 
+	public Task ChangeJobAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken))
+	{
+		MachineConfiguration machine = GetMachine(machineId);
+		MachineRuntimeState runtime = GetRuntime(machineId);
+		if (runtime.AssignedJobId.HasValue)
+		{
+			SimulationJob? currentJob = _configurationService.Configuration.Jobs.FirstOrDefault(j => j.Id == runtime.AssignedJobId);
+			if (currentJob != null && currentJob.Status != JobState.Completed)
+			{
+				currentJob.Status = JobState.Pending;
+				currentJob.AssignedMachineId = null;
+				currentJob.ActualCounter = runtime.ActualCounter;
+			}
+			runtime.AssignedJobId = null;
+		}
+		EnsureJobPoolReady();
+		AssignJobToMachine(machine, runtime);
+		PublishMachine(machine, runtime);
+		NotifyMachineChanged(runtime);
+		return Task.CompletedTask;
+	}
+
 	private async Task StartMachineInternalAsync(MachineConfiguration machine, bool assignJob, CancellationToken cancellationToken)
 	{
 		MachineRuntimeState runtime = GetRuntime(machine.Id);

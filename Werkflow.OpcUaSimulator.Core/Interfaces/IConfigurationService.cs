@@ -7,13 +7,14 @@ namespace Werkflow.OpcUaSimulator.Core.Interfaces;
 
 public interface IConfigurationService
 {
+	ApplicationOperatingMode OperatingMode { get; }
 	AppConfiguration Configuration { get; }
 
 	string ConfigurationDirectory { get; }
 
 	event EventHandler? ConfigurationChanged;
 
-	Task InitializeAsync(CancellationToken cancellationToken = default(CancellationToken));
+	Task InitializeAsync(ApplicationOperatingMode operatingMode, CancellationToken cancellationToken = default(CancellationToken));
 
 	Task SaveAllAsync(CancellationToken cancellationToken = default(CancellationToken));
 

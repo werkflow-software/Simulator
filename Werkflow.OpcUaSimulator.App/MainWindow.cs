@@ -39,22 +39,6 @@ public class MainWindow : Window, IComponentConnector
 
 	private void OnLoaded(object sender, RoutedEventArgs e)
 	{
-		if (Content is not Grid root || root.Children.Count == 0)
-		{
-			return;
-		}
-
-		var host = root.Children[0] as Panel ?? root;
-		var button = new Button
-		{
-			Content = "Virtuelle Maschine",
-			Margin = new Thickness(8),
-			Padding = new Thickness(16, 8, 16, 8),
-			HorizontalAlignment = HorizontalAlignment.Right,
-			VerticalAlignment = VerticalAlignment.Top,
-			Command = _viewModel.OpenVirtualMachineCommand
-		};
-		host.Children.Add(button);
 	}
 
 	private void OnManualControlRequested(object? sender, Guid machineId)
