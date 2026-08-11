@@ -79,9 +79,21 @@ public sealed class CuttingPlanViewModel : ObservableObject
 
 	public void NotifyDisplayRefresh() => OnPropertyChanged(string.Empty);
 
-	public void ZoomIn() => Zoom = Math.Min(3.0, Zoom * 1.2);
+	public void ZoomIn()
+	{
+		Zoom = Math.Min(3.0, Zoom * 1.2);
+		OnPropertyChanged(nameof(Zoom));
+	}
 
-	public void ZoomOut() => Zoom = Math.Max(0.5, Zoom / 1.2);
+	public void ZoomOut()
+	{
+		Zoom = Math.Max(0.5, Zoom / 1.2);
+		OnPropertyChanged(nameof(Zoom));
+	}
 
-	public void FitSheet() => Zoom = 1.0;
+	public void FitSheet()
+	{
+		Zoom = 1.0;
+		OnPropertyChanged(nameof(Zoom));
+	}
 }

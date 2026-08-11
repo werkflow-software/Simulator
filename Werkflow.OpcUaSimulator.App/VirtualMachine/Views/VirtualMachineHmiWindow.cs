@@ -248,11 +248,19 @@ public sealed class VirtualMachineHmiWindow : Window
 		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(300) });
 
-		grid.Children.Add(WrapPanel(BuildLeftAxisColumn()));
-		grid.Children.Add(WrapPanel(BuildCenterProcessColumn()));
-		Grid.SetColumn(grid.Children[^1], 1);
-		grid.Children.Add(WrapPanel(BuildRightControlColumn()));
-		Grid.SetColumn(grid.Children[^1], 2);
+		var leftWrap = WrapPanel(BuildLeftAxisColumn());
+		leftWrap.VerticalAlignment = VerticalAlignment.Stretch;
+		grid.Children.Add(leftWrap);
+
+		var centerWrap = WrapPanel(BuildCenterProcessColumn());
+		centerWrap.VerticalAlignment = VerticalAlignment.Stretch;
+		Grid.SetColumn(centerWrap, 1);
+		grid.Children.Add(centerWrap);
+
+		var rightWrap = WrapPanel(BuildRightControlColumn());
+		rightWrap.VerticalAlignment = VerticalAlignment.Stretch;
+		Grid.SetColumn(rightWrap, 2);
+		grid.Children.Add(rightWrap);
 
 		return grid;
 	}
@@ -274,7 +282,15 @@ public sealed class VirtualMachineHmiWindow : Window
 
 	private UIElement BuildCenterProcessColumn()
 	{
-		var stack = new StackPanel();
+		var grid = new Grid();
+		grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+		grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+		grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+		grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+		grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star), MinHeight = 280 });
+		grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+		grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+		grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
 		var infoGrid = new Grid { Margin = new Thickness(0, 0, 0, 6) };
 		for (int i = 0; i < 4; i++)
@@ -293,7 +309,7 @@ public sealed class VirtualMachineHmiWindow : Window
 		infoGrid.Children.Add(MakePlanInfoBlock("Dicke", nameof(CuttingPlanViewModel.ThicknessText)));
 		Grid.SetColumn(infoGrid.Children[^1], 0);
 		Grid.SetRow(infoGrid.Children[^1], 1);
-		stack.Children.Add(infoGrid);
+		grid.Children.Add(infoGrid);
 
 		var progressPanel = new Border
 		{
@@ -316,9 +332,12 @@ public sealed class VirtualMachineHmiWindow : Window
 		Grid.SetColumn(phaseBlock, 2);
 		progressGrid.Children.Add(phaseBlock);
 		progressPanel.Child = progressGrid;
-		stack.Children.Add(progressPanel);
+		Grid.SetRow(progressPanel, 1);
+		grid.Children.Add(progressPanel);
 
-		stack.Children.Add(BuildTimesPanel());
+		var timesPanel = BuildTimesPanel();
+		Grid.SetRow(timesPanel, 2);
+		grid.Children.Add(timesPanel);
 
 		var banner = new Border
 		{
@@ -330,27 +349,37 @@ public sealed class VirtualMachineHmiWindow : Window
 		var phaseBlockLarge = MakeBoundBlock("ProcessPhaseText", 24, FontWeights.Bold);
 		phaseBlockLarge.Foreground = HmiVisualTheme.TextOnDark;
 		banner.Child = phaseBlockLarge;
-		stack.Children.Add(banner);
+		Grid.SetRow(banner, 3);
+		grid.Children.Add(banner);
 
 		var planBorder = new Border
 		{
 			Background = HmiVisualTheme.PlanSheetBg,
 			BorderBrush = HmiVisualTheme.PanelBorder,
 			BorderThickness = new Thickness(1),
-			MinHeight = 380
+			VerticalAlignment = VerticalAlignment.Stretch,
+			MinHeight = 280
 		};
-		_cuttingPlanCanvas = new CuttingPlanCanvasControl();
+		_cuttingPlanCanvas = new CuttingPlanCanvasControl
+		{
+			VerticalAlignment = VerticalAlignment.Stretch,
+			HorizontalAlignment = HorizontalAlignment.Stretch
+		};
 		_cuttingPlanCanvas.Bind(_viewModel.CuttingPlan);
 		planBorder.Child = _cuttingPlanCanvas;
-		stack.Children.Add(planBorder);
+		Grid.SetRow(planBorder, 4);
+		grid.Children.Add(planBorder);
 
 		var zoomRow = new WrapPanel { Margin = new Thickness(0, 6, 0, 0) };
-		zoomRow.Children.Add(MakeButton("Zoom +", (_, _) => _viewModel.CuttingPlan.ZoomIn()));
-		zoomRow.Children.Add(MakeButton("Zoom −", (_, _) => _viewModel.CuttingPlan.ZoomOut()));
-		zoomRow.Children.Add(MakeButton("Plan zentrieren", (_, _) => _viewModel.CuttingPlan.FitSheet()));
-		stack.Children.Add(zoomRow);
+		zoomRow.Children.Add(MakeButton("Zoom +", (_, _) => _cuttingPlanCanvas?.ZoomIn()));
+		zoomRow.Children.Add(MakeButton("Zoom −", (_, _) => _cuttingPlanCanvas?.ZoomOut()));
+		zoomRow.Children.Add(MakeButton("Plan zentrieren", (_, _) => _cuttingPlanCanvas?.FitSheet()));
+		Grid.SetRow(zoomRow, 5);
+		grid.Children.Add(zoomRow);
 
-		stack.Children.Add(MakeBoundBlock("CuttingPlan.NextJobPreview", 13, FontWeights.Normal, "Nächster Auftrag: {0}"));
+		var nextJobBlock = MakeBoundBlock("CuttingPlan.NextJobPreview", 13, FontWeights.Normal, "Nächster Auftrag: {0}");
+		Grid.SetRow(nextJobBlock, 6);
+		grid.Children.Add(nextJobBlock);
 
 		var indicatorRow = new Grid { Margin = new Thickness(0, 6, 0, 0) };
 		for (int i = 0; i < 3; i++)
@@ -364,9 +393,11 @@ public sealed class VirtualMachineHmiWindow : Window
 		var pos = BuildIndicatorRow("Positionierung aktiv", "PositioningActiveText");
 		Grid.SetColumn(pos, 2);
 		indicatorRow.Children.Add(pos);
-		stack.Children.Add(indicatorRow);
+		Grid.SetRow(indicatorRow, 7);
+		grid.Children.Add(indicatorRow);
 
-		return stack;
+		grid.VerticalAlignment = VerticalAlignment.Stretch;
+		return grid;
 	}
 
 	private void UpdateCuttingPlanCanvas() => _cuttingPlanCanvas?.RefreshGeometry();
@@ -530,6 +561,7 @@ public sealed class VirtualMachineHmiWindow : Window
 			BorderThickness = new Thickness(1),
 			Margin = new Thickness(3),
 			Padding = new Thickness(8),
+			VerticalAlignment = VerticalAlignment.Stretch,
 			Child = child
 		};
 

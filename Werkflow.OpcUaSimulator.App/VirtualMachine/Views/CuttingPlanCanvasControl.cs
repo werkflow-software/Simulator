@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -11,33 +12,169 @@ namespace Werkflow.OpcUaSimulator.App.VirtualMachine.Views;
 public sealed class CuttingPlanCanvasControl : UserControl
 {
 	private readonly Canvas _canvas = new();
-	private readonly Viewbox _viewbox;
+	private readonly ScrollViewer _scrollViewer;
+	private readonly ScaleTransform _scaleTransform;
 	private CuttingPlanViewModel? _planVm;
+	private double _fitScale = 1.0;
+	private double _userZoom = 1.0;
+	private bool _pendingFit;
 
 	public CuttingPlanCanvasControl()
 	{
-		_viewbox = new Viewbox
-		{
-			Stretch = Stretch.Uniform,
-			Child = _canvas
-		};
+		_scaleTransform = new ScaleTransform(1.0, 1.0);
+		_canvas.RenderTransform = _scaleTransform;
+		_canvas.RenderTransformOrigin = new Point(0, 0);
 		_canvas.Width = VirtualMachineKinematicsConfig.WorkingAreaXMax;
 		_canvas.Height = VirtualMachineKinematicsConfig.WorkingAreaYMax;
 		_canvas.Background = HmiVisualTheme.PlanSheetBg;
-		Content = _viewbox;
+
+		_scrollViewer = new ScrollViewer
+		{
+			HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+			VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+			Background = HmiVisualTheme.PlanSheetBg,
+			Content = _canvas,
+			ClipToBounds = true
+		};
+
+		Content = _scrollViewer;
+		Loaded += OnLoaded;
+		SizeChanged += OnSizeChanged;
 	}
+
+	public double UserZoom => _userZoom;
 
 	public void Bind(CuttingPlanViewModel planVm)
 	{
+		if (_planVm != null)
+		{
+			_planVm.PropertyChanged -= OnPlanVmPropertyChanged;
+		}
+
 		_planVm = planVm;
+		_planVm.PropertyChanged += OnPlanVmPropertyChanged;
 		RedrawStatic();
 		RedrawDynamic();
+		RequestFitToViewport();
 	}
 
 	public void RefreshGeometry()
 	{
 		RedrawStatic();
 		RedrawDynamic();
+	}
+
+	public void ZoomIn()
+	{
+		ZoomAtViewportCenter(1.2);
+	}
+
+	public void ZoomOut()
+	{
+		ZoomAtViewportCenter(1.0 / 1.2);
+	}
+
+	public void FitSheet()
+	{
+		_userZoom = 1.0;
+		SyncViewModelZoom();
+		RequestFitToViewport();
+	}
+
+	private void OnLoaded(object sender, RoutedEventArgs e) => RequestFitToViewport();
+
+	private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+	{
+		if (_pendingFit || _userZoom == 1.0)
+		{
+			ApplyFitToViewport();
+		}
+	}
+
+	private void OnPlanVmPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName == nameof(CuttingPlanViewModel.Zoom))
+		{
+			_userZoom = Math.Clamp(_planVm?.Zoom ?? 1.0, 0.5, 3.0);
+			ApplyScale();
+			CenterSheetInViewport();
+		}
+	}
+
+	private void RequestFitToViewport()
+	{
+		_pendingFit = true;
+		if (_scrollViewer.ActualWidth > 1 && _scrollViewer.ActualHeight > 1)
+		{
+			ApplyFitToViewport();
+		}
+	}
+
+	private void ApplyFitToViewport()
+	{
+		double viewportWidth = _scrollViewer.ActualWidth;
+		double viewportHeight = _scrollViewer.ActualHeight;
+		if (viewportWidth < 8 || viewportHeight < 8)
+		{
+			return;
+		}
+
+		double sheetWidth = VirtualMachineKinematicsConfig.WorkingAreaXMax;
+		double sheetHeight = VirtualMachineKinematicsConfig.WorkingAreaYMax;
+		_fitScale = Math.Min(viewportWidth / sheetWidth, viewportHeight / sheetHeight);
+		if (_fitScale <= 0)
+		{
+			_fitScale = 1.0;
+		}
+
+		_pendingFit = false;
+		ApplyScale();
+		CenterSheetInViewport();
+	}
+
+	private void ApplyScale()
+	{
+		double scale = _fitScale * _userZoom;
+		_scaleTransform.ScaleX = scale;
+		_scaleTransform.ScaleY = scale;
+	}
+
+	private void ZoomAtViewportCenter(double factor)
+	{
+		double oldScale = _scaleTransform.ScaleX;
+		if (oldScale <= 0)
+		{
+			return;
+		}
+
+		_userZoom = Math.Clamp(_userZoom * factor, 0.5, 3.0);
+		SyncViewModelZoom();
+		ApplyScale();
+
+		double newScale = _scaleTransform.ScaleX;
+		double ratio = newScale / oldScale;
+		double centerX = _scrollViewer.HorizontalOffset + _scrollViewer.ViewportWidth / 2.0;
+		double centerY = _scrollViewer.VerticalOffset + _scrollViewer.ViewportHeight / 2.0;
+		_scrollViewer.ScrollToHorizontalOffset(Math.Max(0, centerX * ratio - _scrollViewer.ViewportWidth / 2.0));
+		_scrollViewer.ScrollToVerticalOffset(Math.Max(0, centerY * ratio - _scrollViewer.ViewportHeight / 2.0));
+	}
+
+	private void CenterSheetInViewport()
+	{
+		double sheetWidth = VirtualMachineKinematicsConfig.WorkingAreaXMax * _scaleTransform.ScaleX;
+		double sheetHeight = VirtualMachineKinematicsConfig.WorkingAreaYMax * _scaleTransform.ScaleY;
+		_scrollViewer.ScrollToHorizontalOffset(Math.Max(0, (sheetWidth - _scrollViewer.ViewportWidth) / 2.0));
+		_scrollViewer.ScrollToVerticalOffset(Math.Max(0, (sheetHeight - _scrollViewer.ViewportHeight) / 2.0));
+	}
+
+	private void SyncViewModelZoom()
+	{
+		if (_planVm == null)
+		{
+			return;
+		}
+
+		_planVm.Zoom = _userZoom;
 	}
 
 	private void RedrawStatic()
