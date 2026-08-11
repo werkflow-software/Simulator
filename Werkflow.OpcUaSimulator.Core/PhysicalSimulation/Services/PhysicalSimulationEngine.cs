@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Calculation;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.FaultScenarios.Services;
+using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Kinematics;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 
 namespace Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Services;
@@ -52,6 +53,7 @@ public sealed class PhysicalSimulationEngine : IPhysicalSimulationEngine
 		_ticksInWindow[session.MachineId] = 0;
 		_hiddenEngine.Initialize(session.Profile, session.Runtime, session.Simulation, random);
 		_signalEngine.Initialize(session.Profile, session.Runtime, session.Simulation, random);
+		LaserKinematicsEngine.Initialize(session.Simulation, seed, session.MachineId);
 	}
 
 	public void Tick(PhysicalMachineSession session, TimeSpan deltaTime)
@@ -69,6 +71,7 @@ public sealed class PhysicalSimulationEngine : IPhysicalSimulationEngine
 		Stopwatch stopwatch = Stopwatch.StartNew();
 		_hiddenEngine.Tick(session.Profile, session.Runtime, session.Simulation, random, deltaTime2);
 		_faultScenarioEngine?.Tick(session, deltaTime, _faultBridge);
+		LaserKinematicsEngine.Tick(session.Profile, session.Runtime, session.Simulation, deltaTime2, session.Simulation.Seed);
 		_signalEngine.CalculateSignals(session.Profile, session.Runtime, session.Simulation, random, deltaTime2);
 		_faultScenarioEngine?.EvaluateThresholdsAfterSignals(session, _faultBridge);
 		_faultScenarioEngine?.ApplySignalOverrides(session, _faultBridge);

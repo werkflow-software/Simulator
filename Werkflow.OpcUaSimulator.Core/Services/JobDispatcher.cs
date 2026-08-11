@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Werkflow.OpcUaSimulator.Core.Defaults;
 using Werkflow.OpcUaSimulator.Core.Interfaces;
 using Werkflow.OpcUaSimulator.Core.Models;
 
@@ -70,6 +71,25 @@ public sealed class JobDispatcher : IJobDispatcher
 		simulationJob2.StartedAt = null;
 		simulationJob2.CompletedAt = null;
 		return simulationJob2;
+	}
+
+	public SimulationJob? GetJobByCatalogIndex(int catalogIndex, AppConfiguration config)
+	{
+		SimulationJob? existing = config.Jobs.FirstOrDefault(j => j.CatalogIndex == catalogIndex);
+		if (existing != null && existing.Status != JobState.Completed)
+		{
+			return existing;
+		}
+
+		FixedProductionJobDefinition definition = FixedSimulationCatalog.GetDefinition(catalogIndex);
+		SimulationJob job = FixedSimulationCatalog.CreateSimulationJob(definition);
+		if (existing != null && existing.Status == JobState.Completed)
+		{
+			job.Id = Guid.NewGuid();
+		}
+
+		config.Jobs.Add(job);
+		return job;
 	}
 
 	public void CompleteJob(SimulationJob job, MachineRuntimeState runtime)

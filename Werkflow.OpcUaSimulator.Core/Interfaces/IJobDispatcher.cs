@@ -9,5 +9,7 @@ public interface IJobDispatcher
 
 	SimulationJob? GetNextJobForMachine(Guid machineId, AppConfiguration config, Random random);
 
+	SimulationJob? GetJobByCatalogIndex(int catalogIndex, AppConfiguration config);
+
 	void CompleteJob(SimulationJob job, MachineRuntimeState runtime);
 }

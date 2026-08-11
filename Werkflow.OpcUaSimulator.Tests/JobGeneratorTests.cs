@@ -15,9 +15,9 @@ public class JobGeneratorTests
 		JobGenerator jobGenerator = new JobGenerator();
 		List<SimulationJob> list = jobGenerator.GenerateJobs(new SimulationSettings(), new Random(99));
 		Assert.Equal(20, list.Count);
-		Assert.Equal("Part-001", list[0].PartName);
-		Assert.Equal("Job-020", list[19].JobName);
-		Assert.Equal(FixedSimulationCatalog.BatchSizes[0], list[0].TargetQuantity);
-		Assert.Equal(FixedSimulationCatalog.BatchSizes[19], list[19].TargetQuantity);
+		Assert.Equal("Halter_01", list[0].PartName);
+		Assert.Equal("JOB-020", list[19].JobName);
+		Assert.Equal(FixedSimulationCatalog.GetDefinition(0).TargetQuantity, list[0].TargetQuantity);
+		Assert.Equal(FixedSimulationCatalog.GetDefinition(19).TargetQuantity, list[19].TargetQuantity);
 	}
 }

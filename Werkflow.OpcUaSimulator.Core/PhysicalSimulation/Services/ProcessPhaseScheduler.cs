@@ -1,4 +1,5 @@
 using System;
+using Werkflow.OpcUaSimulator.Core.Defaults;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Calculation;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 
@@ -6,8 +7,12 @@ namespace Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Services;
 
 public static class ProcessPhaseScheduler
 {
-	public static TimeSpan GetMinDuration(ProcessPhase phase, PhysicalVerificationMode mode, SeededRandomStreams random)
+	public static TimeSpan GetMinDuration(ProcessPhase phase, PhysicalVerificationMode mode, SeededRandomStreams random, PhysicalSimulationContext? context = null)
 	{
+		if (context?.OverrideSetupDuration.HasValue == true && phase == ProcessPhase.Setup)
+		{
+			return context.OverrideSetupDuration.Value;
+		}
 		TimeSpan result;
 		if (mode == PhysicalVerificationMode.Short)
 		{
@@ -78,7 +83,18 @@ public static class ProcessPhaseScheduler
 	public static bool TryAdvance(PhysicalSimulationContext context, SeededRandomStreams random, out ProcessPhaseTransition? transition)
 	{
 		transition = null;
-		TimeSpan minDuration = GetMinDuration(context.CurrentPhase, context.VerificationMode, random);
+		if (context.IsJobChangePauseActive)
+		{
+			if (context.SimulationTime >= context.JobChangePauseUntil)
+			{
+				context.IsJobChangePauseActive = false;
+				context.OverrideSetupDuration = null;
+			}
+
+			return false;
+		}
+
+		TimeSpan minDuration = GetMinDuration(context.CurrentPhase, context.VerificationMode, random, context);
 		if (context.PhaseElapsedSimulationTime < minDuration)
 		{
 			return false;
@@ -106,9 +122,10 @@ public static class ProcessPhaseScheduler
 			bool flag4 = (uint)(currentPhase - 6) <= 1u;
 			flag3 = flag4;
 		}
-		if (flag3)
+		if (flag3 && !context.ProductionDrivenJobs)
 		{
-			PhysicalJobCoordinator.AdvanceJob(context);
+			int nextIndex = FixedSimulationCatalog.GetNextCatalogIndex(context.Job.JobIndex - 1);
+			PhysicalJobCoordinator.ApplyDefinition(context, FixedSimulationCatalog.GetDefinition(nextIndex), null);
 		}
 		return true;
 	}

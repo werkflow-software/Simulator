@@ -51,6 +51,8 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 
 	private readonly Dictionary<Guid, int> _manualStepSizes = new Dictionary<Guid, int>();
 
+	private readonly Dictionary<Guid, object> _jobChangeLocks = new Dictionary<Guid, object>();
+
 	private CancellationTokenSource? _globalCts;
 
 	private SimulationState _state = SimulationState.Stopped;
@@ -510,21 +512,26 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 	{
 		MachineConfiguration machine = GetMachine(machineId);
 		MachineRuntimeState runtime = GetRuntime(machineId);
+		if (runtime.IsJobChangeActive)
+		{
+			return Task.CompletedTask;
+		}
+
+		int nextIndex = runtime.CurrentJobCatalogIndex < 0
+			? 0
+			: FixedSimulationCatalog.GetNextCatalogIndex(runtime.CurrentJobCatalogIndex);
 		if (runtime.AssignedJobId.HasValue)
 		{
 			SimulationJob? currentJob = _configurationService.Configuration.Jobs.FirstOrDefault(j => j.Id == runtime.AssignedJobId);
 			if (currentJob != null && currentJob.Status != JobState.Completed)
 			{
-				currentJob.Status = JobState.Pending;
-				currentJob.AssignedMachineId = null;
-				currentJob.ActualCounter = runtime.ActualCounter;
+				_jobDispatcher.CompleteJob(currentJob, runtime);
 			}
+
 			runtime.AssignedJobId = null;
 		}
-		EnsureJobPoolReady();
-		AssignJobToMachine(machine, runtime);
-		PublishMachine(machine, runtime);
-		NotifyMachineChanged(runtime);
+
+		ScheduleJobChange(machine, runtime, nextIndex, cancellationToken);
 		return Task.CompletedTask;
 	}
 
@@ -592,10 +599,22 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 					interval = SimulationRandom.ScaleInterval(interval, speed);
 					int manualStep;
 					int step = (_manualStepSizes.TryGetValue(machine.Id, out manualStep) ? manualStep : machine.ProductionStepSize);
-					if (ShouldTickProduction(runtime) && (now - lastProductionTick).TotalMilliseconds >= (double)interval)
+					if (ShouldTickProduction(machine, runtime) && (now - lastProductionTick).TotalMilliseconds >= (double)interval)
 					{
 						IncrementCounter(machine, runtime, step);
 						lastProductionTick = now;
+					}
+					if (_physicalCoordinator != null
+						&& machine.Id == VirtualMachineContract.MachineId
+						&& runtime.IsProducing
+						&& !runtime.IsJobChangeActive
+						&& CanIncrement(runtime))
+					{
+						int pendingParts = _physicalCoordinator.ConsumePendingPartCompletions(machine.Id);
+						for (int i = 0; i < pendingParts; i++)
+						{
+							IncrementCounter(machine, runtime, step);
+						}
 					}
 					if (_state == SimulationState.Running && now >= nextEventCheck)
 					{
@@ -730,6 +749,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			}
 		}
 		PublishMachine(machine, runtime);
+		_physicalCoordinator?.SyncProductionCounters(machine.Id, runtime.ActualCounter, runtime.TargetCounter);
 		_logService.Log(LogCategory.Production, "Zähler erhöht", machine.Name, actualCounter.ToString(), runtime.ActualCounter.ToString());
 		if (runtime.ActualCounter >= runtime.TargetCounter && runtime.TargetCounter > 0)
 		{
@@ -739,8 +759,6 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 
 	private void HandleJobCompletion(MachineConfiguration machine, MachineRuntimeState runtime)
 	{
-		runtime.IsProducing = false;
-		SetMachineState(runtime, MachineState.Idle);
 		if (runtime.AssignedJobId.HasValue)
 		{
 			SimulationJob simulationJob = _configurationService.Configuration.Jobs.FirstOrDefault(delegate(SimulationJob j)
@@ -755,45 +773,168 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 				_logService.Log(LogCategory.Job, "Auftrag abgeschlossen: " + simulationJob.JobName, machine.Name);
 			}
 		}
-		if (_configurationService.Configuration.Settings.AutoRestartCompletedJobs && _state == SimulationState.Running)
-		{
-			Task.Run(async delegate
-			{
-				int setup = _configurationService.Configuration.Settings.SetupTimeMs;
-				int pause = _configurationService.Configuration.Settings.PauseBetweenJobsMs;
-				await Task.Delay(setup + pause).ConfigureAwait(continueOnCapturedContext: false);
-				if (_state == SimulationState.Running)
-				{
-					SetMachineState(runtime, MachineState.Setup);
-					PublishMachine(machine, runtime);
-					await Task.Delay(setup).ConfigureAwait(continueOnCapturedContext: false);
-					AssignJobToMachine(machine, runtime);
-					runtime.IsProducing = true;
-					SetMachineState(runtime, MachineState.Running);
-					PublishMachine(machine, runtime);
-					NotifyMachineChanged(runtime);
-				}
-			});
-		}
+
+		runtime.IsProducing = false;
+		SetMachineState(runtime, MachineState.Idle);
 		PublishMachine(machine, runtime);
+
+		if (!ShouldAutoContinueJobs(machine, runtime))
+		{
+			return;
+		}
+
+		int nextIndex = runtime.CurrentJobCatalogIndex < 0
+			? 0
+			: FixedSimulationCatalog.GetNextCatalogIndex(runtime.CurrentJobCatalogIndex);
+		ScheduleJobChange(machine, runtime, nextIndex, _globalCts?.Token ?? CancellationToken.None);
+	}
+
+	private bool ShouldAutoContinueJobs(MachineConfiguration machine, MachineRuntimeState runtime)
+	{
+		if (!_configurationService.Configuration.Settings.AutoRestartCompletedJobs)
+		{
+			return false;
+		}
+
+		lock (_sync)
+		{
+			return _state == SimulationState.Running
+				|| (_state == SimulationState.Stopped && runtime.IsServerOnline && machine.Id == VirtualMachineContract.MachineId);
+		}
+	}
+
+	private void ScheduleJobChange(
+		MachineConfiguration machine,
+		MachineRuntimeState runtime,
+		int nextCatalogIndex,
+		CancellationToken cancellationToken)
+	{
+		if (runtime.IsJobChangeActive)
+		{
+			return;
+		}
+
+		object jobChangeLock = GetJobChangeLock(machine.Id);
+		lock (jobChangeLock)
+		{
+			if (runtime.IsJobChangeActive)
+			{
+				return;
+			}
+
+			FixedProductionJobDefinition nextDefinition = FixedSimulationCatalog.GetDefinition(nextCatalogIndex);
+			int pauseSeconds = SimulationRandom.NextInRange(
+				_random,
+				FixedSimulationCatalog.MinJobChangePauseSeconds,
+				FixedSimulationCatalog.MaxJobChangePauseSeconds);
+			double speedFactor = Math.Max(0.1, _configurationService.Configuration.Settings.SimulationSpeedFactor);
+			int wallMs = (int)(pauseSeconds * 1000.0 / speedFactor);
+
+			runtime.IsJobChangeActive = true;
+			runtime.IsProducing = false;
+			runtime.JobChangePauseSeconds = pauseSeconds;
+			runtime.JobChangeEndsAtUtc = DateTime.UtcNow.AddMilliseconds(wallMs);
+			runtime.NextJobNamePreview = nextDefinition.JobName;
+			runtime.NextPartNamePreview = nextDefinition.PartName;
+			runtime.NextTargetQuantityPreview = nextDefinition.TargetQuantity;
+			SetMachineState(runtime, MachineState.Setup);
+			PublishMachine(machine, runtime);
+			_physicalCoordinator?.BeginJobChange(machine.Id, pauseSeconds, nextDefinition);
+			NotifyMachineChanged(runtime);
+
+			Task.Run(async () =>
+			{
+				try
+				{
+					await Task.Delay(wallMs, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+					if (!cancellationToken.IsCancellationRequested && runtime.IsJobChangeActive)
+					{
+						CompleteScheduledJobChange(machine, runtime, nextCatalogIndex);
+					}
+				}
+				catch (OperationCanceledException)
+				{
+				}
+			}, cancellationToken);
+		}
+	}
+
+	private void CompleteScheduledJobChange(MachineConfiguration machine, MachineRuntimeState runtime, int catalogIndex)
+	{
+		object jobChangeLock = GetJobChangeLock(machine.Id);
+		lock (jobChangeLock)
+		{
+			if (!runtime.IsJobChangeActive)
+			{
+				return;
+			}
+
+			EnsureJobPoolReady();
+			SimulationJob? job = _jobDispatcher.GetJobByCatalogIndex(catalogIndex, _configurationService.Configuration);
+			if (job == null)
+			{
+				runtime.IsJobChangeActive = false;
+				runtime.JobChangeEndsAtUtc = null;
+				return;
+			}
+
+			ApplyJobToRuntime(machine, runtime, job, FixedSimulationCatalog.GetDefinition(catalogIndex));
+			runtime.IsJobChangeActive = false;
+			runtime.JobChangeEndsAtUtc = null;
+			runtime.IsProducing = true;
+			SetMachineState(runtime, MachineState.Running);
+			PublishMachine(machine, runtime);
+			NotifyMachineChanged(runtime);
+			_logService.Log(LogCategory.Job, "Auftrag geladen: " + job.JobName, machine.Name);
+		}
 	}
 
 	private void AssignJobToMachine(MachineConfiguration machine, MachineRuntimeState runtime)
 	{
-		SimulationJob nextJobForMachine = _jobDispatcher.GetNextJobForMachine(machine.Id, _configurationService.Configuration, _random);
-		if (nextJobForMachine != null)
+		int catalogIndex = runtime.CurrentJobCatalogIndex < 0 ? 0 : runtime.CurrentJobCatalogIndex;
+		EnsureJobPoolReady();
+		SimulationJob? job = _jobDispatcher.GetJobByCatalogIndex(catalogIndex, _configurationService.Configuration);
+		if (job != null)
 		{
-			runtime.AssignedJobId = nextJobForMachine.Id;
-			runtime.PartName = nextJobForMachine.PartName;
-			runtime.JobName = nextJobForMachine.JobName;
-			runtime.TargetCounter = nextJobForMachine.TargetQuantity;
-			runtime.ActualCounter = 0;
-			nextJobForMachine.Status = JobState.Running;
-			nextJobForMachine.StartedAt = DateTime.UtcNow;
-			runtime.IsProducing = true;
-			SetMachineState(runtime, MachineState.Running);
-			PublishMachine(machine, runtime);
-			_logService.Log(LogCategory.Job, "Auftrag zugewiesen: " + nextJobForMachine.JobName, machine.Name);
+			ApplyJobToRuntime(machine, runtime, job, FixedSimulationCatalog.GetDefinition(catalogIndex));
+		}
+	}
+
+	private void ApplyJobToRuntime(
+		MachineConfiguration machine,
+		MachineRuntimeState runtime,
+		SimulationJob job,
+		FixedProductionJobDefinition definition)
+	{
+		runtime.AssignedJobId = job.Id;
+		runtime.CurrentJobCatalogIndex = definition.CatalogIndex;
+		runtime.PartName = job.PartName;
+		runtime.JobName = job.JobName;
+		runtime.TargetCounter = job.TargetQuantity;
+		runtime.ActualCounter = 0;
+		job.Status = JobState.Running;
+		job.AssignedMachineId = machine.Id;
+		job.StartedAt = DateTime.UtcNow;
+		job.ActualCounter = 0;
+		runtime.IsProducing = true;
+		SetMachineState(runtime, MachineState.Running);
+		_physicalCoordinator?.ApplyProductionJob(machine.Id, definition);
+		_physicalCoordinator?.SyncProductionCounters(machine.Id, runtime.ActualCounter, runtime.TargetCounter);
+		PublishMachine(machine, runtime);
+		_logService.Log(LogCategory.Job, "Auftrag zugewiesen: " + job.JobName, machine.Name);
+	}
+
+	private object GetJobChangeLock(Guid machineId)
+	{
+		lock (_sync)
+		{
+			if (!_jobChangeLocks.TryGetValue(machineId, out object? jobChangeLock))
+			{
+				jobChangeLock = new object();
+				_jobChangeLocks[machineId] = jobChangeLock;
+			}
+
+			return jobChangeLock;
 		}
 	}
 
@@ -839,16 +980,30 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 	private void EnsureJobPoolReady()
 	{
 		AppConfiguration configuration = _configurationService.Configuration;
-		bool hasAssignableJob = configuration.Jobs.Any((SimulationJob j) => j.Status == JobState.Pending || j.Status == JobState.Assigned || (configuration.Settings.ReuseCompletedJobs && j.Status == JobState.Completed));
+		if (configuration.Jobs.Count != FixedSimulationCatalog.JobCount
+			|| configuration.Jobs.Any(j => j.CatalogIndex < 0 || j.CatalogIndex >= FixedSimulationCatalog.JobCount))
+		{
+			_jobGenerator.RegenerateJobs(configuration, _random);
+			return;
+		}
+
+		bool hasAssignableJob = configuration.Jobs.Any((SimulationJob j) =>
+			j.Status == JobState.Pending || j.Status == JobState.Assigned
+			|| (configuration.Settings.ReuseCompletedJobs && j.Status == JobState.Completed));
 		if (!hasAssignableJob)
 		{
 			_jobGenerator.RegenerateJobs(configuration, _random);
 		}
 	}
 
-	private bool ShouldTickProduction(MachineRuntimeState runtime)
+	private bool ShouldTickProduction(MachineConfiguration machine, MachineRuntimeState runtime)
 	{
-		if (!runtime.IsProducing || !CanIncrement(runtime))
+		if (machine.Id == VirtualMachineContract.MachineId)
+		{
+			return false;
+		}
+
+		if (!runtime.IsProducing || !CanIncrement(runtime) || runtime.IsJobChangeActive)
 		{
 			return false;
 		}
@@ -936,6 +1091,13 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			value.IsCounterFrozen = false;
 			value.IsDisconnected = false;
 			value.AssignedJobId = null;
+			value.CurrentJobCatalogIndex = -1;
+			value.IsJobChangeActive = false;
+			value.JobChangeEndsAtUtc = null;
+			value.JobChangePauseSeconds = 0;
+			value.NextJobNamePreview = "—";
+			value.NextPartNamePreview = "—";
+			value.NextTargetQuantityPreview = 0;
 			value.PartName = "—";
 			value.JobName = "—";
 			value.TargetCounter = 100;

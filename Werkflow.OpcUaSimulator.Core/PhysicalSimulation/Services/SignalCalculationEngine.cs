@@ -29,6 +29,10 @@ public sealed class SignalCalculationEngine : ISignalCalculationEngine
 			{
 				continue;
 			}
+			if (context.Kinematics.ControlsSignal(item.SignalId))
+			{
+				continue;
+			}
 			PhysicalSignalDataType dataType = item.DataType;
 			if ((uint)dataType > 3u)
 			{

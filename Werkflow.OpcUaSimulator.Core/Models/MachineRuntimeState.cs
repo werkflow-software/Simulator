@@ -41,6 +41,20 @@ public class MachineRuntimeState
 
 	public Guid? AssignedJobId { get; set; }
 
+	public int CurrentJobCatalogIndex { get; set; } = -1;
+
+	public bool IsJobChangeActive { get; set; }
+
+	public DateTime? JobChangeEndsAtUtc { get; set; }
+
+	public int JobChangePauseSeconds { get; set; }
+
+	public string NextJobNamePreview { get; set; } = "—";
+
+	public string NextPartNamePreview { get; set; } = "—";
+
+	public int NextTargetQuantityPreview { get; set; }
+
 	public DateTime? SimulationStartedAt { get; set; }
 
 	public Dictionary<NodeSemanticType, object?> LiveNodeValues { get; set; } = new Dictionary<NodeSemanticType, object>();
@@ -69,6 +83,13 @@ public class MachineRuntimeState
 			IsCounterFrozen = IsCounterFrozen,
 			IsDisconnected = IsDisconnected,
 			AssignedJobId = AssignedJobId,
+			CurrentJobCatalogIndex = CurrentJobCatalogIndex,
+			IsJobChangeActive = IsJobChangeActive,
+			JobChangeEndsAtUtc = JobChangeEndsAtUtc,
+			JobChangePauseSeconds = JobChangePauseSeconds,
+			NextJobNamePreview = NextJobNamePreview,
+			NextPartNamePreview = NextPartNamePreview,
+			NextTargetQuantityPreview = NextTargetQuantityPreview,
 			SimulationStartedAt = SimulationStartedAt,
 			LiveNodeValues = new Dictionary<NodeSemanticType, object>(LiveNodeValues)
 		};

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Werkflow.OpcUaSimulator.Core.Defaults;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.FaultScenarios.Models;
 
 namespace Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
@@ -37,6 +38,18 @@ public sealed class PhysicalSimulationContext
 	public DateTimeOffset? LastCalculationAt { get; set; }
 
 	public FaultScenarioMachineContext FaultScenarios { get; } = new FaultScenarioMachineContext();
+
+	public bool ProductionDrivenJobs { get; set; } = true;
+
+	public bool IsJobChangePauseActive { get; set; }
+
+	public TimeSpan JobChangePauseUntil { get; set; }
+
+	public FixedProductionJobDefinition? PendingJobDefinition { get; set; }
+
+	public TimeSpan? OverrideSetupDuration { get; set; }
+
+	public LaserKinematicsState Kinematics { get; } = new LaserKinematicsState();
 
 	public void ResetPhaseState()
 	{

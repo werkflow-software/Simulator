@@ -5,9 +5,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Opc.Ua;
+using Werkflow.OpcUaSimulator.Core.Defaults;
 using Werkflow.OpcUaSimulator.Core.Interfaces;
 using Werkflow.OpcUaSimulator.Core.Models;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.FaultScenarios.Services;
+using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Kinematics;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Services;
 using Werkflow.OpcUaSimulator.OpcUa.PhysicalSignals.Mapping;
@@ -89,6 +91,7 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 			PhysicalMachineSession physicalMachineSession = _sessionFactory.TryCreateSession(machine.Id, machine.Name, machine.PhysicalProfileId) ?? throw new InvalidOperationException($"Physisches Profil '{machine.PhysicalProfileId}' für Maschine '{machine.Name}' wurde nicht gefunden.");
 			int seed = simulationSeed ^ machine.Id.GetHashCode();
 			physicalMachineSession.Simulation.Seed = seed;
+			physicalMachineSession.Simulation.ProductionDrivenJobs = true;
 			physicalMachineSession.Simulation.VerificationMode = PhysicalVerificationSettings.VerificationMode;
 			if (physicalMachineSession.Simulation.VerificationMode == PhysicalVerificationMode.Short)
 			{
@@ -296,6 +299,75 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 		{
 			MachineContext value;
 			return _contexts.TryGetValue(machineId, out value) ? _runtimeCoordinator.GetGenerationMode(value.Session) : SignalGenerationMode.Technical;
+		}
+	}
+
+	public void BeginJobChange(Guid machineId, int pauseSimulationSeconds, FixedProductionJobDefinition nextJob)
+	{
+		lock (_sync)
+		{
+			if (!_contexts.TryGetValue(machineId, out MachineContext context))
+			{
+				return;
+			}
+
+			PhysicalSimulationContext simulation = context.Session.Simulation;
+			simulation.ProductionDrivenJobs = true;
+			simulation.IsJobChangePauseActive = true;
+			simulation.PendingJobDefinition = nextJob;
+			simulation.JobChangePauseUntil = simulation.SimulationTime + TimeSpan.FromSeconds(pauseSimulationSeconds);
+			simulation.OverrideSetupDuration = TimeSpan.FromSeconds(pauseSimulationSeconds);
+			simulation.CurrentPhase = ProcessPhase.Setup;
+			simulation.PhaseStartedAt = DateTimeOffset.UtcNow;
+			simulation.PhaseElapsedSimulationTime = TimeSpan.Zero;
+			LaserKinematicsEngine.OnJobChangeBegin(simulation, nextJob);
+		}
+	}
+
+	public void ApplyProductionJob(Guid machineId, FixedProductionJobDefinition job)
+	{
+		lock (_sync)
+		{
+			if (!_contexts.TryGetValue(machineId, out MachineContext context))
+			{
+				return;
+			}
+
+			PhysicalSimulationContext simulation = context.Session.Simulation;
+			simulation.IsJobChangePauseActive = false;
+			simulation.PendingJobDefinition = null;
+			simulation.OverrideSetupDuration = null;
+			PhysicalJobCoordinator.ApplyDefinition(simulation, job, context.Session.Runtime);
+			simulation.CurrentPhase = ProcessPhase.RampUp;
+			simulation.PhaseStartedAt = DateTimeOffset.UtcNow;
+			simulation.PhaseElapsedSimulationTime = TimeSpan.Zero;
+			LaserKinematicsEngine.OnJobApplied(simulation, context.Seed);
+		}
+	}
+
+	public int ConsumePendingPartCompletions(Guid machineId)
+	{
+		lock (_sync)
+		{
+			if (!_contexts.TryGetValue(machineId, out MachineContext context))
+			{
+				return 0;
+			}
+
+			return LaserKinematicsEngine.ConsumePendingPartCompletions(context.Session.Simulation);
+		}
+	}
+
+	public void SyncProductionCounters(Guid machineId, int actualCounter, int targetCounter)
+	{
+		lock (_sync)
+		{
+			if (!_contexts.TryGetValue(machineId, out MachineContext context))
+			{
+				return;
+			}
+
+			PhysicalJobCoordinator.SyncProductionCounters(context.Session.Simulation, actualCounter, targetCounter);
 		}
 	}
 

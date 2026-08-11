@@ -1,49 +1,93 @@
 using System;
+using System.Linq;
+using Werkflow.OpcUaSimulator.Core.Defaults;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 
 namespace Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Services;
 
 public static class PhysicalJobCoordinator
 {
-	private static readonly (string Job, string Part)[] VerificationJobs = new(string, string)[3]
-	{
-		("JOB-001", "PART-A"),
-		("JOB-002", "PART-B"),
-		("JOB-003", "PART-C")
-	};
-
 	public static void Initialize(PhysicalSimulationContext context)
 	{
-		context.Job = new PhysicalJobState
-		{
-			JobIndex = 1,
-			JobName = VerificationJobs[0].Job,
-			PartName = VerificationJobs[0].Part,
-			TargetQuantity = ((context.VerificationMode == PhysicalVerificationMode.Short) ? 8 : 25),
-			ProducedQuantity = 0,
-			JobStartedAtUtc = DateTimeOffset.UtcNow
-		};
+		ApplyDefinition(context, FixedSimulationCatalog.GetDefinition(0), null);
 	}
 
-	public static void AdvanceJob(PhysicalSimulationContext context)
+	public static void ApplyDefinition(
+		PhysicalSimulationContext context,
+		FixedProductionJobDefinition definition,
+		PhysicalMachineRuntime? runtime)
 	{
-		context.Job.JobIndex++;
-		int num = (context.Job.JobIndex - 1) % VerificationJobs.Length;
-		(string, string) tuple = VerificationJobs[num];
-		context.Job.JobName = tuple.Item1;
-		context.Job.PartName = tuple.Item2;
-		context.Job.TargetQuantity = ((context.VerificationMode == PhysicalVerificationMode.Short) ? 8 : 25);
+		context.Job.JobIndex = definition.CatalogIndex + 1;
+		context.Job.JobName = definition.JobName;
+		context.Job.PartName = definition.PartName;
+		context.Job.TargetQuantity = definition.TargetQuantity;
 		context.Job.ProducedQuantity = 0;
 		context.Job.JobStartedAtUtc = DateTimeOffset.UtcNow;
+		context.Job.MaterialName = definition.MaterialName;
+		context.Job.MaterialThicknessMm = definition.MaterialThicknessMm;
+		context.Job.RecipeName = definition.RecipeName;
+		context.Job.ProgramName = definition.ProgramName;
+		context.Job.ProcessLoadFactor = definition.ProcessLoadFactor;
+		context.Job.FeedRateFactor = definition.FeedRateFactor;
 		context.Metrics.JobChanges++;
+		if (runtime != null)
+		{
+			ApplyStableSignals(runtime, definition);
+		}
+	}
+
+	public static void SyncProductionCounters(PhysicalSimulationContext context, int actualCounter, int targetCounter)
+	{
+		context.Job.ProducedQuantity = actualCounter;
+		context.Job.TargetQuantity = targetCounter;
 	}
 
 	public static void TickProductionCounters(PhysicalSimulationContext context)
 	{
+		if (context.IsJobChangePauseActive)
+		{
+			return;
+		}
+
 		ProcessPhase currentPhase = context.CurrentPhase;
 		if ((uint)(currentPhase - 3) <= 1u)
 		{
 			context.Job.ProducedQuantity++;
+		}
+	}
+
+	private static void ApplyStableSignals(PhysicalMachineRuntime runtime, FixedProductionJobDefinition definition)
+	{
+		foreach (SignalRuntimeState signal in runtime.Signals)
+		{
+			switch (signal.SignalId)
+			{
+			case "Process.MaterialThickness":
+				signal.CurrentValue = definition.MaterialThicknessMm;
+				signal.TargetValue = definition.MaterialThicknessMm;
+				break;
+			case "Process.MaterialName":
+				signal.CurrentStringValue = definition.MaterialName;
+				break;
+			case "Process.RecipeName":
+				signal.CurrentStringValue = definition.RecipeName;
+				break;
+			case "Production.RecipeName":
+				signal.CurrentStringValue = definition.RecipeName;
+				break;
+			case "Production.ActiveProgram":
+				signal.CurrentStringValue = definition.ProgramName;
+				break;
+			case "Production.MaterialDesignation":
+				signal.CurrentStringValue = $"Sheet-{definition.MaterialThicknessMm:0.#}mm";
+				break;
+			case "Process.FeedRate":
+			case "Process.FeedRateTarget":
+				double feed = 1200.0 * definition.FeedRateFactor;
+				signal.CurrentValue = feed;
+				signal.TargetValue = feed;
+				break;
+			}
 		}
 	}
 }

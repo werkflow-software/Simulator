@@ -1,3 +1,4 @@
+using Werkflow.OpcUaSimulator.Core.Defaults;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Profiles;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Services;
@@ -92,7 +93,7 @@ public class PhysicalAp3R4SegmentTests
         var recorder = new PhysicalPhaseSegmentRecorder();
         session.Simulation.Job.JobName = "JOB-001";
         recorder.Observe(session, DateTimeOffset.UtcNow);
-        PhysicalJobCoordinator.AdvanceJob(session.Simulation);
+        PhysicalJobCoordinator.ApplyDefinition(session.Simulation, FixedSimulationCatalog.GetDefinition(1), null);
         recorder.Observe(session, DateTimeOffset.UtcNow);
         recorder.CloseCurrent(DateTimeOffset.UtcNow);
 

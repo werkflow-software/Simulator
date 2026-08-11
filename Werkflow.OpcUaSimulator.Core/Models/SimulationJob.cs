@@ -26,6 +26,16 @@ public class SimulationJob
 
 	public DateTime? CompletedAt { get; set; }
 
+	public int CatalogIndex { get; set; }
+
+	public string MaterialName { get; set; } = string.Empty;
+
+	public double MaterialThicknessMm { get; set; }
+
+	public string RecipeName { get; set; } = string.Empty;
+
+	public string ProgramName { get; set; } = string.Empty;
+
 	public SimulationJob Clone()
 	{
 		return new SimulationJob
@@ -40,7 +50,12 @@ public class SimulationJob
 			ActualCounter = 0,
 			CreatedAt = DateTime.UtcNow,
 			StartedAt = null,
-			CompletedAt = null
+			CompletedAt = null,
+			CatalogIndex = CatalogIndex,
+			MaterialName = MaterialName,
+			MaterialThicknessMm = MaterialThicknessMm,
+			RecipeName = RecipeName,
+			ProgramName = ProgramName
 		};
 	}
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Werkflow.OpcUaSimulator.Core.Defaults;
 using Werkflow.OpcUaSimulator.Core.Models;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 
@@ -32,4 +33,12 @@ public interface IPhysicalSignalPublishingCoordinator
 	bool TrySetGenerationMode(Guid machineId, SignalGenerationMode mode);
 
 	SignalGenerationMode GetGenerationMode(Guid machineId);
+
+	void BeginJobChange(Guid machineId, int pauseSimulationSeconds, FixedProductionJobDefinition nextJob);
+
+	void ApplyProductionJob(Guid machineId, FixedProductionJobDefinition job);
+
+	void SyncProductionCounters(Guid machineId, int actualCounter, int targetCounter);
+
+	int ConsumePendingPartCompletions(Guid machineId);
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Calculation;
+using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Kinematics;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 
 namespace Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Services;
@@ -29,9 +30,14 @@ public sealed class HiddenProcessStateEngine : IHiddenProcessStateEngine
 	{
 		context.SimulationTime += deltaTime;
 		context.PhaseElapsedSimulationTime += deltaTime;
-		ProcessPhaseScheduler.TryAdvance(context, random, out ProcessPhaseTransition _);
-		PhysicalJobCoordinator.TickProductionCounters(context);
-		double phaseDemand = ProcessPhaseScheduler.GetPhaseDemand(context.CurrentPhase);
+		if (!context.Kinematics.IsEnabled)
+		{
+			ProcessPhaseScheduler.TryAdvance(context, random, out ProcessPhaseTransition _);
+			PhysicalJobCoordinator.TickProductionCounters(context);
+		}
+		double phaseDemand = context.Kinematics.IsEnabled
+			? LaserKinematicsEngine.GetMotionDemand(context.Kinematics.MotionPhase) * context.Job.ProcessLoadFactor
+			: ProcessPhaseScheduler.GetPhaseDemand(context.CurrentPhase);
 		Dictionary<string, HiddenProcessRuntimeState> dictionary = runtime.HiddenProcessStates.ToDictionary<HiddenProcessRuntimeState, string>((HiddenProcessRuntimeState s) => s.StateId, StringComparer.OrdinalIgnoreCase);
 		Dictionary<string, HiddenProcessStateDefinition> dictionary2 = profile.HiddenProcessStates.ToDictionary<HiddenProcessStateDefinition, string>((HiddenProcessStateDefinition s) => s.StateId, StringComparer.OrdinalIgnoreCase);
 		foreach (HiddenProcessRuntimeState hiddenProcessState in runtime.HiddenProcessStates)
@@ -41,7 +47,7 @@ public sealed class HiddenProcessStateEngine : IHiddenProcessStateEngine
 				double value2 = value.NominalValue;
 				if (hiddenProcessState.StateId.Equals("ProcessDemand", StringComparison.OrdinalIgnoreCase))
 				{
-					value2 = Lerp(value.NormalMinimum, value.NormalMaximum, phaseDemand);
+					value2 = Lerp(value.NormalMinimum, value.NormalMaximum, phaseDemand * context.Job.ProcessLoadFactor);
 				}
 				else if (hiddenProcessState.StateId.Equals("MechanicalLoad", StringComparison.OrdinalIgnoreCase))
 				{
