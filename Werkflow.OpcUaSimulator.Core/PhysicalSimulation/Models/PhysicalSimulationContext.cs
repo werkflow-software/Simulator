@@ -45,6 +45,18 @@ public sealed class PhysicalSimulationContext
 
 	public TimeSpan JobChangePauseUntil { get; set; }
 
+	public bool IsProductionPaused { get; set; }
+
+	public bool IsProductionMotionActive { get; set; }
+
+	public DateTimeOffset? ProductionRunStartedAtUtc { get; set; }
+
+	public double FrozenPartRemainingSeconds { get; set; }
+
+	public double FrozenJobRemainingSeconds { get; set; }
+
+	public double FrozenProductionElapsedSeconds { get; set; }
+
 	public FixedProductionJobDefinition? PendingJobDefinition { get; set; }
 
 	public TimeSpan? OverrideSetupDuration { get; set; }

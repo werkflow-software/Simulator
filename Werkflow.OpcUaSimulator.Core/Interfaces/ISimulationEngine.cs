@@ -50,6 +50,10 @@ public interface ISimulationEngine
 
 	Task PauseProductionAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken));
 
+	Task ResumeProductionAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken));
+
+	Task StopProductionAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken));
+
 	Task ProduceNextPartAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken));
 
 	Task TriggerErrorAsync(Guid machineId, string? message = null, CancellationToken cancellationToken = default(CancellationToken));
@@ -71,4 +75,12 @@ public interface ISimulationEngine
 	Task AssignJobIfMissingAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken));
 
 	Task ChangeJobAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken));
+
+	Task SelectJobAsync(Guid machineId, int catalogIndex, CancellationToken cancellationToken = default(CancellationToken));
+
+	(double partRemainingSeconds, double jobRemainingSeconds) GetProductionTimeEstimates(Guid machineId);
+
+	double GetSetupRemainingSeconds(Guid machineId);
+
+	double GetNozzleChangeRemainingSeconds(Guid machineId);
 }

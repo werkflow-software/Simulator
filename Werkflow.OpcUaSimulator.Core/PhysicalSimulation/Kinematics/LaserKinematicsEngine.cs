@@ -51,6 +51,86 @@ public static class LaserKinematicsEngine
 		LoadPartPlan(context, seed);
 	}
 
+	public static void OnProductionPaused(PhysicalSimulationContext context)
+	{
+		if (!context.Kinematics.IsEnabled)
+		{
+			return;
+		}
+
+		LaserKinematicsState kinematics = context.Kinematics;
+		kinematics.Vx = 0.0;
+		kinematics.Vy = 0.0;
+		kinematics.Vz = 0.0;
+		kinematics.CutFeedMmPerMin = 0.0;
+		kinematics.PathSpeedMmPerS = 0.0;
+		kinematics.NextActionHint = "Pause";
+	}
+
+	public static void OnProductionResumed(PhysicalSimulationContext context)
+	{
+		if (!context.Kinematics.IsEnabled)
+		{
+			return;
+		}
+
+		context.Kinematics.NextActionHint = "Fortsetzen";
+	}
+
+	public static void StopAndResetProduction(PhysicalSimulationContext context, int seed)
+	{
+		if (!context.Kinematics.IsEnabled)
+		{
+			return;
+		}
+
+		context.IsProductionPaused = false;
+		context.ProductionRunStartedAtUtc = null;
+		context.FrozenPartRemainingSeconds = 0.0;
+		context.FrozenJobRemainingSeconds = 0.0;
+		context.IsProductionMotionActive = false;
+		context.Job.ProducedQuantity = 0;
+
+		LaserKinematicsState kinematics = context.Kinematics;
+		kinematics.PartIndex = 0;
+		kinematics.SegmentIndex = 0;
+		kinematics.PierceElapsedSeconds = 0.0;
+		kinematics.PendingPartCompletions = 0;
+		kinematics.DistanceAlongSegmentMm = 0.0;
+		kinematics.MovingToService = false;
+		kinematics.NozzleChangeActive = false;
+		kinematics.NozzleChangeElapsedSeconds = 0.0;
+		kinematics.NozzleChangeRequired = false;
+		kinematics.Vx = 0.0;
+		kinematics.Vy = 0.0;
+		kinematics.Vz = 0.0;
+		kinematics.CutFeedMmPerMin = 0.0;
+		kinematics.PathSpeedMmPerS = 0.0;
+		kinematics.LaserPowerKw = 0.15;
+		kinematics.MotionPhase = LaserMotionPhase.Idle;
+		kinematics.NextActionHint = "Gestoppt";
+		LoadCuttingPlanForJob(context);
+		if (context.Kinematics.ActiveCuttingPlan != null)
+		{
+			CuttingPlanGeometry.ResetRuntimeStates(context.Kinematics.ActiveCuttingPlan);
+		}
+
+		LoadPartPlan(context, seed);
+	}
+
+	public static void AbortProductionForJobChange(PhysicalSimulationContext context, FixedProductionJobDefinition nextJob)
+	{
+		if (!context.Kinematics.IsEnabled)
+		{
+			return;
+		}
+
+		context.IsProductionPaused = false;
+		context.Kinematics.PendingPartCompletions = 0;
+		context.IsProductionMotionActive = false;
+		OnJobChangeBegin(context, nextJob);
+	}
+
 	public static void OnJobChangeBegin(PhysicalSimulationContext context, FixedProductionJobDefinition nextJob)
 	{
 		if (!context.Kinematics.IsEnabled)
@@ -166,6 +246,26 @@ public static class LaserKinematicsEngine
 		}
 
 		LaserKinematicsState kinematics = context.Kinematics;
+		if (context.IsProductionPaused)
+		{
+			TickPausedHold(kinematics);
+			context.CurrentPhase = MapToProcessPhase(kinematics.MotionPhase);
+			kinematics.TrackPosition();
+			ApplySignals(runtime, kinematics);
+			ApplyFrictionTarget(runtime, kinematics);
+			return;
+		}
+
+		if (!context.IsProductionMotionActive && !context.IsJobChangePauseActive && !kinematics.MovingToService)
+		{
+			TickIdleHold(kinematics);
+			context.CurrentPhase = MapToProcessPhase(kinematics.MotionPhase);
+			kinematics.TrackPosition();
+			ApplySignals(runtime, kinematics);
+			ApplyFrictionTarget(runtime, kinematics);
+			return;
+		}
+
 		if (context.IsJobChangePauseActive || kinematics.MovingToService)
 		{
 			TickJobChange(context, kinematics, dt);
@@ -469,6 +569,17 @@ public static class LaserKinematicsEngine
 
 		LoadPartPlan(context, seed);
 		kinematics.MotionPhase = LaserMotionPhase.Repositioning;
+	}
+
+	private static void TickPausedHold(LaserKinematicsState kinematics)
+	{
+		kinematics.Vx = 0.0;
+		kinematics.Vy = 0.0;
+		kinematics.Vz = 0.0;
+		kinematics.CutFeedMmPerMin = 0.0;
+		kinematics.PathSpeedMmPerS = 0.0;
+		kinematics.LaserPowerKw = 0.15;
+		kinematics.NextActionHint = "Pause";
 	}
 
 	private static void TickIdleHold(LaserKinematicsState kinematics)

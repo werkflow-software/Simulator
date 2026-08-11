@@ -41,4 +41,18 @@ public interface IPhysicalSignalPublishingCoordinator
 	void SyncProductionCounters(Guid machineId, int actualCounter, int targetCounter);
 
 	int ConsumePendingPartCompletions(Guid machineId);
+
+	Task PauseProductionAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken));
+
+	Task ResumeProductionAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken));
+
+	void StopProduction(Guid machineId);
+
+	void AbortProductionForJobChange(Guid machineId, FixedProductionJobDefinition nextJob);
+
+	(double partRemainingSeconds, double jobRemainingSeconds) GetProductionTimeEstimates(Guid machineId);
+
+	double GetSetupRemainingSeconds(Guid machineId);
+
+	double GetNozzleChangeRemainingSeconds(Guid machineId);
 }

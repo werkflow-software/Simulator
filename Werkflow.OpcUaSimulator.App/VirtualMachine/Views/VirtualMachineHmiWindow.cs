@@ -318,6 +318,8 @@ public sealed class VirtualMachineHmiWindow : Window
 		progressPanel.Child = progressGrid;
 		stack.Children.Add(progressPanel);
 
+		stack.Children.Add(BuildTimesPanel());
+
 		var banner = new Border
 		{
 			Background = HmiVisualTheme.PhaseBannerBrush(_viewModel.StatusTone),
@@ -384,6 +386,51 @@ public sealed class VirtualMachineHmiWindow : Window
 		return new Border { Child = stack, Padding = new Thickness(2) };
 	}
 
+	private UIElement BuildTimesPanel()
+	{
+		var border = new Border
+		{
+			Background = HmiVisualTheme.MetricTileBg,
+			BorderBrush = HmiVisualTheme.PanelBorder,
+			BorderThickness = new Thickness(1),
+			Padding = new Thickness(10, 6, 10, 6),
+			Margin = new Thickness(0, 0, 0, 6)
+		};
+		var stack = new StackPanel();
+		stack.Children.Add(MakeSectionTitle("ZEITEN"));
+		stack.Children.Add(BuildTimeRow("Teil", nameof(VirtualMachineHmiViewModel.PartRemainingText)));
+		stack.Children.Add(BuildTimeRow("Auftrag", nameof(VirtualMachineHmiViewModel.JobRemainingText)));
+		stack.Children.Add(BuildTimeRow("Einrichten", nameof(VirtualMachineHmiViewModel.SetupRemainingText)));
+		stack.Children.Add(BuildTimeRow("Düsenwechsel", nameof(VirtualMachineHmiViewModel.NozzleRemainingText)));
+		stack.Children.Add(BuildTimeRow("Laufzeit", nameof(VirtualMachineHmiViewModel.JobElapsedText)));
+		border.Child = stack;
+		return border;
+	}
+
+	private static Grid BuildTimeRow(string label, string bindingProperty)
+	{
+		var grid = new Grid { Margin = new Thickness(0, 2, 0, 2) };
+		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(90) });
+		grid.Children.Add(new TextBlock
+		{
+			Text = label,
+			Foreground = HmiVisualTheme.TextSecondary,
+			FontSize = 12
+		});
+		var val = new TextBlock
+		{
+			Foreground = HmiVisualTheme.ValueAccent,
+			FontWeight = FontWeights.SemiBold,
+			FontSize = 14,
+			HorizontalAlignment = HorizontalAlignment.Right
+		};
+		val.SetBinding(TextBlock.TextProperty, new Binding(bindingProperty));
+		Grid.SetColumn(val, 1);
+		grid.Children.Add(val);
+		return grid;
+	}
+
 	private UIElement BuildRightControlColumn()
 	{
 		var stack = new StackPanel();
@@ -397,6 +444,7 @@ public sealed class VirtualMachineHmiWindow : Window
 		stack.Children.Add(prodControls);
 
 		stack.Children.Add(MakeCommandButton("Nächsten Job laden", _viewModel.ChangeJobCommand));
+		stack.Children.Add(MakeCommandButton("Auftrag wählen", _viewModel.SelectJobCommand));
 		stack.Children.Add(MakeCommandButton("Maschine starten", _viewModel.StartMachineCommand));
 		stack.Children.Add(MakeCommandButton("Normalbetrieb", _viewModel.NormalOperationCommand));
 
@@ -516,6 +564,7 @@ public sealed class VirtualMachineHmiWindow : Window
 		stack.Children.Add(MakeBoundBlock("JobChangeText", 13, FontWeights.Normal, "{0}"));
 		stack.Children.Add(MakeBoundBlock("JobChangeRemainingText", 13, FontWeights.Normal, "{0}"));
 		stack.Children.Add(MakeCommandButton("Nächsten Job laden", _viewModel.ChangeJobCommand));
+		stack.Children.Add(MakeCommandButton("Auftrag wählen", _viewModel.SelectJobCommand));
 
 		stack.Children.Add(MakeSectionTitle("Simulation"));
 		stack.Children.Add(MakeBoundBlock("SimulationSpeedText", 13, FontWeights.Normal, "Zeitfaktor: {0}"));

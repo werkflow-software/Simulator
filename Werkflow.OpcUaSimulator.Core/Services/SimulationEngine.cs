@@ -353,6 +353,12 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 		{
 			return Task.CompletedTask;
 		}
+
+		if (machineId == VirtualMachineContract.MachineId && _physicalCoordinator != null)
+		{
+			return StartVirtualMachineProductionAsync(machine, runtime, cancellationToken);
+		}
+
 		runtime.IsProducing = true;
 		SetMachineState(runtime, MachineState.Running);
 		PublishMachine(machine, runtime);
@@ -361,14 +367,79 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 		return Task.CompletedTask;
 	}
 
-	public Task PauseProductionAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken))
+	private async Task StartVirtualMachineProductionAsync(
+		MachineConfiguration machine,
+		MachineRuntimeState runtime,
+		CancellationToken cancellationToken)
+	{
+		if (_physicalCoordinator != null)
+		{
+			await _physicalCoordinator.ResumeProductionAsync(machine.Id, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+		}
+
+		runtime.IsProducing = true;
+		SetMachineState(runtime, MachineState.Running);
+		PublishMachine(machine, runtime);
+		_logService.Log(LogCategory.Production, "Produktion gestartet", machine.Name);
+		NotifyMachineChanged(runtime);
+	}
+
+	public async Task PauseProductionAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken))
 	{
 		MachineConfiguration machine = GetMachine(machineId);
 		MachineRuntimeState runtime = GetRuntime(machineId);
 		runtime.IsProducing = false;
 		SetMachineState(runtime, MachineState.Paused);
+		if (machineId == VirtualMachineContract.MachineId && _physicalCoordinator != null)
+		{
+			await _physicalCoordinator.PauseProductionAsync(machineId, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+		}
+
 		PublishMachine(machine, runtime);
 		_logService.Log(LogCategory.Production, "Produktion pausiert", machine.Name);
+		NotifyMachineChanged(runtime);
+	}
+
+	public async Task ResumeProductionAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken))
+	{
+		MachineConfiguration machine = GetMachine(machineId);
+		MachineRuntimeState runtime = GetRuntime(machineId);
+		if (machineId == VirtualMachineContract.MachineId && _physicalCoordinator != null)
+		{
+			await _physicalCoordinator.ResumeProductionAsync(machineId, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+		}
+
+		runtime.IsProducing = true;
+		SetMachineState(runtime, MachineState.Running);
+		PublishMachine(machine, runtime);
+		_logService.Log(LogCategory.Production, "Produktion fortgesetzt", machine.Name);
+		NotifyMachineChanged(runtime);
+	}
+
+	public Task StopProductionAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken))
+	{
+		MachineConfiguration machine = GetMachine(machineId);
+		MachineRuntimeState runtime = GetRuntime(machineId);
+		if (machineId == VirtualMachineContract.MachineId && _physicalCoordinator != null)
+		{
+			_physicalCoordinator.StopProduction(machineId);
+			runtime.ActualCounter = 0;
+			_physicalCoordinator.SyncProductionCounters(machineId, 0, runtime.TargetCounter);
+			if (runtime.AssignedJobId.HasValue)
+			{
+				SimulationJob? job = _configurationService.Configuration.Jobs
+					.FirstOrDefault(j => j.Id == runtime.AssignedJobId);
+				if (job != null)
+				{
+					job.ActualCounter = 0;
+				}
+			}
+		}
+
+		runtime.IsProducing = false;
+		SetMachineState(runtime, MachineState.Idle);
+		PublishMachine(machine, runtime);
+		_logService.Log(LogCategory.Production, "Produktion gestoppt (Job zurückgesetzt)", machine.Name);
 		NotifyMachineChanged(runtime);
 		return Task.CompletedTask;
 	}
@@ -520,6 +591,48 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 		int nextIndex = runtime.CurrentJobCatalogIndex < 0
 			? 0
 			: FixedSimulationCatalog.GetNextCatalogIndex(runtime.CurrentJobCatalogIndex);
+		return ScheduleJobChangeInternal(machine, runtime, nextIndex, cancellationToken);
+	}
+
+	public Task SelectJobAsync(Guid machineId, int catalogIndex, CancellationToken cancellationToken = default(CancellationToken))
+	{
+		if (catalogIndex < 0 || catalogIndex >= FixedSimulationCatalog.JobCount)
+		{
+			throw new ArgumentOutOfRangeException(nameof(catalogIndex));
+		}
+
+		MachineConfiguration machine = GetMachine(machineId);
+		MachineRuntimeState runtime = GetRuntime(machineId);
+		if (runtime.IsJobChangeActive)
+		{
+			return Task.CompletedTask;
+		}
+
+		return ScheduleJobChangeInternal(machine, runtime, catalogIndex, cancellationToken);
+	}
+
+	public (double partRemainingSeconds, double jobRemainingSeconds) GetProductionTimeEstimates(Guid machineId)
+	{
+		if (_physicalCoordinator == null)
+		{
+			return (0.0, 0.0);
+		}
+
+		return _physicalCoordinator.GetProductionTimeEstimates(machineId);
+	}
+
+	public double GetSetupRemainingSeconds(Guid machineId) =>
+		_physicalCoordinator?.GetSetupRemainingSeconds(machineId) ?? 0.0;
+
+	public double GetNozzleChangeRemainingSeconds(Guid machineId) =>
+		_physicalCoordinator?.GetNozzleChangeRemainingSeconds(machineId) ?? 0.0;
+
+	private Task ScheduleJobChangeInternal(
+		MachineConfiguration machine,
+		MachineRuntimeState runtime,
+		int nextCatalogIndex,
+		CancellationToken cancellationToken)
+	{
 		if (runtime.AssignedJobId.HasValue)
 		{
 			SimulationJob? currentJob = _configurationService.Configuration.Jobs.FirstOrDefault(j => j.Id == runtime.AssignedJobId);
@@ -531,7 +644,15 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			runtime.AssignedJobId = null;
 		}
 
-		ScheduleJobChange(machine, runtime, nextIndex, cancellationToken);
+		if (machine.Id == VirtualMachineContract.MachineId
+			&& _physicalCoordinator != null
+			&& (runtime.IsProducing || runtime.State == MachineState.Running))
+		{
+			FixedProductionJobDefinition nextDefinition = FixedSimulationCatalog.GetDefinition(nextCatalogIndex);
+			_physicalCoordinator.AbortProductionForJobChange(machine.Id, nextDefinition);
+		}
+
+		ScheduleJobChange(machine, runtime, nextCatalogIndex, cancellationToken);
 		return Task.CompletedTask;
 	}
 
@@ -839,7 +960,10 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			runtime.NextTargetQuantityPreview = nextDefinition.TargetQuantity;
 			SetMachineState(runtime, MachineState.Setup);
 			PublishMachine(machine, runtime);
-			_physicalCoordinator?.BeginJobChange(machine.Id, pauseSeconds, nextDefinition);
+			if (machine.Id == VirtualMachineContract.MachineId && _physicalCoordinator != null)
+			{
+				_physicalCoordinator.BeginJobChange(machine.Id, pauseSeconds, nextDefinition);
+			}
 			NotifyMachineChanged(runtime);
 
 			Task.Run(async () =>
@@ -884,6 +1008,10 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			runtime.IsProducing = true;
 			SetMachineState(runtime, MachineState.Running);
 			PublishMachine(machine, runtime);
+			if (machine.Id == VirtualMachineContract.MachineId && _physicalCoordinator != null)
+			{
+				_ = _physicalCoordinator.ResumeProductionAsync(machine.Id).ConfigureAwait(false);
+			}
 			NotifyMachineChanged(runtime);
 			_logService.Log(LogCategory.Job, "Auftrag geladen: " + job.JobName, machine.Name);
 		}
@@ -916,8 +1044,17 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 		job.AssignedMachineId = machine.Id;
 		job.StartedAt = DateTime.UtcNow;
 		job.ActualCounter = 0;
-		runtime.IsProducing = true;
-		SetMachineState(runtime, MachineState.Running);
+		if (machine.Id == VirtualMachineContract.MachineId)
+		{
+			runtime.IsProducing = false;
+			SetMachineState(runtime, MachineState.Idle);
+		}
+		else
+		{
+			runtime.IsProducing = true;
+			SetMachineState(runtime, MachineState.Running);
+		}
+
 		_physicalCoordinator?.ApplyProductionJob(machine.Id, definition);
 		_physicalCoordinator?.SyncProductionCounters(machine.Id, runtime.ActualCounter, runtime.TargetCounter);
 		PublishMachine(machine, runtime);

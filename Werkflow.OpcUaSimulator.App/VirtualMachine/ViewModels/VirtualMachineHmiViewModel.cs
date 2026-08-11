@@ -2,12 +2,14 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Werkflow.OpcUaSimulator.App;
 using Werkflow.OpcUaSimulator.App.ViewModels;
 using Werkflow.OpcUaSimulator.App.VirtualMachine.Models;
+using Werkflow.OpcUaSimulator.App.VirtualMachine.Views;
 using Werkflow.OpcUaSimulator.Core.Defaults;
 using Werkflow.OpcUaSimulator.Core.Interfaces;
 using Werkflow.OpcUaSimulator.Core.Models;
@@ -75,6 +77,11 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	private string _focusText = "—";
 	private string _statusTone = "idle";
 	private string _remainingCounterText = "—";
+	private string _partRemainingText = "—";
+	private string _jobRemainingText = "—";
+	private string _setupRemainingText = "—";
+	private string _nozzleRemainingText = "—";
+	private string _jobElapsedText = "—";
 
 	public ObservableCollection<HmiMetricItem> OverviewMetrics { get; } = [];
 	public ObservableCollection<HmiAxisPanelViewModel> AxisPanels { get; } = [];
@@ -128,6 +135,11 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	public string FocusText => _focusText;
 	public string StatusTone => _statusTone;
 	public string RemainingCounterText => _remainingCounterText;
+	public string PartRemainingText => _partRemainingText;
+	public string JobRemainingText => _jobRemainingText;
+	public string SetupRemainingText => _setupRemainingText;
+	public string NozzleRemainingText => _nozzleRemainingText;
+	public string JobElapsedText => _jobElapsedText;
 
 	public CuttingPlanViewModel CuttingPlan { get; } = new();
 
@@ -158,6 +170,7 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	public IAsyncRelayCommand StopFaultScenarioCommand { get; }
 	public IAsyncRelayCommand NormalOperationCommand { get; }
 	public IAsyncRelayCommand ChangeJobCommand { get; }
+	public IAsyncRelayCommand SelectJobCommand { get; }
 	public IAsyncRelayCommand SetSimulationSpeed1xCommand { get; }
 	public IAsyncRelayCommand SetSimulationSpeed2xCommand { get; }
 	public IAsyncRelayCommand SetSimulationSpeed5xCommand { get; }
@@ -194,7 +207,8 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		ResumeFaultScenarioCommand = new AsyncRelayCommand(ResumeFaultScenarioAsync, () => SelectedFaultScenario != null);
 		StopFaultScenarioCommand = new AsyncRelayCommand(StopFaultScenarioAsync, () => SelectedFaultScenario != null);
 		NormalOperationCommand = new AsyncRelayCommand(NormalOperationAsync, () => _machine != null);
-		ChangeJobCommand = new AsyncRelayCommand(ChangeJobAsync, () => _machine != null && _isMachineRunning);
+		ChangeJobCommand = new AsyncRelayCommand(ChangeJobAsync, CanChangeOrSelectJob);
+		SelectJobCommand = new AsyncRelayCommand(SelectJobAsync, CanChangeOrSelectJob);
 		SetSimulationSpeed1xCommand = new AsyncRelayCommand(() => SetSimulationSpeedAsync(1.0));
 		SetSimulationSpeed2xCommand = new AsyncRelayCommand(() => SetSimulationSpeedAsync(2.0));
 		SetSimulationSpeed5xCommand = new AsyncRelayCommand(() => SetSimulationSpeedAsync(5.0));
@@ -401,8 +415,7 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 			return;
 		}
 
-		await _simulationEngine.PauseProductionAsync(_machine.Id);
-		await _simulationEngine.SetMachineStateManualAsync(_machine.Id, MachineState.Idle);
+		await _simulationEngine.StopProductionAsync(_machine.Id);
 		Refresh();
 	}
 
@@ -469,6 +482,34 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		}
 
 		await _simulationEngine.ChangeJobAsync(_machine.Id);
+		Refresh();
+	}
+
+	private async Task SelectJobAsync()
+	{
+		if (_machine == null)
+		{
+			return;
+		}
+
+		var dialog = new JobSelectionWindow();
+		if (Application.Current?.MainWindow is Window owner && owner.IsLoaded)
+		{
+			dialog.Owner = owner;
+		}
+
+		if (dialog.ShowDialog() != true || dialog.SelectedCatalogIndex == null)
+		{
+			return;
+		}
+
+		if (!_machineServerService.IsRunning(_machine.Id))
+		{
+			await _simulationEngine.StartMachineServerAsync(_machine.Id);
+			await EnsurePhysicalModeAsync();
+		}
+
+		await _simulationEngine.SelectJobAsync(_machine.Id, dialog.SelectedCatalogIndex.Value);
 		Refresh();
 	}
 
@@ -644,6 +685,11 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 			RefreshProcessMotionState(session);
 			RefreshCuttingPlan(session);
 			RefreshBoundSignals(session);
+			RefreshTimeDisplays(session);
+		}
+		else
+		{
+			RefreshTimeDisplays(null);
 		}
 
 		NotifyProcessStateProperties();
@@ -795,6 +841,73 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 			LaserMotionPhase.Idle => "idle",
 			_ => "idle"
 		};
+	}
+
+	private void RefreshTimeDisplays(PhysicalMachineSession? session)
+	{
+		if (_machine == null)
+		{
+			return;
+		}
+
+		bool isPaused = _runtime?.State == MachineState.Paused;
+		bool isJobChange = _runtime?.IsJobChangeActive == true
+			|| session?.Simulation.IsJobChangePauseActive == true
+			|| session?.Simulation.Kinematics.MotionPhase is LaserMotionPhase.JobChange
+				or LaserMotionPhase.Setup
+				or LaserMotionPhase.NozzleChange;
+
+		if (isJobChange)
+		{
+			_partRemainingText = "—";
+			_jobRemainingText = "—";
+			double setupSeconds = _simulationEngine.GetSetupRemainingSeconds(_machine.Id);
+			_setupRemainingText = setupSeconds > 0.0 ? FormatDuration(setupSeconds) : "—";
+			double nozzleSeconds = _simulationEngine.GetNozzleChangeRemainingSeconds(_machine.Id);
+			_nozzleRemainingText = nozzleSeconds > 0.0 ? FormatDuration(nozzleSeconds) : "—";
+		}
+		else
+		{
+			(double partSeconds, double jobSeconds) = _simulationEngine.GetProductionTimeEstimates(_machine.Id);
+			_partRemainingText = partSeconds > 0.0 ? FormatDuration(partSeconds) : "—";
+			_jobRemainingText = jobSeconds > 0.0 ? FormatDuration(jobSeconds) : "—";
+			_setupRemainingText = "—";
+			_nozzleRemainingText = "—";
+		}
+
+		if (session != null && (_runtime?.IsProducing == true || isPaused))
+		{
+			double elapsedSeconds = isPaused
+				? session.Simulation.FrozenProductionElapsedSeconds
+				: session.Simulation.ProductionRunStartedAtUtc.HasValue
+					? (DateTimeOffset.UtcNow - session.Simulation.ProductionRunStartedAtUtc.Value).TotalSeconds
+					: session.Simulation.FrozenProductionElapsedSeconds;
+			_jobElapsedText = elapsedSeconds > 0.0 ? FormatDuration(elapsedSeconds) : "—";
+		}
+		else
+		{
+			_jobElapsedText = "—";
+		}
+
+		OnPropertyChanged(nameof(PartRemainingText));
+		OnPropertyChanged(nameof(JobRemainingText));
+		OnPropertyChanged(nameof(SetupRemainingText));
+		OnPropertyChanged(nameof(NozzleRemainingText));
+		OnPropertyChanged(nameof(JobElapsedText));
+	}
+
+	private static string FormatDuration(double seconds)
+	{
+		if (seconds <= 0.0)
+		{
+			return "00:00";
+		}
+
+		int total = (int)Math.Ceiling(seconds);
+		int hours = total / 3600;
+		int minutes = (total % 3600) / 60;
+		int secs = total % 60;
+		return hours > 0 ? $"{hours:D2}:{minutes:D2}:{secs:D2}" : $"{minutes:D2}:{secs:D2}";
 	}
 
 	private void NotifyProcessStateProperties()
@@ -1034,18 +1147,22 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		return HmiSignalCatalog.FormatValue(def, value);
 	}
 
+	private bool CanChangeOrSelectJob() =>
+		_machine != null && _isMachineRunning && _runtime != null && !_runtime.IsJobChangeActive;
+
 	private bool CanStartProduction() =>
 		_machine != null && _isMachineRunning && _runtime != null &&
-		(_runtime.State is MachineState.Idle or MachineState.Paused or MachineState.Setup) &&
-		!_runtime.ErrorActive;
+		!_runtime.ErrorActive && !_runtime.IsJobChangeActive &&
+		_runtime.State is MachineState.Idle or MachineState.Paused;
 
 	private bool CanStopProduction() =>
 		_machine != null && _isMachineRunning && _runtime != null &&
-		(_runtime.IsProducing || _runtime.State == MachineState.Paused);
+		!_runtime.ErrorActive &&
+		_runtime.State is MachineState.Running or MachineState.Paused;
 
 	private bool CanPauseProduction() =>
 		_machine != null && _isMachineRunning && _runtime != null &&
-		_runtime.IsProducing && _runtime.State == MachineState.Running;
+		_runtime.State == MachineState.Running && _runtime.IsProducing;
 
 	private bool CanResumeProduction() =>
 		_machine != null && _isMachineRunning && _runtime != null &&
@@ -1070,5 +1187,6 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		StopFaultScenarioCommand.NotifyCanExecuteChanged();
 		NormalOperationCommand.NotifyCanExecuteChanged();
 		ChangeJobCommand.NotifyCanExecuteChanged();
+		SelectJobCommand.NotifyCanExecuteChanged();
 	}
 }

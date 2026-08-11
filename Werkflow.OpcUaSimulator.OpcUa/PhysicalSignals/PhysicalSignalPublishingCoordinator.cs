@@ -12,6 +12,7 @@ using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.FaultScenarios.Services;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Kinematics;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Services;
+using Werkflow.OpcUaSimulator.Core.VirtualMachine;
 using Werkflow.OpcUaSimulator.OpcUa.PhysicalSignals.Mapping;
 using Werkflow.OpcUaSimulator.OpcUa.PhysicalSignals.Nodes;
 using Werkflow.OpcUaSimulator.OpcUa.PhysicalSignals.Publishing;
@@ -314,6 +315,7 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 			PhysicalSimulationContext simulation = context.Session.Simulation;
 			simulation.ProductionDrivenJobs = true;
 			simulation.IsJobChangePauseActive = true;
+			simulation.IsProductionMotionActive = false;
 			simulation.PendingJobDefinition = nextJob;
 			simulation.JobChangePauseUntil = simulation.SimulationTime + TimeSpan.FromSeconds(pauseSimulationSeconds);
 			simulation.OverrideSetupDuration = TimeSpan.FromSeconds(pauseSimulationSeconds);
@@ -337,6 +339,7 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 			simulation.IsJobChangePauseActive = false;
 			simulation.PendingJobDefinition = null;
 			simulation.OverrideSetupDuration = null;
+			simulation.IsProductionMotionActive = false;
 			PhysicalJobCoordinator.ApplyDefinition(simulation, job, context.Session.Runtime);
 			simulation.CurrentPhase = ProcessPhase.RampUp;
 			simulation.PhaseStartedAt = DateTimeOffset.UtcNow;
@@ -357,6 +360,185 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 			return LaserKinematicsEngine.ConsumePendingPartCompletions(context.Session.Simulation);
 		}
 	}
+
+	public async Task PauseProductionAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken))
+	{
+		MachineContext? context;
+		lock (_sync)
+		{
+			_contexts.TryGetValue(machineId, out context);
+		}
+
+		if (context == null)
+		{
+			return;
+		}
+
+		PhysicalSimulationContext simulation = context.Session.Simulation;
+		if (simulation.ProductionRunStartedAtUtc.HasValue)
+		{
+			simulation.FrozenProductionElapsedSeconds =
+				(DateTimeOffset.UtcNow - simulation.ProductionRunStartedAtUtc.Value).TotalSeconds;
+		}
+
+		simulation.IsProductionPaused = true;
+		FixedProductionJobDefinition job = BuildJobDefinition(simulation);
+		simulation.FrozenPartRemainingSeconds = LaserToolpathTimeEstimator.EstimateRemainingPartSeconds(simulation.Kinematics, job, context.Seed);
+		simulation.FrozenJobRemainingSeconds = LaserToolpathTimeEstimator.EstimateRemainingJobSeconds(simulation, job, context.Seed);
+		LaserKinematicsEngine.OnProductionPaused(simulation);
+		if (context.Publisher != null)
+		{
+			await context.Publisher.PauseAsync().ConfigureAwait(continueOnCapturedContext: false);
+		}
+	}
+
+	public async Task ResumeProductionAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken))
+	{
+		MachineContext? context;
+		lock (_sync)
+		{
+			_contexts.TryGetValue(machineId, out context);
+		}
+
+		if (context == null)
+		{
+			return;
+		}
+
+		PhysicalSimulationContext simulation = context.Session.Simulation;
+		simulation.IsProductionPaused = false;
+		simulation.IsProductionMotionActive = true;
+		simulation.FrozenPartRemainingSeconds = 0.0;
+		simulation.FrozenJobRemainingSeconds = 0.0;
+		if (simulation.FrozenProductionElapsedSeconds > 0.0)
+		{
+			simulation.ProductionRunStartedAtUtc =
+				DateTimeOffset.UtcNow.AddSeconds(-simulation.FrozenProductionElapsedSeconds);
+		}
+		else if (simulation.ProductionRunStartedAtUtc == null)
+		{
+			simulation.ProductionRunStartedAtUtc = DateTimeOffset.UtcNow;
+		}
+
+		LaserKinematicsEngine.OnProductionResumed(simulation);
+		if (context.Publisher != null)
+		{
+			await context.Publisher.ResumeAsync().ConfigureAwait(continueOnCapturedContext: false);
+		}
+	}
+
+	public void StopProduction(Guid machineId)
+	{
+		IPhysicalSignalPublisher? publisherToResume = null;
+		lock (_sync)
+		{
+			if (!_contexts.TryGetValue(machineId, out MachineContext context))
+			{
+				return;
+			}
+
+			PhysicalSimulationContext simulation = context.Session.Simulation;
+			simulation.IsProductionPaused = false;
+			simulation.IsProductionMotionActive = false;
+			simulation.FrozenPartRemainingSeconds = 0.0;
+			simulation.FrozenJobRemainingSeconds = 0.0;
+			simulation.FrozenProductionElapsedSeconds = 0.0;
+			simulation.ProductionRunStartedAtUtc = null;
+			LaserKinematicsEngine.StopAndResetProduction(simulation, context.Seed);
+			PhysicalJobCoordinator.SyncProductionCounters(simulation, 0, simulation.Job.TargetQuantity);
+			if (context.Publisher != null && context.Session.Metrics.State == PhysicalPublisherState.Paused)
+			{
+				publisherToResume = context.Publisher;
+			}
+		}
+
+		if (publisherToResume != null)
+		{
+			_ = publisherToResume.ResumeAsync();
+		}
+	}
+
+	public void AbortProductionForJobChange(Guid machineId, FixedProductionJobDefinition nextJob)
+	{
+		lock (_sync)
+		{
+			if (!_contexts.TryGetValue(machineId, out MachineContext context))
+			{
+				return;
+			}
+
+			LaserKinematicsEngine.AbortProductionForJobChange(context.Session.Simulation, nextJob);
+		}
+	}
+
+	public (double partRemainingSeconds, double jobRemainingSeconds) GetProductionTimeEstimates(Guid machineId)
+	{
+		lock (_sync)
+		{
+			if (!_contexts.TryGetValue(machineId, out MachineContext context))
+			{
+				return (0.0, 0.0);
+			}
+
+			PhysicalSimulationContext simulation = context.Session.Simulation;
+			if (simulation.IsProductionPaused)
+			{
+				return (simulation.FrozenPartRemainingSeconds, simulation.FrozenJobRemainingSeconds);
+			}
+
+			FixedProductionJobDefinition job = BuildJobDefinition(simulation);
+			double part = LaserToolpathTimeEstimator.EstimateRemainingPartSeconds(simulation.Kinematics, job, context.Seed);
+			double jobRemaining = LaserToolpathTimeEstimator.EstimateRemainingJobSeconds(simulation, job, context.Seed);
+			return (part, jobRemaining);
+		}
+	}
+
+	public double GetSetupRemainingSeconds(Guid machineId)
+	{
+		lock (_sync)
+		{
+			if (!_contexts.TryGetValue(machineId, out MachineContext context))
+			{
+				return 0.0;
+			}
+
+			return LaserToolpathTimeEstimator.EstimateSetupRemainingSeconds(context.Session.Simulation);
+		}
+	}
+
+	public double GetNozzleChangeRemainingSeconds(Guid machineId)
+	{
+		lock (_sync)
+		{
+			if (!_contexts.TryGetValue(machineId, out MachineContext context))
+			{
+				return 0.0;
+			}
+
+			LaserKinematicsState kinematics = context.Session.Simulation.Kinematics;
+			if (!kinematics.NozzleChangeActive)
+			{
+				return 0.0;
+			}
+
+			return Math.Max(
+				0.0,
+				VirtualMachineKinematicsConfig.NozzleChangeDurationSeconds - kinematics.NozzleChangeElapsedSeconds);
+		}
+	}
+
+	private static FixedProductionJobDefinition BuildJobDefinition(PhysicalSimulationContext simulation) =>
+		new()
+		{
+			CatalogIndex = simulation.Job.CatalogIndex,
+			JobName = simulation.Job.JobName,
+			PartName = simulation.Job.PartName,
+			TargetQuantity = simulation.Job.TargetQuantity,
+			MaterialName = simulation.Job.MaterialName,
+			MaterialThicknessMm = simulation.Job.MaterialThicknessMm,
+			RecipeName = simulation.Job.RecipeName,
+			ProgramName = simulation.Job.ProgramName
+		};
 
 	public void SyncProductionCounters(Guid machineId, int actualCounter, int targetCounter)
 	{
