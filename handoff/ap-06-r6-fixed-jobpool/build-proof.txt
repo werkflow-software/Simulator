@@ -1,0 +1,36 @@
+AP-06-R6 Build Proof
+====================
+
+Command:
+  dotnet build Werkflow.OpcUaSimulator.sln -c Release
+
+Date: 2026-08-11
+Working directory: C:\WerkFlow\Coding\Simulation
+
+Exit code: 1
+
+Result: BUILD FAILED (solution-level)
+
+Summary:
+  Errors:    1
+  Warnings:  580
+  Elapsed:   ~8.37 s
+
+Successful project outputs (before test project failure):
+  Werkflow.OpcUaSimulator.Core
+  Werkflow.OpcUaSimulator.App -> Werkflow.OpcUaSimulator.App\bin\Release\net8.0-windows\Werkflow OPC UA Simulator.dll
+  Werkflow.OpcUaSimulator.OpcUa
+
+Error:
+  Werkflow.OpcUaSimulator.Tests\PhysicalAp3R4SegmentTests.cs(95,32): error CS0117:
+  'PhysicalJobCoordinator' does not contain a definition for 'AdvanceJob'
+
+Cause:
+  R6 replaced PhysicalJobCoordinator.AdvanceJob with ApplyDefinition / production-driven
+  job changes. Legacy AP-3 segment test still references AdvanceJob.
+
+Note:
+  R6 implementation projects (Core, App, OpcUa) compile. Failure is in Tests project only.
+  No test execution was performed for this handoff.
+
+Tests: NOT RUN (per AP scope)

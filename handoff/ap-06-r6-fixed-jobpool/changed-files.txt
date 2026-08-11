@@ -1,0 +1,31 @@
+# AP-06-R6 changed files
+
+## Implementation (uncommitted at handoff capture)
+
+Werkflow.OpcUaSimulator.Core/Defaults/FixedProductionJobDefinition.cs
+Werkflow.OpcUaSimulator.Core/Defaults/FixedSimulationCatalog.cs
+Werkflow.OpcUaSimulator.Core/Models/SimulationJob.cs
+Werkflow.OpcUaSimulator.Core/Models/MachineRuntimeState.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Models/PhysicalJobState.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Models/PhysicalSimulationContext.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Services/PhysicalJobCoordinator.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Services/ProcessPhaseScheduler.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Services/HiddenProcessStateEngine.cs
+Werkflow.OpcUaSimulator.Core/Interfaces/IJobDispatcher.cs
+Werkflow.OpcUaSimulator.Core/Services/JobDispatcher.cs
+Werkflow.OpcUaSimulator.Core/Interfaces/IPhysicalSignalPublishingCoordinator.cs
+Werkflow.OpcUaSimulator.Core/Services/SimulationEngine.cs
+Werkflow.OpcUaSimulator.OpcUa/PhysicalSignals/PhysicalSignalPublishingCoordinator.cs
+Werkflow.OpcUaSimulator.App/VirtualMachine/ViewModels/VirtualMachineHmiViewModel.cs
+Werkflow.OpcUaSimulator.App/VirtualMachine/Views/VirtualMachineHmiWindow.cs
+Werkflow.OpcUaSimulator.Tests/JobGeneratorTests.cs
+
+## Handoff
+
+handoff/ap-06-r6-fixed-jobpool/AP-06-R6-fixed-jobpool-and-realistic-job-change-report.md
+handoff/ap-06-r6-fixed-jobpool/build-proof.txt
+handoff/ap-06-r6-fixed-jobpool/git-closure.md
+handoff/ap-06-r6-fixed-jobpool/changed-files.txt
+handoff/ap-06-r6-fixed-jobpool/source/*
+
+AP-06-R6-fixed-jobpool-and-realistic-job-change-report.md
