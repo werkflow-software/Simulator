@@ -51,6 +51,21 @@ internal static class HmiVisualTheme
 	public static readonly Brush StatusBarSetup = Freeze(new SolidColorBrush(Color.FromRgb(184, 152, 40)));
 	public static readonly Brush StatusBarIdle = Freeze(new SolidColorBrush(Color.FromRgb(120, 128, 136)));
 
+	// Cutting plan canvas
+	public static readonly Brush PlanSheetBg = Freeze(new SolidColorBrush(Color.FromRgb(248, 250, 252)));
+	public static readonly Brush PlanBorder = Freeze(new SolidColorBrush(Color.FromRgb(72, 80, 88)));
+	public static readonly Brush PlanGridMajor = Freeze(new SolidColorBrush(Color.FromRgb(180, 188, 196)));
+	public static readonly Brush PlanGridMinor = Freeze(new SolidColorBrush(Color.FromRgb(220, 224, 230)));
+	public static readonly Brush PlanGridLabel = Freeze(new SolidColorBrush(Color.FromRgb(96, 104, 112)));
+	public static readonly Brush PlanContourIdle = Freeze(new SolidColorBrush(Color.FromRgb(88, 96, 104)));
+	public static readonly Brush PlanContourActive = Freeze(new SolidColorBrush(Color.FromRgb(0, 120, 148)));
+	public static readonly Brush PlanContourDone = Freeze(new SolidColorBrush(Color.FromRgb(56, 128, 64)));
+	public static readonly Brush PlanHeadMarker = Freeze(new SolidColorBrush(Color.FromRgb(32, 40, 48)));
+	public static readonly Brush PlanPierceMarker = Freeze(new SolidColorBrush(Color.FromRgb(200, 120, 32)));
+	public static readonly Brush PlanPierceFill = Freeze(new SolidColorBrush(Color.FromArgb(80, 200, 120, 32)));
+	public static readonly Brush PlanRapidLine = Freeze(new SolidColorBrush(Color.FromRgb(120, 128, 136)));
+	public static readonly Brush PlanPartCompletedFill = Freeze(new SolidColorBrush(Color.FromArgb(28, 56, 128, 64)));
+
 	public static Brush PhaseBannerBrush(string tone) =>
 		tone switch
 		{

@@ -4,6 +4,8 @@ namespace Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 
 public sealed class PhysicalJobState
 {
+	public int CatalogIndex { get; set; }
+
 	public int JobIndex { get; set; }
 
 	public string JobName { get; set; } = "JOB-001";

@@ -21,6 +21,12 @@ public sealed class LaserToolpathSegment
 
 	/// <summary>First portion of segment uses reduced speed after direction change.</summary>
 	public bool IsCornerEntry { get; init; }
+
+	public int SheetPartIndex { get; init; }
+
+	public int ContourIndex { get; init; }
+
+	public bool IsInnerContour { get; init; }
 }
 
 public sealed class LaserToolpathPlan

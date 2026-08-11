@@ -18,6 +18,7 @@ public sealed class VirtualMachineHmiWindow : Window
 	private readonly IHmiTrayNotifier _trayNotifier;
 	private readonly Grid _mainContent;
 	private readonly StackPanel _navBar;
+	private CuttingPlanCanvasControl? _cuttingPlanCanvas;
 
 	public VirtualMachineHmiWindow(VirtualMachineHmiViewModel viewModel, IHmiTrayNotifier trayNotifier)
 	{
@@ -52,6 +53,10 @@ public sealed class VirtualMachineHmiWindow : Window
 			{
 				UpdateTabContent();
 				UpdateNavHighlight();
+			}
+			if (e.PropertyName == nameof(VirtualMachineHmiViewModel.PlanVisualToken))
+			{
+				UpdateCuttingPlanCanvas();
 			}
 		};
 		UpdateTabContent();
@@ -271,62 +276,112 @@ public sealed class VirtualMachineHmiWindow : Window
 	{
 		var stack = new StackPanel();
 
+		var infoGrid = new Grid { Margin = new Thickness(0, 0, 0, 6) };
+		for (int i = 0; i < 4; i++)
+		{
+			infoGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+		}
+		infoGrid.RowDefinitions.Add(new RowDefinition());
+		infoGrid.RowDefinitions.Add(new RowDefinition());
+		infoGrid.Children.Add(MakePlanInfoBlock("Plan", nameof(CuttingPlanViewModel.PlanId)));
+		infoGrid.Children.Add(MakePlanInfoBlock("Job", nameof(CuttingPlanViewModel.JobId)));
+		Grid.SetColumn(infoGrid.Children[^1], 1);
+		infoGrid.Children.Add(MakePlanInfoBlock("Teil", nameof(CuttingPlanViewModel.PartName)));
+		Grid.SetColumn(infoGrid.Children[^1], 2);
+		infoGrid.Children.Add(MakePlanInfoBlock("Material", nameof(CuttingPlanViewModel.MaterialText)));
+		Grid.SetColumn(infoGrid.Children[^1], 3);
+		infoGrid.Children.Add(MakePlanInfoBlock("Dicke", nameof(CuttingPlanViewModel.ThicknessText)));
+		Grid.SetColumn(infoGrid.Children[^1], 0);
+		Grid.SetRow(infoGrid.Children[^1], 1);
+		stack.Children.Add(infoGrid);
+
+		var progressPanel = new Border
+		{
+			Background = HmiVisualTheme.MetricTileBg,
+			BorderBrush = HmiVisualTheme.PanelBorder,
+			BorderThickness = new Thickness(1),
+			Padding = new Thickness(10, 6, 10, 6),
+			Margin = new Thickness(0, 0, 0, 6)
+		};
+		var progressGrid = new Grid();
+		for (int i = 0; i < 3; i++)
+		{
+			progressGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+		}
+		progressGrid.Children.Add(MakeBoundBlock("CuttingPlan.ProcessedPartsText", 14, FontWeights.SemiBold));
+		var contourBlock = MakeBoundBlock("CuttingPlan.ContourProgressText", 14, FontWeights.SemiBold);
+		Grid.SetColumn(contourBlock, 1);
+		progressGrid.Children.Add(contourBlock);
+		var phaseBlock = MakeBoundBlock("CuttingPlan.CurrentPhaseText", 16, FontWeights.Bold, "Phase: {0}");
+		Grid.SetColumn(phaseBlock, 2);
+		progressGrid.Children.Add(phaseBlock);
+		progressPanel.Child = progressGrid;
+		stack.Children.Add(progressPanel);
+
 		var banner = new Border
 		{
 			Background = HmiVisualTheme.PhaseBannerBrush(_viewModel.StatusTone),
-			Padding = new Thickness(16, 12, 16, 12),
-			Margin = new Thickness(0, 0, 0, 8),
-			CornerRadius = new CornerRadius(4)
+			Padding = new Thickness(12, 8, 12, 8),
+			Margin = new Thickness(0, 0, 0, 6),
+			CornerRadius = new CornerRadius(3)
 		};
-		var bannerStack = new StackPanel();
-		bannerStack.Children.Add(new TextBlock
-		{
-			Text = "AKTUELLE PHASE",
-			Foreground = HmiVisualTheme.TextOnDark,
-			FontSize = 12
-		});
-		var phaseBlock = MakeBoundBlock("ProcessPhaseText", 32, FontWeights.Bold);
-		phaseBlock.Foreground = HmiVisualTheme.TextOnDark;
-		bannerStack.Children.Add(phaseBlock);
-		banner.Child = bannerStack;
+		var phaseBlockLarge = MakeBoundBlock("ProcessPhaseText", 24, FontWeights.Bold);
+		phaseBlockLarge.Foreground = HmiVisualTheme.TextOnDark;
+		banner.Child = phaseBlockLarge;
 		stack.Children.Add(banner);
 
-		stack.Children.Add(MakeSectionTitle("Prozessindikatoren"));
-		stack.Children.Add(BuildIndicatorRow("Laser aktiv", "LaserActiveText"));
-		stack.Children.Add(BuildIndicatorRow("Schnitt aktiv", "CuttingActiveText"));
-		stack.Children.Add(BuildIndicatorRow("Positionierung aktiv", "PositioningActiveText"));
-
-		stack.Children.Add(MakeSectionTitle("Maschinenzustand"));
-		stack.Children.Add(MakeBoundBlock("MachineStateText", 16, FontWeights.SemiBold, "Status: {0}"));
-		stack.Children.Add(MakeBoundBlock("ProcessPhaseEnglish", 14, FontWeights.Normal, "Phase (EN): {0}"));
-		stack.Children.Add(MakeBoundBlock("NextActionText", 14, FontWeights.Normal, "Nächste Aktion: {0}"));
-
-		stack.Children.Add(MakeSectionTitle("Produktion"));
-		stack.Children.Add(MakeBoundBlock("JobName", 14, FontWeights.Normal, "Auftrag: {0}"));
-		stack.Children.Add(MakeBoundBlock("PartName", 14, FontWeights.Normal, "Teil: {0}"));
-		stack.Children.Add(MakeBoundBlock("CounterText", 14, FontWeights.Normal, "Ist/Soll: {0}"));
-		stack.Children.Add(MakeBoundBlock("RemainingCounterText", 14, FontWeights.Normal, "Rest: {0}"));
-		stack.Children.Add(MakeBoundBlock("NextJobText", 13, FontWeights.Normal, "Nächster Job: {0}"));
-		stack.Children.Add(MakeBoundBlock("JobChangeText", 13, FontWeights.Normal, "{0}"));
-		stack.Children.Add(MakeBoundBlock("JobChangeRemainingText", 13, FontWeights.Normal, "{0}"));
-
-		var metricGrid = new Grid { Margin = new Thickness(0, 8, 0, 0) };
-		for (int c = 0; c < 3; c++)
+		var planBorder = new Border
 		{
-			metricGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-		}
-		int[] overviewIndices = [4, 5, 6, 7, 8];
-		for (int i = 0; i < overviewIndices.Length && overviewIndices[i] < _viewModel.OverviewMetrics.Count; i++)
+			Background = HmiVisualTheme.PlanSheetBg,
+			BorderBrush = HmiVisualTheme.PanelBorder,
+			BorderThickness = new Thickness(1),
+			MinHeight = 380
+		};
+		_cuttingPlanCanvas = new CuttingPlanCanvasControl();
+		_cuttingPlanCanvas.Bind(_viewModel.CuttingPlan);
+		planBorder.Child = _cuttingPlanCanvas;
+		stack.Children.Add(planBorder);
+
+		var zoomRow = new WrapPanel { Margin = new Thickness(0, 6, 0, 0) };
+		zoomRow.Children.Add(MakeButton("Zoom +", (_, _) => _viewModel.CuttingPlan.ZoomIn()));
+		zoomRow.Children.Add(MakeButton("Zoom −", (_, _) => _viewModel.CuttingPlan.ZoomOut()));
+		zoomRow.Children.Add(MakeButton("Plan zentrieren", (_, _) => _viewModel.CuttingPlan.FitSheet()));
+		stack.Children.Add(zoomRow);
+
+		stack.Children.Add(MakeBoundBlock("CuttingPlan.NextJobPreview", 13, FontWeights.Normal, "Nächster Auftrag: {0}"));
+
+		var indicatorRow = new Grid { Margin = new Thickness(0, 6, 0, 0) };
+		for (int i = 0; i < 3; i++)
 		{
-			var tile = BuildLargeMetricTile(_viewModel.OverviewMetrics[overviewIndices[i]]);
-			Grid.SetColumn(tile, i % 3);
-			Grid.SetRow(tile, i / 3);
-			metricGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-			metricGrid.Children.Add(tile);
+			indicatorRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 		}
-		stack.Children.Add(metricGrid);
+		indicatorRow.Children.Add(BuildIndicatorRow("Laser aktiv", "LaserActiveText"));
+		var cut = BuildIndicatorRow("Schnitt aktiv", "CuttingActiveText");
+		Grid.SetColumn(cut, 1);
+		indicatorRow.Children.Add(cut);
+		var pos = BuildIndicatorRow("Positionierung aktiv", "PositioningActiveText");
+		Grid.SetColumn(pos, 2);
+		indicatorRow.Children.Add(pos);
+		stack.Children.Add(indicatorRow);
 
 		return stack;
+	}
+
+	private void UpdateCuttingPlanCanvas() => _cuttingPlanCanvas?.RefreshGeometry();
+
+	private UIElement MakePlanInfoBlock(string label, string bindingPath)
+	{
+		var stack = new StackPanel();
+		stack.Children.Add(new TextBlock
+		{
+			Text = label,
+			Foreground = HmiVisualTheme.TextSecondary,
+			FontSize = 11
+		});
+		var val = new TextBlock { Foreground = HmiVisualTheme.TextPrimary, FontWeight = FontWeights.SemiBold, FontSize = 13 };
+		val.SetBinding(TextBlock.TextProperty, new Binding($"CuttingPlan.{bindingPath}"));
+		stack.Children.Add(val);
+		return new Border { Child = stack, Padding = new Thickness(2) };
 	}
 
 	private UIElement BuildRightControlColumn()

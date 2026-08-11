@@ -1,0 +1,4 @@
+Branch: feature/physical-learning-simulator
+Commit: 9a8dbde
+Message: Add live 2D cutting plan visualization and HMI layout refinement
+Status: committed locally (R9 scope only; unrelated handoff noise remains unstaged)

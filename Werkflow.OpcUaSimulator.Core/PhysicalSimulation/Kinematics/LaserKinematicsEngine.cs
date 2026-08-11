@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Werkflow.OpcUaSimulator.Core.Defaults;
+using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.CuttingPlans;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 using Werkflow.OpcUaSimulator.Core.VirtualMachine;
 
@@ -46,6 +47,7 @@ public static class LaserKinematicsEngine
 		kinematics.MaxX = kinematics.X;
 		kinematics.MinY = kinematics.Y;
 		kinematics.MaxY = kinematics.Y;
+		LoadCuttingPlanForJob(context);
 		LoadPartPlan(context, seed);
 	}
 
@@ -56,6 +58,7 @@ public static class LaserKinematicsEngine
 			return;
 		}
 
+		context.Kinematics.DisplayCuttingPlan = context.Kinematics.ActiveCuttingPlan;
 		context.Kinematics.MovingToService = true;
 		context.Kinematics.MotionPhase = LaserMotionPhase.JobChange;
 		context.Kinematics.NozzleChangeRequired = RequiresNozzleChange(context.Job.MaterialName, context.Job.MaterialThicknessMm, nextJob);
@@ -79,6 +82,7 @@ public static class LaserKinematicsEngine
 		kinematics.MovingToService = false;
 		kinematics.NozzleChangeActive = false;
 		kinematics.NozzleChangeElapsedSeconds = 0.0;
+		LoadCuttingPlanForJob(context);
 		LoadPartPlan(context, seed);
 		kinematics.MotionPhase = LaserMotionPhase.RapidPositioning;
 	}
@@ -326,6 +330,7 @@ public static class LaserKinematicsEngine
 		{
 			kinematics.SegmentStartX = kinematics.X;
 			kinematics.SegmentStartY = kinematics.Y;
+			UpdateContourTracking(kinematics, segment, starting: true);
 		}
 
 		switch (segment.Kind)
@@ -342,8 +347,7 @@ public static class LaserKinematicsEngine
 				dt);
 			if (AtPoint(kinematics, segment.TargetX, segment.TargetY))
 			{
-				kinematics.SegmentIndex++;
-				kinematics.DistanceAlongSegmentMm = 0.0;
+				AdvanceSegment(kinematics);
 			}
 			break;
 		case LaserToolpathSegmentKind.Pierce:
@@ -356,8 +360,7 @@ public static class LaserKinematicsEngine
 			if (kinematics.PierceElapsedSeconds >= segment.PierceDurationSeconds)
 			{
 				kinematics.PierceElapsedSeconds = 0.0;
-				kinematics.SegmentIndex++;
-				kinematics.DistanceAlongSegmentMm = 0.0;
+				AdvanceSegment(kinematics);
 			}
 			break;
 		case LaserToolpathSegmentKind.CutLine:
@@ -368,15 +371,88 @@ public static class LaserKinematicsEngine
 			kinematics.CutFeedMmPerMin = cutSpeed * 60.0;
 			if (MoveTowardPoint(kinematics, segment.TargetX, segment.TargetY, cutSpeed, dt))
 			{
-				kinematics.SegmentIndex++;
-				kinematics.DistanceAlongSegmentMm = 0.0;
+				AdvanceSegment(kinematics);
 			}
 			break;
 		}
 	}
 
+	private static void AdvanceSegment(LaserKinematicsState kinematics)
+	{
+		if (kinematics.CurrentPlan != null && kinematics.SegmentIndex < kinematics.CurrentPlan.Segments.Count)
+		{
+			LaserToolpathSegment completed = kinematics.CurrentPlan.Segments[kinematics.SegmentIndex];
+			UpdateContourTracking(kinematics, completed, starting: false);
+		}
+
+		kinematics.SegmentIndex++;
+		kinematics.DistanceAlongSegmentMm = 0.0;
+	}
+
+	private static void UpdateContourTracking(LaserKinematicsState kinematics, LaserToolpathSegment segment, bool starting)
+	{
+		if (kinematics.ActiveCuttingPlan == null)
+		{
+			return;
+		}
+
+		kinematics.SheetPartIndex = segment.SheetPartIndex;
+		kinematics.CurrentContourIndex = segment.ContourIndex;
+		if (segment.SheetPartIndex < 0 || segment.SheetPartIndex >= kinematics.ActiveCuttingPlan.Parts.Count)
+		{
+			return;
+		}
+
+		CuttingPlanPart part = kinematics.ActiveCuttingPlan.Parts[segment.SheetPartIndex];
+		if (starting && segment.Kind == LaserToolpathSegmentKind.Pierce)
+		{
+			part.State = CuttingPartState.InProgress;
+			foreach (CuttingPlanContour contour in part.Contours)
+			{
+				if (contour.ContourIndex == segment.ContourIndex)
+				{
+					contour.State = CuttingContourState.Active;
+				}
+			}
+		}
+
+		if (!starting && segment.Kind == LaserToolpathSegmentKind.CutLine)
+		{
+			int nextIndex = kinematics.SegmentIndex + 1;
+			bool contourComplete = kinematics.CurrentPlan == null
+				|| nextIndex >= kinematics.CurrentPlan.Segments.Count
+				|| kinematics.CurrentPlan.Segments[nextIndex].ContourIndex != segment.ContourIndex
+				|| kinematics.CurrentPlan.Segments[nextIndex].SheetPartIndex != segment.SheetPartIndex
+				|| kinematics.CurrentPlan.Segments[nextIndex].Kind != LaserToolpathSegmentKind.CutLine;
+
+			if (contourComplete)
+			{
+				foreach (CuttingPlanContour contour in part.Contours)
+				{
+					if (contour.ContourIndex == segment.ContourIndex)
+					{
+						contour.State = CuttingContourState.Completed;
+					}
+				}
+			}
+		}
+	}
+
 	private static void CompletePart(PhysicalSimulationContext context, LaserKinematicsState kinematics, int seed)
 	{
+		if (kinematics.ActiveCuttingPlan != null)
+		{
+			int layoutIndex = kinematics.SheetPartIndex;
+			if (layoutIndex >= 0 && layoutIndex < kinematics.ActiveCuttingPlan.Parts.Count)
+			{
+				kinematics.ActiveCuttingPlan.Parts[layoutIndex].State = CuttingPartState.Completed;
+				foreach (CuttingPlanContour contour in kinematics.ActiveCuttingPlan.Parts[layoutIndex].Contours)
+				{
+					contour.State = CuttingContourState.Completed;
+				}
+			}
+		}
+
 		kinematics.PendingPartCompletions++;
 		kinematics.PartIndex++;
 		kinematics.SegmentIndex = 0;
@@ -406,11 +482,11 @@ public static class LaserKinematicsEngine
 		kinematics.NextActionHint = "Leerlauf";
 	}
 
-	private static void LoadPartPlan(PhysicalSimulationContext context, int seed)
+	private static void LoadCuttingPlanForJob(PhysicalSimulationContext context)
 	{
 		FixedProductionJobDefinition definition = new FixedProductionJobDefinition
 		{
-			CatalogIndex = context.Job.JobIndex - 1,
+			CatalogIndex = context.Job.CatalogIndex,
 			JobName = context.Job.JobName,
 			PartName = context.Job.PartName,
 			TargetQuantity = context.Job.TargetQuantity,
@@ -419,10 +495,71 @@ public static class LaserKinematicsEngine
 			RecipeName = context.Job.RecipeName,
 			ProgramName = context.Job.ProgramName
 		};
+		CuttingPlan plan = CuttingPlanCatalog.GetForJob(definition);
+		CuttingPlanGeometry.ResetRuntimeStates(plan);
+		context.Kinematics.ActiveCuttingPlan = plan;
+		context.Kinematics.DisplayCuttingPlan = plan;
+	}
+
+	private static void LoadPartPlan(PhysicalSimulationContext context, int seed)
+	{
+		FixedProductionJobDefinition definition = new FixedProductionJobDefinition
+		{
+			CatalogIndex = context.Job.CatalogIndex,
+			JobName = context.Job.JobName,
+			PartName = context.Job.PartName,
+			TargetQuantity = context.Job.TargetQuantity,
+			MaterialName = context.Job.MaterialName,
+			MaterialThicknessMm = context.Job.MaterialThicknessMm,
+			RecipeName = context.Job.RecipeName,
+			ProgramName = context.Job.ProgramName
+		};
+
+		if (context.Kinematics.ActiveCuttingPlan == null)
+		{
+			LoadCuttingPlanForJob(context);
+		}
+
+		CuttingPlan plan = context.Kinematics.ActiveCuttingPlan!;
+		int layoutIndex = plan.PartCount == 0 ? 0 : context.Kinematics.PartIndex % plan.PartCount;
+		if (layoutIndex == 0 && context.Kinematics.PartIndex > 0)
+		{
+			CuttingPlanGeometry.ResetRuntimeStates(plan);
+		}
+
+		PrepareSheetVisualState(plan, layoutIndex, context.Kinematics.PartIndex);
+		CuttingPlanPart sheetPart = plan.Parts[layoutIndex];
 		int partSeed = seed ^ (context.Kinematics.PartIndex * 1337);
-		context.Kinematics.CurrentPlan = LaserToolpathGenerator.CreatePartPlan(definition, partSeed, context.Kinematics.PartIndex);
+		context.Kinematics.SheetPartIndex = layoutIndex;
+		context.Kinematics.CurrentContourIndex = 0;
+		context.Kinematics.CurrentPlan = CuttingPlanToolpathBuilder.BuildToolpath(sheetPart, layoutIndex, definition, partSeed);
 		context.Kinematics.SegmentIndex = 0;
 		context.Kinematics.PierceElapsedSeconds = 0.0;
+		context.Kinematics.DistanceAlongSegmentMm = 0.0;
+	}
+
+	private static void PrepareSheetVisualState(CuttingPlan plan, int layoutIndex, int productionPartIndex)
+	{
+		for (int i = 0; i < layoutIndex; i++)
+		{
+			plan.Parts[i].State = CuttingPartState.Completed;
+		}
+
+		for (int i = layoutIndex + 1; i < plan.Parts.Count; i++)
+		{
+			plan.Parts[i].State = CuttingPartState.NotStarted;
+			foreach (CuttingPlanContour contour in plan.Parts[i].Contours)
+			{
+				contour.State = CuttingContourState.Unprocessed;
+			}
+		}
+
+		CuttingPlanPart current = plan.Parts[layoutIndex];
+		current.State = CuttingPartState.NotStarted;
+		foreach (CuttingPlanContour contour in current.Contours)
+		{
+			contour.State = CuttingContourState.Unprocessed;
+		}
 	}
 
 	private static bool MoveTowardPoint(LaserKinematicsState kinematics, double targetX, double targetY, double maxSpeed, double dt)

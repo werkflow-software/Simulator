@@ -29,19 +29,30 @@ public class LaserKinematicsPlausibilityTests
 		};
 		session.Simulation.TimeFactor = 20.0;
 		session.Simulation.Job.TargetQuantity = 3;
-		PhysicalJobCoordinator.ApplyDefinition(session.Simulation, FixedSimulationCatalog.GetDefinition(2), session.Runtime);
-
 		engine.Initialize(session, 42);
+		PhysicalJobCoordinator.ApplyDefinition(session.Simulation, FixedSimulationCatalog.GetDefinition(2), session.Runtime);
+		LaserKinematicsEngine.OnJobApplied(session.Simulation, 42);
 		Assert.True(session.Simulation.Kinematics.IsEnabled);
 		Assert.InRange(session.Simulation.Kinematics.X, 20.0, 40.0);
 		Assert.InRange(session.Simulation.Kinematics.Y, 40.0, 60.0);
 
 		double maxFeed = 0.0;
+		bool simultaneousObserved = false;
+		double lastX = session.Simulation.Kinematics.X;
+		double lastY = session.Simulation.Kinematics.Y;
 		for (int i = 0; i < 800; i++)
 		{
-			engine.Tick(session, TimeSpan.FromMilliseconds(100));
+			engine.Tick(session, TimeSpan.FromMilliseconds(20));
 			double feed = session.Runtime.Signals.First(s => s.SignalId == "Process.FeedRate").CurrentValue;
 			maxFeed = Math.Max(maxFeed, feed);
+			double dx = session.Simulation.Kinematics.X - lastX;
+			double dy = session.Simulation.Kinematics.Y - lastY;
+			if (Math.Abs(dx) > 0.2 && Math.Abs(dy) > 0.2)
+			{
+				simultaneousObserved = true;
+			}
+			lastX = session.Simulation.Kinematics.X;
+			lastY = session.Simulation.Kinematics.Y;
 		}
 
 		var xPos = session.Runtime.Signals.First(s => s.SignalId == "Axis01.Position").CurrentValue;
@@ -52,19 +63,8 @@ public class LaserKinematicsPlausibilityTests
 		Assert.True(session.Simulation.Kinematics.MaxY - session.Simulation.Kinematics.MinY > 200.0);
 		Assert.True(maxFeed > 100.0);
 		Assert.Contains(session.Simulation.Kinematics.MotionPhase, new[] { LaserMotionPhase.Cutting, LaserMotionPhase.RapidPositioning, LaserMotionPhase.Piercing });
-
-		bool simultaneousObserved = false;
-		for (int i = 0; i < 400; i++)
-		{
-			engine.Tick(session, TimeSpan.FromMilliseconds(100));
-			double vx = session.Simulation.Kinematics.Vx;
-			double vy = session.Simulation.Kinematics.Vy;
-			if (Math.Abs(vx) > 5.0 && Math.Abs(vy) > 5.0)
-			{
-				simultaneousObserved = true;
-				break;
-			}
-		}
 		Assert.True(simultaneousObserved);
+		Assert.NotNull(session.Simulation.Kinematics.ActiveCuttingPlan);
+		Assert.Equal("PLAN-003", session.Simulation.Kinematics.ActiveCuttingPlan.PlanId);
 	}
 }

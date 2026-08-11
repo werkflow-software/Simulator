@@ -13,6 +13,7 @@ using Werkflow.OpcUaSimulator.Core.Interfaces;
 using Werkflow.OpcUaSimulator.Core.Models;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.FaultScenarios.Models;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.FaultScenarios.Services;
+using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.CuttingPlans;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Kinematics;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 using Werkflow.OpcUaSimulator.Core.VirtualMachine;
@@ -127,6 +128,16 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	public string FocusText => _focusText;
 	public string StatusTone => _statusTone;
 	public string RemainingCounterText => _remainingCounterText;
+
+	public CuttingPlanViewModel CuttingPlan { get; } = new();
+
+	public bool CuttingPlanNeedsGeometryReload { get; private set; }
+
+	public bool CuttingPlanNeedsStateRedraw { get; private set; }
+
+	public int PlanVisualToken { get; private set; }
+
+	private string? _loadedPlanId;
 
 	public int SelectedTabIndex
 	{
@@ -631,11 +642,105 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		if (session != null)
 		{
 			RefreshProcessMotionState(session);
+			RefreshCuttingPlan(session);
 			RefreshBoundSignals(session);
 		}
 
 		NotifyProcessStateProperties();
 		NotifyCommandStates();
+	}
+
+	public void ClearCuttingPlanRefreshFlags()
+	{
+		CuttingPlanNeedsGeometryReload = false;
+		CuttingPlanNeedsStateRedraw = false;
+	}
+
+	private void RefreshCuttingPlan(PhysicalMachineSession session)
+	{
+		LaserKinematicsState kinematics = session.Simulation.Kinematics;
+		CuttingPlan? displayPlan = kinematics.DisplayCuttingPlan ?? kinematics.ActiveCuttingPlan;
+		if (!kinematics.IsEnabled || displayPlan == null)
+		{
+			return;
+		}
+
+		CuttingPlan.PlanId = displayPlan.PlanId;
+		CuttingPlan.JobId = displayPlan.JobId;
+		CuttingPlan.PartName = _partName;
+		CuttingPlan.MaterialText = session.Simulation.Job.MaterialName;
+		CuttingPlan.ThicknessText = $"{session.Simulation.Job.MaterialThicknessMm:0.#} mm";
+		CuttingPlan.PartsOnSheet = displayPlan.PartCount;
+		CuttingPlan.PartsProcessedOnSheet = displayPlan.Parts.Count(p => p.State == CuttingPartState.Completed);
+		CuttingPlan.CurrentSheetPartIndex = kinematics.SheetPartIndex;
+		CuttingPlan.CurrentContourIndex = kinematics.CurrentContourIndex + 1;
+		if (kinematics.SheetPartIndex >= 0 && kinematics.SheetPartIndex < displayPlan.Parts.Count)
+		{
+			CuttingPlan.ContourCountOnPart = displayPlan.Parts[kinematics.SheetPartIndex].Contours.Count;
+		}
+		CuttingPlan.CurrentPhaseText = _processPhaseText;
+		CuttingPlan.HeadX = kinematics.X;
+		CuttingPlan.HeadY = kinematics.Y;
+		CuttingPlan.SegmentStartX = kinematics.SegmentStartX;
+		CuttingPlan.SegmentStartY = kinematics.SegmentStartY;
+		CuttingPlan.ShowRapidLine = kinematics.MotionPhase is LaserMotionPhase.RapidPositioning or LaserMotionPhase.Repositioning;
+		CuttingPlan.IsPiercing = kinematics.MotionPhase == LaserMotionPhase.Piercing;
+		CuttingPlan.NextJobPreview = _nextJobText;
+
+		if (_loadedPlanId != displayPlan.PlanId)
+		{
+			_loadedPlanId = displayPlan.PlanId;
+			CuttingPlan.Parts.Clear();
+			foreach (CuttingPlanPart part in displayPlan.Parts)
+			{
+				var partVm = new CuttingPlanPartViewModel
+				{
+					PartIndex = part.PartIndex,
+					Label = part.Label,
+					State = part.State,
+					Contours = part.Contours.Select(c => new CuttingPlanContourViewModel
+					{
+						ContourIndex = c.ContourIndex,
+						IsInnerContour = c.IsInnerContour,
+						Points = c.Vertices.Select(v => (v.X, v.Y)).ToList(),
+						State = c.State
+					}).ToList()
+				};
+				CuttingPlan.Parts.Add(partVm);
+			}
+			CuttingPlanNeedsGeometryReload = true;
+		}
+		else
+		{
+			for (int i = 0; i < displayPlan.Parts.Count && i < CuttingPlan.Parts.Count; i++)
+			{
+				CuttingPlanPart source = displayPlan.Parts[i];
+				CuttingPlanPartViewModel target = CuttingPlan.Parts[i];
+				if (target.State != source.State)
+				{
+					target.State = source.State;
+					CuttingPlanNeedsStateRedraw = true;
+				}
+
+				for (int c = 0; c < source.Contours.Count && c < target.Contours.Count; c++)
+				{
+					if (target.Contours[c].State != source.Contours[c].State)
+					{
+						target.Contours[c].State = source.Contours[c].State;
+						CuttingPlanNeedsStateRedraw = true;
+					}
+				}
+			}
+		}
+
+		PlanVisualToken++;
+		OnPropertyChanged(nameof(PlanVisualToken));
+		if (CuttingPlanNeedsGeometryReload || CuttingPlanNeedsStateRedraw)
+		{
+			ClearCuttingPlanRefreshFlags();
+		}
+
+		CuttingPlan.NotifyDisplayRefresh();
 	}
 
 	private void RefreshProcessMotionState(PhysicalMachineSession session)

@@ -102,7 +102,7 @@ public static class LaserToolpathGenerator
 		};
 	}
 
-	private static bool RequiresNozzleChange(FixedProductionJobDefinition job) =>
+	public static bool RequiresNozzleChange(FixedProductionJobDefinition job) =>
 		job.CatalogIndex % 3 == 0
 		|| job.MaterialThicknessMm >= 6.0
 		|| job.MaterialName.Contains("Cu", StringComparison.OrdinalIgnoreCase);

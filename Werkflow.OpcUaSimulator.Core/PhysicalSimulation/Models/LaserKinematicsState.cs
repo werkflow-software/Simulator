@@ -1,3 +1,4 @@
+using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.CuttingPlans;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Kinematics;
 
 namespace Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
@@ -30,6 +31,14 @@ public sealed class LaserKinematicsState
 	public LaserMotionPhase MotionPhase { get; set; } = LaserMotionPhase.Idle;
 
 	public LaserToolpathPlan? CurrentPlan { get; set; }
+
+	public CuttingPlan? ActiveCuttingPlan { get; set; }
+
+	public CuttingPlan? DisplayCuttingPlan { get; set; }
+
+	public int SheetPartIndex { get; set; }
+
+	public int CurrentContourIndex { get; set; }
 
 	public int SegmentIndex { get; set; }
 

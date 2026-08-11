@@ -17,6 +17,7 @@ public static class PhysicalJobCoordinator
 		FixedProductionJobDefinition definition,
 		PhysicalMachineRuntime? runtime)
 	{
+		context.Job.CatalogIndex = definition.CatalogIndex;
 		context.Job.JobIndex = definition.CatalogIndex + 1;
 		context.Job.JobName = definition.JobName;
 		context.Job.PartName = definition.PartName;

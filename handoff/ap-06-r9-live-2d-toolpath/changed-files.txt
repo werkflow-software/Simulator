@@ -1,0 +1,17 @@
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/CuttingPlans/CuttingPlanModels.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/CuttingPlans/CuttingPlanGeometry.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/CuttingPlans/CuttingPlanCatalog.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/CuttingPlans/CuttingPlanToolpathBuilder.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Kinematics/LaserKinematicsEngine.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Kinematics/LaserToolpathGenerator.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Kinematics/LaserToolpathModels.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Models/LaserKinematicsState.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Models/PhysicalJobState.cs
+Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Services/PhysicalJobCoordinator.cs
+Werkflow.OpcUaSimulator.App/VirtualMachine/ViewModels/CuttingPlanViewModel.cs
+Werkflow.OpcUaSimulator.App/VirtualMachine/ViewModels/VirtualMachineHmiViewModel.cs
+Werkflow.OpcUaSimulator.App/VirtualMachine/Views/CuttingPlanCanvasControl.cs
+Werkflow.OpcUaSimulator.App/VirtualMachine/Views/HmiVisualTheme.cs
+Werkflow.OpcUaSimulator.App/VirtualMachine/Views/VirtualMachineHmiWindow.cs
+Werkflow.OpcUaSimulator.Tests/LaserKinematicsPlausibilityTests.cs
+AP-06-R9-live-2d-toolpath-visualization-report.md
