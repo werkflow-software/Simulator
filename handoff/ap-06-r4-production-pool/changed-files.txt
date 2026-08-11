@@ -1,0 +1,6 @@
+Werkflow.OpcUaSimulator.Core/Services/SimulationEngine.cs
+AP-06-R4-production-job-pool-binding-report.md
+handoff/ap-06-r4-production-pool/AP-06-R4-production-job-pool-binding-report.md
+handoff/ap-06-r4-production-pool/changed-files.txt
+handoff/ap-06-r4-production-pool/build-proof.txt
+handoff/ap-06-r4-production-pool/git-closure.md

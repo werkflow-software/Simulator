@@ -7,6 +7,7 @@ using Werkflow.OpcUaSimulator.Core.Defaults;
 using Werkflow.OpcUaSimulator.Core.Interfaces;
 using Werkflow.OpcUaSimulator.Core.Models;
 using Werkflow.OpcUaSimulator.Core.Utilities;
+using Werkflow.OpcUaSimulator.Core.VirtualMachine;
 
 namespace Werkflow.OpcUaSimulator.Core.Services;
 
@@ -313,7 +314,9 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			throw new InvalidOperationException(string.Join(Environment.NewLine, validation.Errors));
 		}
 		EnsureRuntimeStates();
-		await StartMachineInternalAsync(machine, assignJob: false, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+		bool isVirtualMachine = machineId == VirtualMachineContract.MachineId;
+		CancellationToken loopToken = isVirtualMachine ? EnsureStandaloneEngineReady(cancellationToken) : cancellationToken;
+		await StartMachineInternalAsync(machine, assignJob: isVirtualMachine, loopToken).ConfigureAwait(continueOnCapturedContext: false);
 	}
 
 	public Task StopMachineServerAsync(Guid machineId, CancellationToken cancellationToken = default(CancellationToken))
@@ -493,9 +496,11 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 	{
 		MachineConfiguration machine = GetMachine(machineId);
 		MachineRuntimeState runtime = GetRuntime(machineId);
-		if (string.IsNullOrWhiteSpace(runtime.JobName) || runtime.TargetCounter <= 0)
+		if (IsJobUnassigned(runtime))
 		{
+			EnsureJobPoolReady();
 			AssignJobToMachine(machine, runtime);
+			PublishMachine(machine, runtime);
 		}
 		NotifyMachineChanged(runtime);
 		return Task.CompletedTask;
@@ -565,7 +570,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 					interval = SimulationRandom.ScaleInterval(interval, speed);
 					int manualStep;
 					int step = (_manualStepSizes.TryGetValue(machine.Id, out manualStep) ? manualStep : machine.ProductionStepSize);
-					if (_state == SimulationState.Running && runtime.IsProducing && CanIncrement(runtime) && (now - lastProductionTick).TotalMilliseconds >= (double)interval)
+					if (ShouldTickProduction(runtime) && (now - lastProductionTick).TotalMilliseconds >= (double)interval)
 					{
 						IncrementCounter(machine, runtime, step);
 						lastProductionTick = now;
@@ -767,6 +772,67 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			SetMachineState(runtime, MachineState.Running);
 			PublishMachine(machine, runtime);
 			_logService.Log(LogCategory.Job, "Auftrag zugewiesen: " + nextJobForMachine.JobName, machine.Name);
+		}
+	}
+
+	private static bool IsPlaceholderValue(string? value)
+	{
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			return true;
+		}
+		string trimmed = value.Trim();
+		return trimmed == "—" || trimmed == "-" || trimmed == "–";
+	}
+
+	private static bool IsJobUnassigned(MachineRuntimeState runtime)
+	{
+		if (runtime.AssignedJobId.HasValue)
+		{
+			return false;
+		}
+		return IsPlaceholderValue(runtime.JobName) || IsPlaceholderValue(runtime.PartName);
+	}
+
+	private CancellationToken EnsureStandaloneEngineReady(CancellationToken cancellationToken)
+	{
+		lock (_sync)
+		{
+			if (_globalCts == null || _globalCts.IsCancellationRequested)
+			{
+				_globalCts?.Dispose();
+				_globalCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+			}
+			if (_state == SimulationState.Stopped)
+			{
+				SimulationSettings settings = _configurationService.Configuration.Settings;
+				_currentSeed = (settings.GenerateNewSeedOnStart ? Environment.TickCount : settings.RandomSeed);
+				_random = SimulationRandom.Create(_currentSeed);
+			}
+		}
+		EnsureJobPoolReady();
+		return _globalCts!.Token;
+	}
+
+	private void EnsureJobPoolReady()
+	{
+		AppConfiguration configuration = _configurationService.Configuration;
+		bool hasAssignableJob = configuration.Jobs.Any((SimulationJob j) => j.Status == JobState.Pending || j.Status == JobState.Assigned || (configuration.Settings.ReuseCompletedJobs && j.Status == JobState.Completed));
+		if (!hasAssignableJob)
+		{
+			_jobGenerator.RegenerateJobs(configuration, _random);
+		}
+	}
+
+	private bool ShouldTickProduction(MachineRuntimeState runtime)
+	{
+		if (!runtime.IsProducing || !CanIncrement(runtime))
+		{
+			return false;
+		}
+		lock (_sync)
+		{
+			return _state == SimulationState.Running || (_state == SimulationState.Stopped && runtime.IsServerOnline);
 		}
 	}
 
