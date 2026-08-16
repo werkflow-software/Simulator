@@ -37,10 +37,13 @@ public sealed class PhysicalRuntimeCoordinator : IPhysicalRuntimeCoordinator
 
 	public bool TrySetGenerationMode(PhysicalMachineSession session, SignalGenerationMode mode)
 	{
-		if (session.Metrics.State == PhysicalPublisherState.Running && mode != session.Simulation.GenerationMode)
+		if (session.Metrics.State == PhysicalPublisherState.Running
+			&& mode != session.Simulation.GenerationMode
+			&& mode != SignalGenerationMode.Physical)
 		{
 			return false;
 		}
+
 		if (mode == SignalGenerationMode.Physical && !_initialized.Contains(session.MachineId))
 		{
 			_engine.Initialize(session, session.Simulation.Seed);

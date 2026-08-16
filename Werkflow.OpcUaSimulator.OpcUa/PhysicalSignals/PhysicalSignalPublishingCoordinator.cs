@@ -90,7 +90,7 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 		if (!string.IsNullOrWhiteSpace(machine.PhysicalProfileId))
 		{
 			PhysicalMachineSession physicalMachineSession = _sessionFactory.TryCreateSession(machine.Id, machine.Name, machine.PhysicalProfileId) ?? throw new InvalidOperationException($"Physisches Profil '{machine.PhysicalProfileId}' für Maschine '{machine.Name}' wurde nicht gefunden.");
-			int seed = simulationSeed ^ machine.Id.GetHashCode();
+			int seed = VigilLabRunProfile.ResolveSimulationSeed(machine.Id, simulationSeed) ^ machine.Id.GetHashCode();
 			physicalMachineSession.Simulation.Seed = seed;
 			physicalMachineSession.Simulation.ProductionDrivenJobs = true;
 			physicalMachineSession.Simulation.VerificationMode = PhysicalVerificationSettings.VerificationMode;

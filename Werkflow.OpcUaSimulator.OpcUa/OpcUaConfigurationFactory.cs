@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +17,7 @@ internal static class OpcUaConfigurationFactory
 {
 	public static async Task<ApplicationConfiguration> CreateAsync(MachineConfiguration machine, CancellationToken cancellationToken = default(CancellationToken))
 	{
-		string pkiRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Werkflow", "OpcUaSimulator", "pki", machine.Id.ToString("N"));
+		string pkiRoot = GetMachinePkiRoot(machine);
 		string ownPath = Path.Combine(pkiRoot, "own");
 		string trustedPath = Path.Combine(pkiRoot, "trusted");
 		string issuerPath = Path.Combine(pkiRoot, "issuer");
@@ -110,24 +113,176 @@ internal static class OpcUaConfigurationFactory
 		return config;
 	}
 
+	public static async Task<ApplicationInstance> CreateApplicationInstanceAsync(
+		MachineConfiguration machine,
+		ILogService logService,
+		CancellationToken cancellationToken = default(CancellationToken))
+	{
+		ApplicationConfiguration config = await CreateAsync(machine, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+		return await CreateValidatedApplicationInstanceAsync(machine, config, logService, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+	}
+
 	public static async Task EnsureCertificateAsync(ApplicationInstance application, ILogService logService, string machineName, CancellationToken cancellationToken = default(CancellationToken))
 	{
-		if (!(await application.CheckApplicationInstanceCertificates(silent: false, 2048, cancellationToken).ConfigureAwait(continueOnCapturedContext: false)))
-		{
-			throw new InvalidOperationException("Anwendungszertifikat für '" + machineName + "' konnte nicht erstellt oder geladen werden.");
-		}
 		ApplicationConfiguration config = application.ApplicationConfiguration ?? throw new InvalidOperationException("ApplicationConfiguration fehlt.");
-		ApplicationConfiguration applicationConfiguration = config;
-		if (applicationConfiguration.CertificateValidator == null)
+		await EnsureCertificateLoadedAsync(application, config, logService, machineName, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+	}
+
+	private static async Task<ApplicationInstance> CreateValidatedApplicationInstanceAsync(
+		MachineConfiguration machine,
+		ApplicationConfiguration config,
+		ILogService logService,
+		CancellationToken cancellationToken)
+	{
+		ApplicationInstance application = CreateApplicationInstance(config);
+		if (await TryCheckApplicationCertificateAsync(application, cancellationToken).ConfigureAwait(continueOnCapturedContext: false))
 		{
-			applicationConfiguration.CertificateValidator = new CertificateValidator();
+			await CompleteCertificateLoadAsync(application, config, logService, machine.Name, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+			return application;
+		}
+
+		logService.Log(LogCategory.Server, "Ungültiges Serverzertifikat erkannt; PKI-Speicher wird zurückgesetzt.", machine.Name);
+		return await RecreateApplicationInstanceWithFreshCertificateAsync(machine, config, logService, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+	}
+
+	private static async Task<ApplicationInstance> RecreateApplicationInstanceWithFreshCertificateAsync(
+		MachineConfiguration machine,
+		ApplicationConfiguration config,
+		ILogService logService,
+		CancellationToken cancellationToken)
+	{
+		ClearMachineCertificateStores(config.SecurityConfiguration);
+		logService.Log(LogCategory.Server, "Ungültiges Serverzertifikat entfernt; PKI-Speicher zurückgesetzt.", machine.Name);
+
+		ApplicationConfiguration freshConfig = await CreateAsync(machine, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+		ApplicationInstance application = CreateApplicationInstance(freshConfig);
+		if (!await TryCheckApplicationCertificateAsync(application, cancellationToken).ConfigureAwait(continueOnCapturedContext: false))
+		{
+			throw new InvalidOperationException("Anwendungszertifikat für '" + machine.Name + "' konnte nach PKI-Bereinigung nicht erstellt oder geladen werden.");
+		}
+
+		await CompleteCertificateLoadAsync(application, freshConfig, logService, machine.Name, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+		logService.Log(LogCategory.Server, "Serverzertifikat neu erstellt und im PKI-Speicher abgelegt.", machine.Name);
+		return application;
+	}
+
+	private static async Task EnsureCertificateLoadedAsync(
+		ApplicationInstance application,
+		ApplicationConfiguration config,
+		ILogService logService,
+		string machineName,
+		CancellationToken cancellationToken,
+		bool allowRegeneration = true)
+	{
+		if (!await TryCheckApplicationCertificateAsync(application, cancellationToken).ConfigureAwait(continueOnCapturedContext: false))
+		{
+			if (!allowRegeneration)
+			{
+				throw new InvalidOperationException("Anwendungszertifikat für '" + machineName + "' konnte nicht erstellt oder geladen werden.");
+			}
+
+			throw new InvalidOperationException("Anwendungszertifikat für '" + machineName + "' ist ungültig.");
+		}
+
+		await CompleteCertificateLoadAsync(application, config, logService, machineName, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+	}
+
+	private static async Task CompleteCertificateLoadAsync(
+		ApplicationInstance application,
+		ApplicationConfiguration config,
+		ILogService logService,
+		string machineName,
+		CancellationToken cancellationToken)
+	{
+		_ = application;
+		_ = cancellationToken;
+		if (config.CertificateValidator == null)
+		{
+			config.CertificateValidator = new CertificateValidator();
 		}
 		await config.CertificateValidator.UpdateAsync(config.SecurityConfiguration).ConfigureAwait(continueOnCapturedContext: false);
-		X509Certificate2 certificate = await config.SecurityConfiguration.ApplicationCertificate.Find(needPrivateKey: true).ConfigureAwait(continueOnCapturedContext: false);
-		if (certificate == null)
+		X509Certificate2 certificate = await config.SecurityConfiguration.ApplicationCertificate.Find(needPrivateKey: true).ConfigureAwait(continueOnCapturedContext: false)
+			?? throw new InvalidOperationException("Kein gültiges Serverzertifikat für '" + machineName + "' im Zertifikatsspeicher gefunden.");
+		if (!certificate.HasPrivateKey)
 		{
-			throw new InvalidOperationException("Kein gültiges Serverzertifikat für '" + machineName + "' im Zertifikatsspeicher gefunden.");
+			throw new InvalidOperationException("Serverzertifikat für '" + machineName + "' besitzt keinen privaten Schlüssel.");
 		}
+
 		logService.Log(LogCategory.Server, "Serverzertifikat geladen: " + certificate.Subject, machineName);
+	}
+
+	private static async Task<bool> TryCheckApplicationCertificateAsync(ApplicationInstance application, CancellationToken cancellationToken)
+	{
+		try
+		{
+			return await application.CheckApplicationInstanceCertificates(silent: false, 2048, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+		}
+		catch (ServiceResultException ex) when (ShouldRegenerateApplicationCertificate(ex))
+		{
+			return false;
+		}
+		catch (CryptographicException)
+		{
+			return false;
+		}
+	}
+
+	private static ApplicationInstance CreateApplicationInstance(ApplicationConfiguration config) =>
+		new()
+		{
+			ApplicationName = config.ApplicationName,
+			ApplicationType = ApplicationType.Server,
+			ApplicationConfiguration = config
+		};
+
+	private static bool ShouldRegenerateApplicationCertificate(Exception exception)
+	{
+		if (exception is ServiceResultException serviceResultException)
+		{
+			if (serviceResultException.StatusCode == StatusCodes.BadCertificateInvalid
+				|| serviceResultException.StatusCode == StatusCodes.BadCertificateUriInvalid
+				|| serviceResultException.StatusCode == StatusCodes.BadCertificateTimeInvalid)
+			{
+				return true;
+			}
+		}
+
+		return exception.Message.Contains("invalid", StringComparison.OrdinalIgnoreCase)
+			|| exception.Message.Contains("Please update or delete the certificate", StringComparison.OrdinalIgnoreCase);
+	}
+
+	internal static string GetMachinePkiRoot(MachineConfiguration machine) =>
+		Path.Combine(
+			Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+			"Werkflow",
+			"OpcUaSimulator",
+			"pki",
+			machine.Id.ToString("N"),
+			machine.Port.ToString());
+
+	internal static void ClearMachineCertificateStores(SecurityConfiguration securityConfiguration)
+	{
+		ClearCertificateStore(securityConfiguration.ApplicationCertificate.StorePath);
+		ClearCertificateStore(securityConfiguration.TrustedIssuerCertificates?.StorePath);
+		ClearCertificateStore(securityConfiguration.TrustedPeerCertificates?.StorePath);
+		ClearCertificateStore(securityConfiguration.RejectedCertificateStore?.StorePath);
+	}
+
+	private static void ClearCertificateStore(string? storePath)
+	{
+		if (string.IsNullOrWhiteSpace(storePath) || !Directory.Exists(storePath))
+		{
+			return;
+		}
+
+		foreach (string file in Directory.EnumerateFiles(storePath, "*", SearchOption.AllDirectories))
+		{
+			File.Delete(file);
+		}
+
+		foreach (string directory in Directory.EnumerateDirectories(storePath, "*", SearchOption.AllDirectories).OrderByDescending(static path => path.Length))
+		{
+			Directory.Delete(directory, recursive: false);
+		}
 	}
 }

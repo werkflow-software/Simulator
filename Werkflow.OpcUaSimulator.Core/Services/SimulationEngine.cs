@@ -316,7 +316,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			throw new InvalidOperationException(string.Join(Environment.NewLine, validation.Errors));
 		}
 		EnsureRuntimeStates();
-		bool isVirtualMachine = machineId == VirtualMachineContract.MachineId;
+		bool isVirtualMachine = VirtualLaserMachineRegistry.IsVirtualLaserMachine(machineId);
 		CancellationToken loopToken = isVirtualMachine ? EnsureStandaloneEngineReady(cancellationToken) : cancellationToken;
 		await StartMachineInternalAsync(machine, assignJob: isVirtualMachine, loopToken).ConfigureAwait(continueOnCapturedContext: false);
 	}
@@ -354,7 +354,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			return Task.CompletedTask;
 		}
 
-		if (machineId == VirtualMachineContract.MachineId && _physicalCoordinator != null)
+		if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machineId) && _physicalCoordinator != null)
 		{
 			return StartVirtualMachineProductionAsync(machine, runtime, cancellationToken);
 		}
@@ -390,7 +390,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 		MachineRuntimeState runtime = GetRuntime(machineId);
 		runtime.IsProducing = false;
 		SetMachineState(runtime, MachineState.Paused);
-		if (machineId == VirtualMachineContract.MachineId && _physicalCoordinator != null)
+		if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machineId) && _physicalCoordinator != null)
 		{
 			await _physicalCoordinator.PauseProductionAsync(machineId, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
 		}
@@ -404,7 +404,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 	{
 		MachineConfiguration machine = GetMachine(machineId);
 		MachineRuntimeState runtime = GetRuntime(machineId);
-		if (machineId == VirtualMachineContract.MachineId && _physicalCoordinator != null)
+		if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machineId) && _physicalCoordinator != null)
 		{
 			await _physicalCoordinator.ResumeProductionAsync(machineId, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
 		}
@@ -420,7 +420,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 	{
 		MachineConfiguration machine = GetMachine(machineId);
 		MachineRuntimeState runtime = GetRuntime(machineId);
-		if (machineId == VirtualMachineContract.MachineId && _physicalCoordinator != null)
+		if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machineId) && _physicalCoordinator != null)
 		{
 			_physicalCoordinator.StopProduction(machineId);
 			runtime.ActualCounter = 0;
@@ -644,7 +644,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			runtime.AssignedJobId = null;
 		}
 
-		if (machine.Id == VirtualMachineContract.MachineId
+		if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machine.Id)
 			&& _physicalCoordinator != null
 			&& (runtime.IsProducing || runtime.State == MachineState.Running))
 		{
@@ -726,7 +726,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 						lastProductionTick = now;
 					}
 					if (_physicalCoordinator != null
-						&& machine.Id == VirtualMachineContract.MachineId
+						&& VirtualLaserMachineRegistry.IsVirtualLaserMachine(machine.Id)
 						&& runtime.IsProducing
 						&& !runtime.IsJobChangeActive
 						&& CanIncrement(runtime))
@@ -920,7 +920,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 		lock (_sync)
 		{
 			return _state == SimulationState.Running
-				|| (_state == SimulationState.Stopped && runtime.IsServerOnline && machine.Id == VirtualMachineContract.MachineId);
+				|| (_state == SimulationState.Stopped && runtime.IsServerOnline && VirtualLaserMachineRegistry.IsVirtualLaserMachine(machine.Id));
 		}
 	}
 
@@ -960,7 +960,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			runtime.NextTargetQuantityPreview = nextDefinition.TargetQuantity;
 			SetMachineState(runtime, MachineState.Setup);
 			PublishMachine(machine, runtime);
-			if (machine.Id == VirtualMachineContract.MachineId && _physicalCoordinator != null)
+			if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machine.Id) && _physicalCoordinator != null)
 			{
 				_physicalCoordinator.BeginJobChange(machine.Id, pauseSeconds, nextDefinition);
 			}
@@ -1008,7 +1008,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			runtime.IsProducing = true;
 			SetMachineState(runtime, MachineState.Running);
 			PublishMachine(machine, runtime);
-			if (machine.Id == VirtualMachineContract.MachineId && _physicalCoordinator != null)
+			if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machine.Id) && _physicalCoordinator != null)
 			{
 				_ = _physicalCoordinator.ResumeProductionAsync(machine.Id).ConfigureAwait(false);
 			}
@@ -1044,7 +1044,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 		job.AssignedMachineId = machine.Id;
 		job.StartedAt = DateTime.UtcNow;
 		job.ActualCounter = 0;
-		if (machine.Id == VirtualMachineContract.MachineId)
+		if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machine.Id))
 		{
 			runtime.IsProducing = false;
 			SetMachineState(runtime, MachineState.Idle);
@@ -1135,7 +1135,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 
 	private bool ShouldTickProduction(MachineConfiguration machine, MachineRuntimeState runtime)
 	{
-		if (machine.Id == VirtualMachineContract.MachineId)
+		if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machine.Id))
 		{
 			return false;
 		}

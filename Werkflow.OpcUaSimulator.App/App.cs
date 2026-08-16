@@ -56,6 +56,7 @@ public class App : Application
 		{
 			services.AddSingleton<IApplicationSessionContext, ApplicationSessionContext>();
 			services.AddSingleton<ApplicationSessionCoordinator>();
+			services.AddSingleton<IVirtualMachineSessionNavigator>(sp => sp.GetRequiredService<ApplicationSessionCoordinator>());
 			services.AddSingleton<ILogService, LogService>();
 			services.AddSingleton<IJobGenerator, JobGenerator>();
 			services.AddSingleton<IConfigurationService, ConfigurationService>();

@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -149,17 +150,20 @@ public sealed class ConfigurationService : IConfigurationService
 
 	private void ApplyVirtualMachineMachineFilter()
 	{
-		MachineConfiguration? virtualMachine = Configuration.Machines
-			.FirstOrDefault(m => m.Id == VirtualMachineContract.MachineId || m.Port == VirtualMachineContract.Port);
-		if (virtualMachine == null)
-		{
-			virtualMachine = DefaultMachines.Create().First(m => m.Port == VirtualMachineContract.Port);
-		}
+		MachineConfiguration existingLaser = ResolveVirtualMachineMachine(VirtualMachineContract.MachineId, VirtualMachineContract.Port)
+			?? DefaultMachines.Create().First(m => m.Port == VirtualMachineContract.Port);
+		MachineConfiguration vigilLabLaser = ResolveVirtualMachineMachine(VigilLabMachineContract.MachineId, VigilLabMachineContract.Port)
+			?? DefaultMachines.CreateVigilLabMachine();
 
-		virtualMachine.IsActive = true;
-		NormalizeMachine(virtualMachine);
-		Configuration.Machines = new List<MachineConfiguration> { virtualMachine };
+		existingLaser.IsActive = true;
+		vigilLabLaser.IsActive = true;
+		NormalizeMachine(existingLaser);
+		NormalizeMachine(vigilLabLaser);
+		Configuration.Machines = [existingLaser, vigilLabLaser];
 	}
+
+	private MachineConfiguration? ResolveVirtualMachineMachine(Guid machineId, int port) =>
+		Configuration.Machines.FirstOrDefault(m => m.Id == machineId || m.Port == port);
 
 	private static void NormalizeMachine(MachineConfiguration machine)
 	{
@@ -169,6 +173,17 @@ public sealed class ConfigurationService : IConfigurationService
 			machine.Name = VirtualMachineContract.DisplayName;
 			machine.PhysicalProfileId = VirtualMachineContract.PhysicalProfileId;
 			machine.Host = "localhost";
+			machine.UpdateEndpointFromHostPort();
+		}
+		else if (machine.Port == VigilLabMachineContract.Port)
+		{
+			machine.Id = VigilLabMachineContract.MachineId;
+			machine.Name = VigilLabMachineContract.DisplayName;
+			machine.PhysicalProfileId = VigilLabMachineContract.PhysicalProfileId;
+			machine.NamespaceUri = VigilLabMachineContract.NamespaceUri;
+			machine.Host = "localhost";
+			machine.ErrorProbabilityPercent = 0.0;
+			machine.DisconnectProbabilityPercent = 0.0;
 			machine.UpdateEndpointFromHostPort();
 		}
 

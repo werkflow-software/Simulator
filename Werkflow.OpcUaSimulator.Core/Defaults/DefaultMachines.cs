@@ -40,6 +40,32 @@ public static class DefaultMachines
 		return machine;
 	}
 
+	public static MachineConfiguration CreateVigilLabMachine()
+	{
+		MachineConfiguration machine = CreateMachine(
+			5,
+			VigilLabMachineContract.Port,
+			"VIGIL LAB",
+			"VIGIL interner Lernversuch-Laser mit reduziertem OPC-UA-Signalvertrag",
+			1000,
+			0.0,
+			0.0,
+			5000,
+			30000,
+			5000,
+			30000,
+			2.0,
+			MachineState.Idle);
+		machine.Id = VigilLabMachineContract.MachineId;
+		machine.Name = VigilLabMachineContract.DisplayName;
+		machine.PhysicalProfileId = VigilLabMachineContract.PhysicalProfileId;
+		machine.NamespaceUri = VigilLabMachineContract.NamespaceUri;
+		machine.ErrorProbabilityPercent = 0.0;
+		machine.DisconnectProbabilityPercent = 0.0;
+		machine.UpdateEndpointFromHostPort();
+		return machine;
+	}
+
 	private static MachineConfiguration CreateMachine(int index, int port, string profile, string description, int productionIntervalMs, double errorProb, double disconnectProb, int minError, int maxError, int minOffline, int maxOffline, double speedFactor, MachineState baseState, bool startInError = false)
 	{
 		MachineConfiguration machineConfiguration = new MachineConfiguration

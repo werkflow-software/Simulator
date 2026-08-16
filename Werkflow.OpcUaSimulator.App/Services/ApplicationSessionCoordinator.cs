@@ -13,7 +13,7 @@ using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.FaultScenarios.Services;
 
 namespace Werkflow.OpcUaSimulator.App;
 
-public sealed class ApplicationSessionCoordinator
+public sealed class ApplicationSessionCoordinator : IVirtualMachineSessionNavigator
 {
 	private readonly IHost _host;
 	private readonly IApplicationSessionContext _sessionContext;

@@ -45,23 +45,7 @@ internal sealed class MachineOpcUaHost
 
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
-		ApplicationConfiguration config = await OpcUaConfigurationFactory.CreateAsync(_machine, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
-		_application = new ApplicationInstance
-		{
-			ApplicationName = config.ApplicationName,
-			ApplicationType = ApplicationType.Server,
-			ApplicationConfiguration = config
-		};
-		try
-		{
-			await OpcUaConfigurationFactory.EnsureCertificateAsync(_application, _logService, _machine.Name, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
-		}
-		catch (Exception ex)
-		{
-			Exception ex2 = ex;
-			_logService.Log(LogCategory.Server, ex2.Message, _machine.Name);
-			throw;
-		}
+		_application = await OpcUaConfigurationFactory.CreateApplicationInstanceAsync(_machine, _logService, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
 		_server = new SimulatorServer(_machine, Runtime, _logService, _physicalCoordinator);
 		await _application.Start(_server).ConfigureAwait(continueOnCapturedContext: false);
 		if (_server.CurrentInstance?.SessionManager != null)

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
@@ -14,6 +14,7 @@
     <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.5.376.213" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Werkflow.OpcUaSimulator.App\Werkflow.OpcUaSimulator.App.csproj" />
     <ProjectReference Include="..\Werkflow.OpcUaSimulator.Core\Werkflow.OpcUaSimulator.Core.csproj" />
     <ProjectReference Include="..\Werkflow.OpcUaSimulator.OpcUa\Werkflow.OpcUaSimulator.OpcUa.csproj" />
   </ItemGroup>

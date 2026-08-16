@@ -125,37 +125,57 @@ public sealed class VirtualMachineHmiWindow : Window
 		};
 
 		var grid = new Grid();
-		for (int i = 0; i < 7; i++)
+		for (int i = 0; i < 8; i++)
 		{
 			grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 		}
 		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
+		var selector = new ComboBox
+		{
+			MinWidth = 220,
+			VerticalAlignment = VerticalAlignment.Center,
+			Margin = new Thickness(0, 0, 8, 0)
+		};
+		selector.SetBinding(ItemsControl.ItemsSourceProperty, new Binding(nameof(VirtualMachineHmiViewModel.AvailableMachines)));
+		selector.DisplayMemberPath = nameof(VirtualMachineSelectorItem.DisplayName);
+		selector.SelectedValuePath = nameof(VirtualMachineSelectorItem.MachineId);
+		selector.SetBinding(ComboBox.SelectedValueProperty, new Binding(nameof(VirtualMachineHmiViewModel.SelectedMachineId))
+		{
+			Mode = BindingMode.TwoWay
+		});
+		grid.Children.Add(selector);
+
+		var endpoint = MakeBoundBlock(nameof(VirtualMachineHmiViewModel.Endpoint), 11, FontWeights.Normal, "Endpoint: {0}");
+		Grid.SetColumn(endpoint, 1);
+		grid.Children.Add(endpoint);
+
 		var title = MakeHeaderText(_viewModel.MachineTitle, 18, FontWeights.Bold);
+		Grid.SetColumn(title, 2);
 		grid.Children.Add(title);
 
 		var mode = MakeBoundBlock("ModeText", 12, FontWeights.Normal, "Betriebsart: {0}");
-		Grid.SetColumn(mode, 1);
+		Grid.SetColumn(mode, 3);
 		grid.Children.Add(mode);
 
 		var state = MakeBoundBlock("MachineStateText", 13, FontWeights.SemiBold, "Maschine: {0}");
-		Grid.SetColumn(state, 2);
+		Grid.SetColumn(state, 4);
 		grid.Children.Add(state);
 
 		var phase = MakeBoundBlock("ProcessPhaseText", 13, FontWeights.Bold, "Phase: {0}");
-		Grid.SetColumn(phase, 3);
+		Grid.SetColumn(phase, 5);
 		grid.Children.Add(phase);
 
 		var job = MakeBoundBlock("JobName", 12, FontWeights.Normal, "Job: {0}");
-		Grid.SetColumn(job, 4);
+		Grid.SetColumn(job, 6);
 		grid.Children.Add(job);
 
 		var counter = MakeBoundBlock("CounterText", 12, FontWeights.Normal, "Ist/Soll: {0}");
-		Grid.SetColumn(counter, 5);
+		Grid.SetColumn(counter, 7);
 		grid.Children.Add(counter);
 
 		var opc = MakeBoundBlock("OpcUaStatus", 12, FontWeights.SemiBold, "OPC UA: {0}");
-		Grid.SetColumn(opc, 6);
+		Grid.SetColumn(opc, 8);
 		grid.Children.Add(opc);
 
 		var right = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
@@ -163,7 +183,7 @@ public sealed class VirtualMachineHmiWindow : Window
 		right.Children.Add(MakeButton("Vollbild", (_, _) =>
 			WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized));
 		right.Children.Add(MakeButton("Maschine beenden", async (_, _) => await _viewModel.ShutdownMachineCommand.ExecuteAsync(null)));
-		Grid.SetColumn(right, 7);
+		Grid.SetColumn(right, 9);
 		grid.Children.Add(right);
 
 		panel.Child = grid;

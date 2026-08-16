@@ -12,7 +12,7 @@ public static class LaserKinematicsEngine
 {
 	private const double PositionTolerance = 0.5;
 
-	public static bool ShouldEnable(Guid machineId) => machineId == VirtualMachineContract.MachineId;
+	public static bool ShouldEnable(Guid machineId) => VirtualLaserMachineRegistry.IsVirtualLaserMachine(machineId);
 
 	public static void Initialize(PhysicalSimulationContext context, int seed, Guid machineId)
 	{

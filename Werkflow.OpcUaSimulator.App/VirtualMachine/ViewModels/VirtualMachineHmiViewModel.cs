@@ -6,8 +6,8 @@ using System.Windows;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Werkflow.OpcUaSimulator.App;
 using Werkflow.OpcUaSimulator.App.ViewModels;
+using Werkflow.OpcUaSimulator.App.VirtualMachine.Services;
 using Werkflow.OpcUaSimulator.App.VirtualMachine.Models;
 using Werkflow.OpcUaSimulator.App.VirtualMachine.Views;
 using Werkflow.OpcUaSimulator.Core.Defaults;
@@ -31,7 +31,7 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	private readonly IFaultScenarioService _faultScenarioService;
 	private readonly IDialogService _dialogService;
 	private readonly IJobDispatcher _jobDispatcher;
-	private readonly ApplicationSessionCoordinator _sessionCoordinator;
+	private readonly IVirtualMachineSessionNavigator _sessionNavigator;
 	private readonly DispatcherTimer _refreshTimer;
 
 	private MachineConfiguration? _machine;
@@ -39,6 +39,7 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	private FaultScenarioListItem? _selectedFaultScenario;
 	private bool _activated;
 	private int _selectedTabIndex;
+	private Guid _selectedMachineId = VirtualMachineContract.MachineId;
 
 	private string _machineTitle = VirtualMachineContract.DisplayName;
 	private string _machineStateText = "—";
@@ -94,9 +95,33 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	public ObservableCollection<HmiMetricItem> ProductionMetrics { get; } = [];
 	public ObservableCollection<HmiSignalDisplayItem> OtherSignals { get; } = [];
 	public ObservableCollection<FaultScenarioListItem> LaserFaultScenarios { get; } = [];
+	public ObservableCollection<VirtualMachineSelectorItem> AvailableMachines { get; } = [];
 
-	public Guid MachineId => VirtualMachineContract.MachineId;
-	public string Endpoint => VirtualMachineContract.Endpoint;
+	public Guid MachineId => _machine?.Id ?? _selectedMachineId;
+	public string Endpoint => _machine?.Endpoint ?? VirtualMachineContract.Endpoint;
+
+	public Guid SelectedMachineId
+	{
+		get => _selectedMachineId;
+		set
+		{
+			if (_selectedMachineId == value)
+			{
+				return;
+			}
+
+			if (!AvailableMachines.Any(item => item.MachineId == value))
+			{
+				return;
+			}
+
+			_selectedMachineId = value;
+			OnPropertyChanged(nameof(SelectedMachineId));
+			BindSelectedMachine(clearPresentation: true);
+			LoadFaultScenarios();
+			Refresh();
+		}
+	}
 
 	public string MachineTitle => _machineTitle;
 	public string MachineStateText => _machineStateText;
@@ -184,7 +209,7 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		IFaultScenarioService faultScenarioService,
 		IDialogService dialogService,
 		IJobDispatcher jobDispatcher,
-		ApplicationSessionCoordinator sessionCoordinator)
+		IVirtualMachineSessionNavigator sessionNavigator)
 	{
 		_simulationEngine = simulationEngine;
 		_configurationService = configurationService;
@@ -193,7 +218,7 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		_faultScenarioService = faultScenarioService;
 		_dialogService = dialogService;
 		_jobDispatcher = jobDispatcher;
-		_sessionCoordinator = sessionCoordinator;
+		_sessionNavigator = sessionNavigator;
 
 		StartMachineCommand = new AsyncRelayCommand(StartMachineAsync, () => CanStartMachine);
 		StartProductionCommand = new AsyncRelayCommand(StartProductionAsync, CanStartProduction);
@@ -337,16 +362,69 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 
 	private void EnsureMachineBound()
 	{
+		RefreshAvailableMachines();
+		BindSelectedMachine(clearPresentation: false);
+	}
+
+	private void RefreshAvailableMachines()
+	{
+		AvailableMachines.Clear();
+		foreach (MachineConfiguration machine in _configurationService.Configuration.Machines
+			         .Where(m => m.IsActive)
+			         .OrderBy(m => m.Port))
+		{
+			ApplyContractNormalization(machine);
+			AvailableMachines.Add(new VirtualMachineSelectorItem(machine.Id, machine.Name, machine.Endpoint));
+		}
+
+		if (!AvailableMachines.Any(item => item.MachineId == _selectedMachineId))
+		{
+			_selectedMachineId = AvailableMachines.FirstOrDefault()?.MachineId ?? VirtualMachineContract.MachineId;
+			OnPropertyChanged(nameof(SelectedMachineId));
+		}
+	}
+
+	private void BindSelectedMachine(bool clearPresentation)
+	{
+		if (clearPresentation)
+		{
+			ResetSessionBoundPresentation();
+		}
+
 		_machine = _configurationService.Configuration.Machines
-			.FirstOrDefault(m => m.Port == VirtualMachineContract.Port)
+			.FirstOrDefault(m => m.Id == _selectedMachineId)
 			?? _configurationService.Configuration.Machines.FirstOrDefault();
 
-		if (_machine != null && _machine.Port == VirtualMachineContract.Port)
+		if (_machine == null)
 		{
-			_machine.Id = VirtualMachineContract.MachineId;
-			_machine.Name = VirtualMachineContract.DisplayName;
-			_machine.PhysicalProfileId = VirtualMachineContract.PhysicalProfileId;
-			_machine.UpdateEndpointFromHostPort();
+			return;
+		}
+
+		ApplyContractNormalization(_machine);
+		_selectedMachineId = _machine.Id;
+		_machineTitle = _machine.Name;
+		OnPropertyChanged(nameof(MachineTitle));
+		OnPropertyChanged(nameof(MachineId));
+		OnPropertyChanged(nameof(Endpoint));
+		OnPropertyChanged(nameof(SelectedMachineId));
+	}
+
+	private static void ApplyContractNormalization(MachineConfiguration machine)
+	{
+		if (machine.Port == VirtualMachineContract.Port)
+		{
+			machine.Id = VirtualMachineContract.MachineId;
+			machine.Name = VirtualMachineContract.DisplayName;
+			machine.PhysicalProfileId = VirtualMachineContract.PhysicalProfileId;
+			machine.UpdateEndpointFromHostPort();
+		}
+		else if (machine.Port == VigilLabMachineContract.Port)
+		{
+			machine.Id = VigilLabMachineContract.MachineId;
+			machine.Name = VigilLabMachineContract.DisplayName;
+			machine.PhysicalProfileId = VigilLabMachineContract.PhysicalProfileId;
+			machine.NamespaceUri = VigilLabMachineContract.NamespaceUri;
+			machine.UpdateEndpointFromHostPort();
 		}
 	}
 
@@ -360,7 +438,8 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 
 		foreach (var definition in _faultScenarioService.GetCatalog()
 			.Where(s => s.IsEnabled && s.MachineProfileIds.Any(id =>
-				id.Equals(VirtualMachineContract.PhysicalProfileId, StringComparison.OrdinalIgnoreCase)))
+				id.Equals(VirtualMachineContract.PhysicalProfileId, StringComparison.OrdinalIgnoreCase)
+				|| id.Equals(VigilLabMachineContract.PhysicalProfileId, StringComparison.OrdinalIgnoreCase)))
 			.OrderBy(s => s.DisplayName))
 		{
 			LaserFaultScenarios.Add(new FaultScenarioListItem(definition));
@@ -471,7 +550,7 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 
 		await _simulationEngine.PauseProductionAsync(_machine.Id);
 		await _simulationEngine.StopMachineServerAsync(_machine.Id);
-		await _sessionCoordinator.EndSessionAndReturnToSelectorAsync();
+		await _sessionNavigator.EndSessionAndReturnToSelectorAsync();
 	}
 
 	private async Task ChangeJobAsync()
@@ -689,6 +768,7 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		}
 		else
 		{
+			ResetSessionBoundPresentation();
 			RefreshTimeDisplays(null);
 		}
 
@@ -708,6 +788,7 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		CuttingPlan? displayPlan = kinematics.DisplayCuttingPlan ?? kinematics.ActiveCuttingPlan;
 		if (!kinematics.IsEnabled || displayPlan == null)
 		{
+			ClearCuttingPlanPresentation();
 			return;
 		}
 
@@ -1188,5 +1269,81 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		NormalOperationCommand.NotifyCanExecuteChanged();
 		ChangeJobCommand.NotifyCanExecuteChanged();
 		SelectJobCommand.NotifyCanExecuteChanged();
+	}
+
+	private void ResetSessionBoundPresentation()
+	{
+		_loadedPlanId = null;
+
+		_processPhaseText = "—";
+		_processPhaseEnglish = "—";
+		_laserActiveText = "NEIN";
+		_cuttingActiveText = "NEIN";
+		_positioningActiveText = "NEIN";
+		_nextActionText = "—";
+		_pathSpeedText = "—";
+		_xSpeedText = "—";
+		_ySpeedText = "—";
+		_focusText = "—";
+		_statusTone = "idle";
+		_remainingCounterText = "—";
+
+		ResetMetricCollection(OverviewMetrics);
+		ResetMetricCollection(ProcessMetrics);
+		ResetMetricCollection(CoolingMetrics);
+		ResetMetricCollection(PowerMetrics);
+		ResetMetricCollection(VibrationMetrics);
+		ResetMetricCollection(ProductionMetrics);
+
+		AxisPanels.Clear();
+		MotorGroups.Clear();
+		TemperatureTiles.Clear();
+		OtherSignals.Clear();
+		LiveSignalCount = 0;
+
+		ClearCuttingPlanPresentation();
+	}
+
+	private static void ResetMetricCollection(ObservableCollection<HmiMetricItem> metrics)
+	{
+		foreach (HmiMetricItem metric in metrics)
+		{
+			metric.Value = "—";
+		}
+	}
+
+	private void ClearCuttingPlanPresentation()
+	{
+		bool hadGeometry = CuttingPlan.Parts.Count > 0 || _loadedPlanId != null;
+		_loadedPlanId = null;
+		CuttingPlan.PlanId = "—";
+		CuttingPlan.JobId = "—";
+		CuttingPlan.PartName = "—";
+		CuttingPlan.MaterialText = "—";
+		CuttingPlan.ThicknessText = "—";
+		CuttingPlan.PartsOnSheet = 0;
+		CuttingPlan.PartsProcessedOnSheet = 0;
+		CuttingPlan.CurrentSheetPartIndex = 0;
+		CuttingPlan.CurrentContourIndex = 0;
+		CuttingPlan.ContourCountOnPart = 0;
+		CuttingPlan.CurrentPhaseText = "—";
+		CuttingPlan.HeadX = 0;
+		CuttingPlan.HeadY = 0;
+		CuttingPlan.SegmentStartX = 0;
+		CuttingPlan.SegmentStartY = 0;
+		CuttingPlan.ShowRapidLine = false;
+		CuttingPlan.IsPiercing = false;
+		CuttingPlan.NextJobPreview = "—";
+		CuttingPlan.Parts.Clear();
+
+		if (hadGeometry)
+		{
+			CuttingPlanNeedsGeometryReload = true;
+			CuttingPlanNeedsStateRedraw = true;
+			PlanVisualToken++;
+			OnPropertyChanged(nameof(PlanVisualToken));
+			CuttingPlan.NotifyDisplayRefresh();
+			ClearCuttingPlanRefreshFlags();
+		}
 	}
 }
