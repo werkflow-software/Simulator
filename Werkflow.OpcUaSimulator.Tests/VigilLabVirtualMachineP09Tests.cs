@@ -21,8 +21,8 @@ public sealed class VigilLabVirtualMachineP09Tests
 
 		MachineRuntimeState runtime = harness.Runtime;
 		Assert.Equal("JOB-001", runtime.JobName);
-		Assert.Equal(VigilLabRunProfile.Run002Job1Quantity, runtime.TargetCounter);
-		Assert.Equal(VigilLabRunProfile.Run002Job1Quantity, harness.Publisher.GetLatest(harness.VigilLab.Id, NodeSemanticType.TargetCounter));
+		Assert.Equal(VigilLabRunProfile.ActiveJob1Quantity, runtime.TargetCounter);
+		Assert.Equal(VigilLabRunProfile.ActiveJob1Quantity, harness.Publisher.GetLatest(harness.VigilLab.Id, NodeSemanticType.TargetCounter));
 	}
 
 	[Fact]
@@ -32,7 +32,7 @@ public sealed class VigilLabVirtualMachineP09Tests
 		await harness.StartVigilLabAsync();
 
 		Assert.Equal("JOB-001", harness.Runtime.JobName);
-		Assert.Equal(VigilLabRunProfile.Run002Job1Quantity, harness.Runtime.TargetCounter);
+		Assert.Equal(VigilLabRunProfile.ActiveJob1Quantity, harness.Runtime.TargetCounter);
 
 		await harness.Engine.CompleteJobAsync(harness.VigilLab.Id);
 		Assert.True(harness.Runtime.IsJobChangeActive);
@@ -42,10 +42,10 @@ public sealed class VigilLabVirtualMachineP09Tests
 
 		Assert.False(harness.Runtime.IsJobChangeActive);
 		Assert.Equal("JOB-002", harness.Runtime.JobName);
-		Assert.Equal(VigilLabRunProfile.Run002Job2Quantity, harness.Runtime.TargetCounter);
+		Assert.Equal(VigilLabRunProfile.ActiveJob2Quantity, harness.Runtime.TargetCounter);
 		Assert.Equal(0, harness.Runtime.ActualCounter);
 		Assert.Contains("JOB-002", harness.Publisher.GetHistory(harness.VigilLab.Id, NodeSemanticType.JobName).Cast<string>());
-		Assert.Contains(VigilLabRunProfile.Run002Job2Quantity, harness.Publisher.GetHistory(harness.VigilLab.Id, NodeSemanticType.TargetCounter).Cast<int>());
+		Assert.Contains(VigilLabRunProfile.ActiveJob2Quantity, harness.Publisher.GetHistory(harness.VigilLab.Id, NodeSemanticType.TargetCounter).Cast<int>());
 	}
 
 	[Fact]
@@ -82,15 +82,13 @@ public sealed class VigilLabVirtualMachineP09Tests
 		await harness.StartVigilLabAsync();
 
 		int initialJobChanges = harness.Publisher.GetChangeCount(harness.VigilLab.Id, NodeSemanticType.JobName);
-		int initialTargetChanges = harness.Publisher.GetChangeCount(harness.VigilLab.Id, NodeSemanticType.TargetCounter);
 		Assert.True(initialJobChanges >= 1);
-		Assert.True(initialTargetChanges >= 1);
 
 		await harness.Engine.CompleteJobAsync(harness.VigilLab.Id);
 		await harness.AdvanceDueJobChangeAsync();
 
 		Assert.True(harness.Publisher.GetChangeCount(harness.VigilLab.Id, NodeSemanticType.JobName) > initialJobChanges);
-		Assert.True(harness.Publisher.GetChangeCount(harness.VigilLab.Id, NodeSemanticType.TargetCounter) > initialTargetChanges);
+		Assert.Equal(VigilLabRunProfile.ActiveJob2Quantity, harness.Runtime.TargetCounter);
 	}
 
 	[Fact]
@@ -106,7 +104,7 @@ public sealed class VigilLabVirtualMachineP09Tests
 	}
 
 	[Fact]
-	public void P09_Run002ShortProfile_UsesCatalogGeometriesWithReducedQuantities()
+	public void P09_ActiveShortProfile_UsesCatalogGeometriesWithRun004Quantities()
 	{
 		var job1 = VigilLabRunProfile.ResolveJobDefinition(VigilLabMachineContract.MachineId, 0);
 		var job2 = VigilLabRunProfile.ResolveJobDefinition(VigilLabMachineContract.MachineId, 1);
@@ -115,9 +113,9 @@ public sealed class VigilLabVirtualMachineP09Tests
 
 		Assert.Equal(catalog1.PartName, job1.PartName);
 		Assert.Equal(catalog2.PartName, job2.PartName);
-		Assert.Equal(VigilLabRunProfile.Run002Job1Quantity, job1.TargetQuantity);
-		Assert.Equal(VigilLabRunProfile.Run002Job2Quantity, job2.TargetQuantity);
-		Assert.Equal(11, job1.TargetQuantity);
-		Assert.Equal(15, job2.TargetQuantity);
+		Assert.Equal(VigilLabRunProfile.ActiveJob1Quantity, job1.TargetQuantity);
+		Assert.Equal(VigilLabRunProfile.ActiveJob2Quantity, job2.TargetQuantity);
+		Assert.Equal(6, job1.TargetQuantity);
+		Assert.Equal(6, job2.TargetQuantity);
 	}
 }

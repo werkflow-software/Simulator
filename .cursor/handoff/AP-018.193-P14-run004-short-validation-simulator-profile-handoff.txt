@@ -1,0 +1,104 @@
+AP-018.193-P14 — RUN-004 Short Validation Simulator Profile
+================================================================
+
+Repository: C:\WerkFlow\Coding\Simulation
+Branch: feature/physical-learning-simulator
+Simulator Baseline: 4360d434ee31b28e14b8cdb3547b71cdcf1b910f
+VIGIL Baseline (unchanged): f05a7eea62145893d26be727956b34c3685893fc
+Product Owner: Tobias Burkhart
+Date: 2026-08-18
+
+Handoff archive
+---------------
+No prior active root handoff existed in this repository at P14 start.
+New active handoff created directly.
+
+RUN-004 short validation profile (VIGIL LAB only)
+-------------------------------------------------
+Active short profile switched to RUN-004 via existing VigilLabRunProfile mechanism.
+
+JOB-001 / Halter_01 (catalog index 0):
+- TargetQuantity: 6 (Run004Job1Quantity / ActiveJob1Quantity)
+- Expected production duration: ~4.0 min (6 x ~40.5 s/part, evaluator wall clock)
+
+JOB-002 / Flansch_02 (catalog index 1):
+- TargetQuantity: 6 (Run004Job2Quantity / ActiveJob2Quantity)
+- Expected production duration: ~9.8 min (6 x ~97.8 s/part, evaluator wall clock)
+
+Frozen RUN-002 reference constants retained:
+- Run002Job1Quantity = 11
+- Run002Job2Quantity = 15
+
+Job change / setup (JOB-001 -> JOB-002)
+---------------------------------------
+VIGIL LAB only. Existing ScheduleJobChange path unchanged; pause bounds resolved via
+VigilLabRunProfile.ResolveJobChangePauseRange().
+
+Internal simulation pause bounds (RUN-004):
+- MinJobChangePauseSeconds = 60
+- MaxJobChangePauseSeconds = 120
+
+Speed factors (default VIGIL LAB configuration):
+- SimulationSpeedFactor = 1.0 (FixedSimulationCatalog.CreateDefaultSettings)
+- ProductionSpeedFactor = 2.0 (DefaultMachines.CreateVigilLabMachine)
+
+Combined speed factor:
+  max(0.1, SimulationSpeedFactor x ProductionSpeedFactor) = 2.0
+
+Wall-clock formula (existing SimulationEngine):
+  wallMs = pauseSeconds x 1000 / combinedSpeedFactor
+
+Expected wall-clock job-change span:
+- Minimum: 60 / 2.0 = 30 s
+- Maximum: 120 / 2.0 = 60 s
+
+Expected total RUN-004 duration:
+- Production: ~13.8 min
+- Job change: ~30-60 s
+- Total: ~14-16 min (moderate cadence deviation acceptable)
+
+Unchanged by design
+-------------------
+- Single-part geometry, toolpath, axis kinematics
+- Pierce/cut phases, cutting speed, laser power, focus, temperature model
+- Signal update rates
+- OPC-UA signal contract (7 physical + existing machine-state publishing = 13 VIGIL signals)
+- MachineState / counter semantics
+- P09 OPC/job synchronization path
+- Other simulator machines (catalog 50/75, pause 60-300 s)
+- No ground truth over OPC UA
+
+Implementation
+--------------
+- VigilLabRunProfile: RUN-004 quantities, active profile, job-change pause bounds,
+  ResolveJobChangePauseRange(), ResolveExpectedJobChangeWallClock()
+- SimulationEngine.ScheduleJobChange: machine-specific pause range via VigilLabRunProfile
+- P09 tests updated for active RUN-004 quantities
+- New VigilLabVirtualMachineP14Tests (11 tests)
+
+Tests
+-----
+VigilLabVirtualMachineP09 + P14 targeted: 17/17 PASS
+Build Werkflow.OpcUaSimulator.sln -c Release: 0 Errors
+
+VIGIL repository
+----------------
+Not modified. Baseline remains f05a7eea62145893d26be727956b34c3685893fc.
+
+RUN integrity
+-------------
+RUN-001/002/003 frozen evidence unchanged.
+RUN-004 NOT started (no harness, no preflight, no production, no live samples).
+
+FuE
+---
+2026-08-18;22:38;22:48;AP-018.193-P14;RUN-004 Short-Validation-Simulatorprofil mit reduzierten Jobmengen und verkürzter VIGIL-LAB-Jobwechselzeit;00:10;JOB-001/002 je 6 Teile, Jobwechsel 30-60 s wall-clock, Tests 17/17 PASS, Build 0 Errors
+
+Git: no commit, no push.
+
+Open points
+-----------
+- VIGIL harness Run004Profile registration remains separate AP (not in P14 scope)
+- Realistic long-run side processes (table change, referencing, nozzle cleaning, etc.) explicitly deferred
+
+PO Gate: bereit JA (simulator profile ready; RUN-004 execution gate remains separate)

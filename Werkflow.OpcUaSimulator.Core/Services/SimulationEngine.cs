@@ -945,10 +945,11 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			}
 
 			FixedProductionJobDefinition nextDefinition = ResolveJobDefinition(machine.Id, nextCatalogIndex);
+			VigilLabRunProfile.ResolveJobChangePauseRange(machine.Id, out int minPauseSeconds, out int maxPauseSeconds);
 			int pauseSeconds = SimulationRandom.NextInRange(
 				_random,
-				FixedSimulationCatalog.MinJobChangePauseSeconds,
-				FixedSimulationCatalog.MaxJobChangePauseSeconds);
+				minPauseSeconds,
+				maxPauseSeconds);
 			double speedFactor = Math.Max(0.1, _configurationService.Configuration.Settings.SimulationSpeedFactor * machine.ProductionSpeedFactor);
 			int wallMs = (int)(pauseSeconds * 1000.0 / speedFactor);
 
