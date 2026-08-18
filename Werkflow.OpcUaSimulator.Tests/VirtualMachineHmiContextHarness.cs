@@ -37,6 +37,25 @@ internal static class VirtualMachineHmiContextHarness
 			new HmiTestSessionNavigator());
 	}
 
+	public static VirtualMachineHmiViewModel CreateViewModel(
+		FaultScenarioTestStack stack,
+		IReadOnlyList<MachineConfiguration> machines,
+		ISimulationEngine simulationEngine,
+		IMachineServerService? serverService = null)
+	{
+		var configuration = new HmiTestConfigurationService(machines);
+		IMachineServerService server = serverService ?? new MachineServerService(new TestLogService(), stack.Coordinator);
+		return new VirtualMachineHmiViewModel(
+			simulationEngine,
+			configuration,
+			stack.Coordinator,
+			server,
+			stack.FaultScenarioService,
+			new HmiTestDialogService(),
+			new HmiTestJobDispatcher(),
+			new HmiTestSessionNavigator());
+	}
+
 	public static void SetAxisPosition(PhysicalMachineSession session, string axisKey, double position)
 	{
 		string signalId = axisKey + ".Position";

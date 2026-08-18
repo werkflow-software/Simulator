@@ -29,6 +29,21 @@ public static class FixedSimulationCatalog
 		return Definitions[catalogIndex];
 	}
 
+	public static FixedProductionJobDefinition WithTargetQuantity(
+		FixedProductionJobDefinition definition,
+		int targetQuantity) =>
+		new()
+		{
+			CatalogIndex = definition.CatalogIndex,
+			JobName = definition.JobName,
+			PartName = definition.PartName,
+			TargetQuantity = targetQuantity,
+			MaterialName = definition.MaterialName,
+			MaterialThicknessMm = definition.MaterialThicknessMm,
+			RecipeName = definition.RecipeName,
+			ProgramName = definition.ProgramName
+		};
+
 	public static int GetNextCatalogIndex(int currentCatalogIndex) => (currentCatalogIndex + 1) % JobCount;
 
 	public static List<SimulationJob> CreateJobs()

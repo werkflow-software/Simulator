@@ -55,6 +55,8 @@ public class MachineRuntimeState
 
 	public int NextTargetQuantityPreview { get; set; }
 
+	public int PendingNextJobCatalogIndex { get; set; } = -1;
+
 	public DateTime? SimulationStartedAt { get; set; }
 
 	public Dictionary<NodeSemanticType, object?> LiveNodeValues { get; set; } = new Dictionary<NodeSemanticType, object>();
@@ -90,6 +92,7 @@ public class MachineRuntimeState
 			NextJobNamePreview = NextJobNamePreview,
 			NextPartNamePreview = NextPartNamePreview,
 			NextTargetQuantityPreview = NextTargetQuantityPreview,
+			PendingNextJobCatalogIndex = PendingNextJobCatalogIndex,
 			SimulationStartedAt = SimulationStartedAt,
 			LiveNodeValues = new Dictionary<NodeSemanticType, object>(LiveNodeValues)
 		};
