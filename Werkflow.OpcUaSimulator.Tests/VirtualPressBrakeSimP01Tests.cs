@@ -93,8 +93,13 @@ public class PressBrakeKinematicsPlausibilityTests
 			MachineId = VirtualPressBrakeContract.MachineId,
 			MachineName = VirtualPressBrakeContract.DisplayName,
 			Profile = profile,
-			Runtime = new PhysicalMachineRuntimeFactory().Create(profile, null)
+			Runtime = new PhysicalMachineRuntimeFactory().Create(profile, null),
+			PressBrakeGroundTruth = new PressBrakeGroundTruthRecorder()
 		};
+		((PressBrakeGroundTruthRecorder)session.PressBrakeGroundTruth!).BeginSession(
+			VirtualPressBrakeContract.MachineId,
+			seed,
+			Path.Combine(Path.GetTempPath(), $"pb-gt-tick-{Guid.NewGuid():N}.jsonl"));
 		session.Simulation.TimeFactor = 20.0;
 		session.Simulation.Job.TargetQuantity = 6;
 		engine.Initialize(session, seed);

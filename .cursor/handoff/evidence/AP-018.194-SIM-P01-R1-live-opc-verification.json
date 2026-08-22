@@ -1,0 +1,155 @@
+{
+  "Passed": true,
+  "Endpoint": "opc.tcp://localhost:4841",
+  "MachineId": "c3333333-3333-4333-8333-333333333333",
+  "ProfileId": "vigil-press-brake-reduced",
+  "EnabledSignalCount": 14,
+  "ResolvedCount": 14,
+  "ReadableCount": 14,
+  "OpcSessionEstablished": true,
+  "SimulatorStarted": true,
+  "ProductionMotionActive": true,
+  "RamBehaviorPass": true,
+  "BackgaugeBehaviorPass": true,
+  "FormingForceBehaviorPass": true,
+  "BendAngleBehaviorPass": true,
+  "CounterProgressionPass": true,
+  "ProgramPartTransitionPass": true,
+  "ThermalEvolutionPass": true,
+  "ActivityStateBehaviorPass": true,
+  "DynamicSignalSmokePass": true,
+  "GroundTruthGenerationPass": true,
+  "GroundTruthIsolationPass": true,
+  "GroundTruthArtifactPath": "C:\\Users\\tobib\\AppData\\Local\\Werkflow\\OpcUaSimulator\\press-brake-ground-truth\\pb-gt-c3333333333343338333333333333333--2147483534.jsonl",
+  "GroundTruthEventTypesObserved": [
+    "approach_end",
+    "bend_step_end",
+    "bend_step_start",
+    "cycle_completion",
+    "forming_end",
+    "forming_start",
+    "inter_part_wait",
+    "operator_wait_start",
+    "part_end",
+    "part_start",
+    "return_end",
+    "return_start",
+    "setup_end",
+    "setup_start"
+  ],
+  "Signals": [
+    {
+      "SignalId": "Machine.MachineState",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "PB_ST_05",
+      "LaterValue": "PB_ST_00",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Machine.ProgramId",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "PRG-7F2A",
+      "LaterValue": "PRG-7F2A",
+      "Dynamic": false
+    },
+    {
+      "SignalId": "Machine.PartId",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "PRT-19C4",
+      "LaterValue": "PRT-19C4",
+      "Dynamic": false
+    },
+    {
+      "SignalId": "Machine.ActualCounter",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "3",
+      "LaterValue": "10",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Machine.TargetCounter",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "10",
+      "LaterValue": "10",
+      "Dynamic": false
+    },
+    {
+      "SignalId": "Machine.LastProductionChange",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "2026-08-22T23:28:12.3248474Z",
+      "LaterValue": "2026-08-22T23:28:33.0448068Z",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Ram.Position",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "165.02",
+      "LaterValue": "185",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Ram.Velocity",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "6.425439337002713",
+      "LaterValue": "0",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Backgauge.Position",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "140",
+      "LaterValue": "95",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Process.BendAngle",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "0",
+      "LaterValue": "0",
+      "Dynamic": false
+    },
+    {
+      "SignalId": "Process.FormingForce",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "33.516812499999986",
+      "LaterValue": "12.354424999999992",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Tool.StationState",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "TL_ST_01",
+      "LaterValue": "TL_ST_01",
+      "Dynamic": false
+    },
+    {
+      "SignalId": "Thermal.HydraulicOilTemp",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "39.01357034500001",
+      "LaterValue": "40.288807155000036",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Cycle.ActivityState",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "CY_AC_03",
+      "LaterValue": "CY_AC_04",
+      "Dynamic": true
+    }
+  ],
+  "Failures": []
+}

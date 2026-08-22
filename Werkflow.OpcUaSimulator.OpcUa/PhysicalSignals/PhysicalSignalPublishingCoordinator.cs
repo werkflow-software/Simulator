@@ -9,6 +9,7 @@ using Werkflow.OpcUaSimulator.Core.Defaults;
 using Werkflow.OpcUaSimulator.Core.Interfaces;
 using Werkflow.OpcUaSimulator.Core.Models;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.FaultScenarios.Services;
+using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Evaluation.GroundTruth;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Kinematics;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Services;
@@ -99,6 +100,13 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 				physicalMachineSession.Simulation.TimeFactor = PhysicalVerificationSettings.ShortModeTimeFactor;
 			}
 			_runtimeCoordinator.EnsureEngine(physicalMachineSession, seed);
+			if (VirtualPressBrakeMachineRegistry.IsVirtualPressBrakeMachine(machine.Id))
+			{
+				var recorder = new PressBrakeGroundTruthRecorder();
+				recorder.BeginSession(machine.Id, seed);
+				physicalMachineSession.PressBrakeGroundTruth = recorder;
+			}
+
 			MachineContext value = new MachineContext
 			{
 				Session = physicalMachineSession,

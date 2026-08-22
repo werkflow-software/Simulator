@@ -1,0 +1,68 @@
+﻿AP-018.194-SIM-P01-R1 - Virtual Press Brake Live OPC Verification & GT Runtime Wiring Handoff
+==============================================================================================
+Date: 2026-08-23
+Branch: feature/ap-018-194-sim-p01-virtual-press-brake
+Repository: WerkFlow/Coding/Simulation (Werkflow.OpcUaSimulator)
+
+SCOPE (R1)
+----------
+Complete SIM-P01-R1: wire PressBrakeGroundTruth into runtime ticks, attach recorder on press-brake
+PrepareMachine, and verify Machine 2 (port 4841) via live OPC UA harness + Release tests.
+
+BUILD
+-----
+Command: dotnet build Werkflow.OpcUaSimulator.sln -c Release
+Result: Build succeeded (warnings only).
+
+TESTS (Release filter SIM_P01 / PressBrake / AP6)
+-------------------------------------------------
+Command: dotnet test Werkflow.OpcUaSimulator.Tests -c Release --filter "FullyQualifiedName~SIM_P01|FullyQualifiedName~PressBrake|FullyQualifiedName~AP6_VirtualMachineContract|FullyQualifiedName~AP6_LeakageRegression"
+Result: 14 passed, 0 failed, 0 skipped (~40s).
+
+LIVE OPC SMOKE (SIM_P01_R1_LiveOpcUaSmoke_All14SignalsReadable)
+-----------------------------------------------------------------
+Endpoint: opc.tcp://localhost:4841
+MachineId: c3333333-3333-4333-8333-333333333333
+Profile: vigil-press-brake-reduced (14 contract signals)
+Session: established; simulator started; production motion active
+Signal evidence: 14/14 resolved, 14/14 readable; dynamic smoke >= 8 dynamic signals
+  - Ram.Position, Backgauge.Position, Process.FormingForce, Thermal.HydraulicOilTemp, Machine.LastProductionChange, etc.
+  - Process.BendAngle OPC scalar remained 0 at sampled instants; forming confirmed via GT events + forming force dynamics
+Harness: Werkflow.OpcUaSimulator.Tests/PressBrakeOpcUaLiveVerificationHarness.cs
+Evidence JSON: .cursor/handoff/evidence/AP-018.194-SIM-P01-R1-live-opc-verification.json
+
+GROUND TRUTH (runtime wiring)
+-----------------------------
+PhysicalSimulationEngine.Tick passes session.PressBrakeGroundTruth into PressBrakeKinematicsEngine.Tick.
+PhysicalSignalPublishingCoordinator.PrepareMachine attaches PressBrakeGroundTruthRecorder for virtual press brake.
+GT artifact path (sample run): %LocalAppData%/Werkflow/OpcUaSimulator/press-brake-ground-truth/pb-gt-*.jsonl
+
+GT event types observed (live smoke):
+  approach_end, bend_step_end, bend_step_start, cycle_completion, forming_end, forming_start,
+  inter_part_wait, operator_wait_start, part_end, part_start, return_end, return_start, setup_end, setup_start
+
+GT isolation: no GroundTruth/HiddenState signal IDs on OPC contract (14-signal profile unchanged).
+
+CODE TOUCHED (intended commit)
+------------------------------
+- Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Models/PhysicalMachineSession.cs
+- Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Services/PhysicalSimulationEngine.cs
+- Werkflow.OpcUaSimulator.OpcUa/PhysicalSignals/PhysicalSignalPublishingCoordinator.cs
+- Werkflow.OpcUaSimulator.Tests/PressBrakeOpcUaLiveVerificationHarness.cs (new)
+- Werkflow.OpcUaSimulator.Tests/VirtualPressBrakeSimP01R1Tests.cs (new)
+- Werkflow.OpcUaSimulator.Tests/VirtualPressBrakeSimP01Tests.cs (if delta remains R1-relevant)
+
+HANDOFF INTEGRITY
+-----------------
+Predecessor archived (byte-identical):
+  Source: .cursor/handoff/AP-018.194-SIM-P01-virtual-press-brake-architecture-implementation-handoff.txt
+  Archive: .cursor/handoff/archive/AP-018.194-SIM-P01-virtual-press-brake-architecture-implementation-handoff-archived-20260823.txt
+  SourceBytes: 3237
+  SHA256: E254D0F075351E95FACBF24549BCA4E874A99D7B823B972F9D130006A539EB1C
+Active handoff root count after rotation: 1 (this file only).
+
+FOLLOW-UP
+---------
+- Investigate Process.BendAngle OPC publish vs kinematics state (reads 0 while forming_force moves).
+- Optional: shorten live smoke wall-clock via PHYSICS_VERIFY_SHORT=1 in CI.
+

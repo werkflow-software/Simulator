@@ -1,4 +1,5 @@
 using System;
+using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Evaluation.GroundTruth;
 
 namespace Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 
@@ -15,6 +16,8 @@ public sealed class PhysicalMachineSession
 	public PhysicalPublisherMetrics Metrics { get; } = new PhysicalPublisherMetrics();
 
 	public PhysicalSimulationContext Simulation { get; } = new PhysicalSimulationContext();
+
+	public IPressBrakeGroundTruthRecorder? PressBrakeGroundTruth { get; set; }
 
 	public int OpcUaNodeCount { get; set; }
 
