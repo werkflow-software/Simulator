@@ -1,0 +1,61 @@
+﻿AP-018.194-SIM-P01 — Virtual Press Brake Architecture Implementation Handoff
+================================================================================
+Date: 2026-08-23
+Branch: feature/ap-018-194-sim-p01-virtual-press-brake
+Repository: WerkFlow/Coding/Simulation (Werkflow.OpcUaSimulator)
+
+SCOPE
+-----
+SIM-P01 delivers Machine 2 (Virtual Press Brake) for VIGIL cross-machine generalization validation:
+separate OPC UA contract (port 4841), reduced 14-signal physical profile, dedicated kinematics engine,
+ground-truth recorder, and registry integration alongside the existing virtual laser (port 4840).
+
+CONTRACT & REGISTRY
+-------------------
+- VirtualPressBrakeContract: MachineId c3333333-..., port 4841, profile vigil-press-brake-reduced.
+- VirtualPressBrakeMachineRegistry / VirtualKinematicsMachineRegistry: route session factory and HMI by machine type.
+- DefaultMachines: second default machine entry wired to press-brake contract and profile.
+
+PHYSICAL PROFILE (14 enabled signals)
+-------------------------------------
+- VigilPressBrakeReducedProfileFactory: Machine/Ram/Backgauge/Process/Tool/Thermal/Cycle signals.
+- No GroundTruth or HiddenState signal IDs exposed on OPC contract.
+- Structural independence from laser reduced profile (disjoint enabled signal ID sets).
+
+KINEMATICS & SIMULATION
+-----------------------
+- PressBrakeKinematicsEngine + state/phase/program catalog: deterministic ram/backgauge motion, forming force,
+  bend angle, hydraulic oil temperature drift, production counters, program/part rotation.
+- PhysicalSimulationContext extended with PressBrake state; PhysicalSimulationEngine invokes press-brake tick path.
+- SignalCalculationEngine / HiddenProcessStateEngine: press-brake aware hidden load states.
+- SimulationEngine + ConfigurationService: machine-type dispatch for virtual press brake vs laser.
+
+GROUND TRUTH (offline evaluation)
+-----------------------------------
+- IPressBrakeGroundTruthRecorder, PressBrakeGroundTruthRecorder, PressBrakeGroundTruthEvent: JSONL bend-step
+  events (bend_step_start) without leaking GroundTruth into OPC signal namespace.
+
+OPC UA / HMI
+------------
+- PhysicalSignalPublishingCoordinator: publish path respects virtual press-brake machine registry.
+- VirtualMachineHmiViewModel: kinematics registry hooks for press-brake HMI when Machine 2 selected.
+
+TESTS (Release filter SIM_P01 / PressBrake / AP6)
+-------------------------------------------------
+- VirtualPressBrakeSimP01Tests.cs: contract, 14-signal profile, kinematics plausibility, determinism,
+  ground-truth hygiene, structural independence from laser.
+- Command: dotnet test Werkflow.OpcUaSimulator.Tests -c Release --filter FullyQualifiedName~SIM_P01|...
+- Result after fresh build: 11 passed, 0 failed, 0 skipped.
+
+NOT IN THIS COMMIT (left unstaged)
+----------------------------------
+- scratch/, _api_probe*, tmp_diag.csx, unrelated handoff/ verification artifact churn, AP-06 report edits.
+
+FOLLOW-UP
+---------
+- End-to-end OPC UA smoke on port 4841 with VIGIL ingestion.
+- Align HMI visuals with press-brake motion phases if not already covered in AP-06 track.
+
+INTEGRITY
+---------
+Prior active handoff AP-018.193-P14 archived under .cursor/handoff/archive/ with integrity note.

@@ -29,7 +29,7 @@ public sealed class SignalCalculationEngine : ISignalCalculationEngine
 			{
 				continue;
 			}
-			if (context.Kinematics.ControlsSignal(item.SignalId))
+			if (context.Kinematics.ControlsSignal(item.SignalId) || context.PressBrake.ControlsSignal(item.SignalId))
 			{
 				continue;
 			}

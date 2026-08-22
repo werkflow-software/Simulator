@@ -154,12 +154,16 @@ public sealed class ConfigurationService : IConfigurationService
 			?? DefaultMachines.Create().First(m => m.Port == VirtualMachineContract.Port);
 		MachineConfiguration vigilLabLaser = ResolveVirtualMachineMachine(VigilLabMachineContract.MachineId, VigilLabMachineContract.Port)
 			?? DefaultMachines.CreateVigilLabMachine();
+		MachineConfiguration pressBrake = ResolveVirtualMachineMachine(VirtualPressBrakeContract.MachineId, VirtualPressBrakeContract.Port)
+			?? DefaultMachines.Create().First(m => m.Port == VirtualPressBrakeContract.Port);
 
 		existingLaser.IsActive = true;
 		vigilLabLaser.IsActive = true;
+		pressBrake.IsActive = true;
 		NormalizeMachine(existingLaser);
 		NormalizeMachine(vigilLabLaser);
-		Configuration.Machines = [existingLaser, vigilLabLaser];
+		NormalizeMachine(pressBrake);
+		Configuration.Machines = [existingLaser, pressBrake, vigilLabLaser];
 	}
 
 	private MachineConfiguration? ResolveVirtualMachineMachine(Guid machineId, int port) =>
@@ -181,6 +185,17 @@ public sealed class ConfigurationService : IConfigurationService
 			machine.Name = VigilLabMachineContract.DisplayName;
 			machine.PhysicalProfileId = VigilLabMachineContract.PhysicalProfileId;
 			machine.NamespaceUri = VigilLabMachineContract.NamespaceUri;
+			machine.Host = "localhost";
+			machine.ErrorProbabilityPercent = 0.0;
+			machine.DisconnectProbabilityPercent = 0.0;
+			machine.UpdateEndpointFromHostPort();
+		}
+		else if (machine.Port == VirtualPressBrakeContract.Port || machine.Id == VirtualPressBrakeContract.MachineId)
+		{
+			machine.Id = VirtualPressBrakeContract.MachineId;
+			machine.Name = VirtualPressBrakeContract.DisplayName;
+			machine.PhysicalProfileId = VirtualPressBrakeContract.PhysicalProfileId;
+			machine.NamespaceUri = VirtualPressBrakeContract.NamespaceUri;
 			machine.Host = "localhost";
 			machine.ErrorProbabilityPercent = 0.0;
 			machine.DisconnectProbabilityPercent = 0.0;

@@ -102,3 +102,9 @@ Open points
 - Realistic long-run side processes (table change, referencing, nozzle cleaning, etc.) explicitly deferred
 
 PO Gate: bereit JA (simulator profile ready; RUN-004 execution gate remains separate)
+
+--- INTEGRITY NOTE ---
+Archived: 2026-08-23T00:58:36.1177540+02:00
+Reason: Superseded by AP-018.194 SIM-P01 virtual press brake handoff
+Previous active handoff preserved with timestamp suffix.
+

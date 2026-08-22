@@ -418,6 +418,14 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 			machine.PhysicalProfileId = VirtualMachineContract.PhysicalProfileId;
 			machine.UpdateEndpointFromHostPort();
 		}
+		else if (machine.Port == VirtualPressBrakeContract.Port || machine.Id == VirtualPressBrakeContract.MachineId)
+		{
+			machine.Id = VirtualPressBrakeContract.MachineId;
+			machine.Name = VirtualPressBrakeContract.DisplayName;
+			machine.PhysicalProfileId = VirtualPressBrakeContract.PhysicalProfileId;
+			machine.NamespaceUri = VirtualPressBrakeContract.NamespaceUri;
+			machine.UpdateEndpointFromHostPort();
+		}
 		else if (machine.Port == VigilLabMachineContract.Port)
 		{
 			machine.Id = VigilLabMachineContract.MachineId;
@@ -872,32 +880,48 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 
 	private void RefreshProcessMotionState(PhysicalMachineSession session)
 	{
-		LaserKinematicsState kinematics = session.Simulation.Kinematics;
-		if (kinematics.IsEnabled)
+		PressBrakeKinematicsState pressBrake = session.Simulation.PressBrake;
+		if (pressBrake.IsEnabled)
 		{
-			_processPhaseText = LaserMotionPhaseLabels.ToGerman(kinematics.MotionPhase);
-			_processPhaseEnglish = LaserMotionPhaseLabels.ToEnglish(kinematics.MotionPhase);
-			bool laser = kinematics.MotionPhase is LaserMotionPhase.Piercing or LaserMotionPhase.Cutting;
-			bool cutting = kinematics.MotionPhase == LaserMotionPhase.Cutting;
-			bool positioning = kinematics.MotionPhase is LaserMotionPhase.RapidPositioning
-				or LaserMotionPhase.Repositioning or LaserMotionPhase.JobChange;
-			_laserActiveText = laser ? "JA" : "NEIN";
-			_cuttingActiveText = cutting ? "JA" : "NEIN";
-			_positioningActiveText = positioning ? "JA" : "NEIN";
-			_nextActionText = kinematics.NextActionHint;
-			_pathSpeedText = $"{kinematics.PathSpeedMmPerS:0} mm/s";
-			_statusTone = ResolveStatusTone(kinematics.MotionPhase, _errorActive);
+			_processPhaseText = pressBrake.MotionPhase.ToString();
+			_processPhaseEnglish = pressBrake.MotionPhase.ToString();
+			_laserActiveText = "NEIN";
+			_cuttingActiveText = pressBrake.MotionPhase is PressBrakeMotionPhase.Forming or PressBrakeMotionPhase.Hold ? "JA" : "NEIN";
+			_positioningActiveText = pressBrake.MotionPhase is PressBrakeMotionPhase.RamApproach or PressBrakeMotionPhase.BackgaugeMove ? "JA" : "NEIN";
+			_nextActionText = pressBrake.NextActionHint;
+			_pathSpeedText = $"{Math.Abs(pressBrake.RamVelocityMmPerS):0.#} mm/s";
+			_focusText = $"{pressBrake.BendAngleDeg:0.#}°";
+			_statusTone = _errorActive ? "error" : pressBrake.MotionPhase == PressBrakeMotionPhase.Forming ? "cutting" : "running";
 		}
 		else
 		{
-			_processPhaseText = session.Simulation.CurrentPhase.ToString();
-			_processPhaseEnglish = session.Simulation.CurrentPhase.ToString();
-			_laserActiveText = "NEIN";
-			_cuttingActiveText = "NEIN";
-			_positioningActiveText = "NEIN";
-			_nextActionText = "—";
-			_pathSpeedText = "—";
-			_statusTone = _errorActive ? "error" : "idle";
+			LaserKinematicsState kinematics = session.Simulation.Kinematics;
+			if (kinematics.IsEnabled)
+			{
+				_processPhaseText = LaserMotionPhaseLabels.ToGerman(kinematics.MotionPhase);
+				_processPhaseEnglish = LaserMotionPhaseLabels.ToEnglish(kinematics.MotionPhase);
+				bool laser = kinematics.MotionPhase is LaserMotionPhase.Piercing or LaserMotionPhase.Cutting;
+				bool cutting = kinematics.MotionPhase == LaserMotionPhase.Cutting;
+				bool positioning = kinematics.MotionPhase is LaserMotionPhase.RapidPositioning
+					or LaserMotionPhase.Repositioning or LaserMotionPhase.JobChange;
+				_laserActiveText = laser ? "JA" : "NEIN";
+				_cuttingActiveText = cutting ? "JA" : "NEIN";
+				_positioningActiveText = positioning ? "JA" : "NEIN";
+				_nextActionText = kinematics.NextActionHint;
+				_pathSpeedText = $"{kinematics.PathSpeedMmPerS:0} mm/s";
+				_statusTone = ResolveStatusTone(kinematics.MotionPhase, _errorActive);
+			}
+			else
+			{
+				_processPhaseText = session.Simulation.CurrentPhase.ToString();
+				_processPhaseEnglish = session.Simulation.CurrentPhase.ToString();
+				_laserActiveText = "NEIN";
+				_cuttingActiveText = "NEIN";
+				_positioningActiveText = "NEIN";
+				_nextActionText = "—";
+				_pathSpeedText = "—";
+				_statusTone = _errorActive ? "error" : "idle";
+			}
 		}
 
 		if (_runtime != null)

@@ -354,7 +354,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			return Task.CompletedTask;
 		}
 
-		if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machineId) && _physicalCoordinator != null)
+		if (VirtualKinematicsMachineRegistry.IsKinematicsDrivenMachine(machineId) && _physicalCoordinator != null)
 		{
 			return StartVirtualMachineProductionAsync(machine, runtime, cancellationToken);
 		}
@@ -390,7 +390,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 		MachineRuntimeState runtime = GetRuntime(machineId);
 		runtime.IsProducing = false;
 		SetMachineState(runtime, MachineState.Paused);
-		if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machineId) && _physicalCoordinator != null)
+		if (VirtualKinematicsMachineRegistry.IsKinematicsDrivenMachine(machineId) && _physicalCoordinator != null)
 		{
 			await _physicalCoordinator.PauseProductionAsync(machineId, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
 		}
@@ -404,7 +404,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 	{
 		MachineConfiguration machine = GetMachine(machineId);
 		MachineRuntimeState runtime = GetRuntime(machineId);
-		if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machineId) && _physicalCoordinator != null)
+		if (VirtualKinematicsMachineRegistry.IsKinematicsDrivenMachine(machineId) && _physicalCoordinator != null)
 		{
 			await _physicalCoordinator.ResumeProductionAsync(machineId, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
 		}
@@ -420,7 +420,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 	{
 		MachineConfiguration machine = GetMachine(machineId);
 		MachineRuntimeState runtime = GetRuntime(machineId);
-		if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machineId) && _physicalCoordinator != null)
+		if (VirtualKinematicsMachineRegistry.IsKinematicsDrivenMachine(machineId) && _physicalCoordinator != null)
 		{
 			_physicalCoordinator.StopProduction(machineId);
 			runtime.ActualCounter = 0;
@@ -644,7 +644,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			runtime.AssignedJobId = null;
 		}
 
-		if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machine.Id)
+		if (VirtualKinematicsMachineRegistry.IsKinematicsDrivenMachine(machine.Id)
 			&& _physicalCoordinator != null
 			&& (runtime.IsProducing || runtime.State == MachineState.Running))
 		{
@@ -726,7 +726,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 						lastProductionTick = now;
 					}
 					if (_physicalCoordinator != null
-						&& VirtualLaserMachineRegistry.IsVirtualLaserMachine(machine.Id)
+						&& VirtualKinematicsMachineRegistry.IsKinematicsDrivenMachine(machine.Id)
 						&& runtime.IsProducing
 						&& !runtime.IsJobChangeActive
 						&& CanIncrement(runtime))
@@ -921,7 +921,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 		lock (_sync)
 		{
 			return _state == SimulationState.Running
-				|| (_state == SimulationState.Stopped && runtime.IsServerOnline && VirtualLaserMachineRegistry.IsVirtualLaserMachine(machine.Id));
+				|| (_state == SimulationState.Stopped && runtime.IsServerOnline && VirtualKinematicsMachineRegistry.IsKinematicsDrivenMachine(machine.Id));
 		}
 	}
 
@@ -963,7 +963,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			runtime.NextTargetQuantityPreview = nextDefinition.TargetQuantity;
 			SetMachineState(runtime, MachineState.Setup);
 			PublishMachine(machine, runtime);
-			if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machine.Id) && _physicalCoordinator != null)
+			if (VirtualKinematicsMachineRegistry.IsKinematicsDrivenMachine(machine.Id) && _physicalCoordinator != null)
 			{
 				_physicalCoordinator.BeginJobChange(machine.Id, pauseSeconds, nextDefinition);
 			}
@@ -1013,7 +1013,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			runtime.IsProducing = true;
 			SetMachineState(runtime, MachineState.Running);
 			PublishMachine(machine, runtime);
-			if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machine.Id) && _physicalCoordinator != null)
+			if (VirtualKinematicsMachineRegistry.IsKinematicsDrivenMachine(machine.Id) && _physicalCoordinator != null)
 			{
 				_ = _physicalCoordinator.ResumeProductionAsync(machine.Id).ConfigureAwait(false);
 			}
@@ -1032,9 +1032,6 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			ApplyJobToRuntime(machine, runtime, job, ResolveJobDefinition(machine.Id, catalogIndex));
 		}
 	}
-
-	private static FixedProductionJobDefinition ResolveJobDefinition(Guid machineId, int catalogIndex) =>
-		VigilLabRunProfile.ResolveJobDefinition(machineId, catalogIndex);
 
 	private void TryCompleteDueJobChange(MachineConfiguration machine, MachineRuntimeState runtime)
 	{
@@ -1057,6 +1054,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 	{
 		definition = ResolveJobDefinition(machine.Id, definition.CatalogIndex);
 		VigilLabRunProfile.SynchronizeSimulationJob(job, machine.Id);
+		VirtualPressBrakeRunProfile.SynchronizeSimulationJob(job, machine.Id);
 		runtime.AssignedJobId = job.Id;
 		runtime.CurrentJobCatalogIndex = definition.CatalogIndex;
 		runtime.PartName = definition.PartName;
@@ -1067,7 +1065,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 		job.AssignedMachineId = machine.Id;
 		job.StartedAt = DateTime.UtcNow;
 		job.ActualCounter = 0;
-		if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machine.Id))
+		if (VirtualKinematicsMachineRegistry.IsKinematicsDrivenMachine(machine.Id))
 		{
 			runtime.IsProducing = false;
 			SetMachineState(runtime, MachineState.Idle);
@@ -1180,7 +1178,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 
 	private bool ShouldTickProduction(MachineConfiguration machine, MachineRuntimeState runtime)
 	{
-		if (VirtualLaserMachineRegistry.IsVirtualLaserMachine(machine.Id))
+		if (VirtualKinematicsMachineRegistry.IsKinematicsDrivenMachine(machine.Id))
 		{
 			return false;
 		}
@@ -1497,5 +1495,15 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 	{
 		_globalCts?.Cancel();
 		_machineServerService.ServerStatusChanged -= OnServerStatusChanged;
+	}
+
+	private static FixedProductionJobDefinition ResolveJobDefinition(Guid machineId, int catalogIndex)
+	{
+		if (VirtualPressBrakeMachineRegistry.IsVirtualPressBrakeMachine(machineId))
+		{
+			return VirtualPressBrakeRunProfile.ResolveJobDefinition(machineId, catalogIndex);
+		}
+
+		return VigilLabRunProfile.ResolveJobDefinition(machineId, catalogIndex);
 	}
 }

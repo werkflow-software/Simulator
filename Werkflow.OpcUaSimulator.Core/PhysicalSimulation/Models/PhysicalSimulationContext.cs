@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Werkflow.OpcUaSimulator.Core.Defaults;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.FaultScenarios.Models;
+using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Kinematics;
 
 namespace Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 
@@ -62,6 +63,8 @@ public sealed class PhysicalSimulationContext
 	public TimeSpan? OverrideSetupDuration { get; set; }
 
 	public LaserKinematicsState Kinematics { get; } = new LaserKinematicsState();
+
+	public PressBrakeKinematicsState PressBrake { get; } = new PressBrakeKinematicsState();
 
 	public void ResetPhaseState()
 	{

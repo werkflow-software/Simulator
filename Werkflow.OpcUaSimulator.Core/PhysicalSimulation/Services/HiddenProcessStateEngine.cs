@@ -30,14 +30,16 @@ public sealed class HiddenProcessStateEngine : IHiddenProcessStateEngine
 	{
 		context.SimulationTime += deltaTime;
 		context.PhaseElapsedSimulationTime += deltaTime;
-		if (!context.Kinematics.IsEnabled)
+		if (!context.Kinematics.IsEnabled && !context.PressBrake.IsEnabled)
 		{
 			ProcessPhaseScheduler.TryAdvance(context, random, out ProcessPhaseTransition _);
 			PhysicalJobCoordinator.TickProductionCounters(context);
 		}
 		double phaseDemand = context.Kinematics.IsEnabled
 			? LaserKinematicsEngine.GetMotionDemand(context.Kinematics.MotionPhase) * context.Job.ProcessLoadFactor
-			: ProcessPhaseScheduler.GetPhaseDemand(context.CurrentPhase);
+			: context.PressBrake.IsEnabled
+				? PressBrakeKinematicsEngine.GetMotionDemand(context.PressBrake.MotionPhase) * context.Job.ProcessLoadFactor
+				: ProcessPhaseScheduler.GetPhaseDemand(context.CurrentPhase);
 		Dictionary<string, HiddenProcessRuntimeState> dictionary = runtime.HiddenProcessStates.ToDictionary<HiddenProcessRuntimeState, string>((HiddenProcessRuntimeState s) => s.StateId, StringComparer.OrdinalIgnoreCase);
 		Dictionary<string, HiddenProcessStateDefinition> dictionary2 = profile.HiddenProcessStates.ToDictionary<HiddenProcessStateDefinition, string>((HiddenProcessStateDefinition s) => s.StateId, StringComparer.OrdinalIgnoreCase);
 		foreach (HiddenProcessRuntimeState hiddenProcessState in runtime.HiddenProcessStates)

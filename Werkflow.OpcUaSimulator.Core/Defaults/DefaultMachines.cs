@@ -11,7 +11,7 @@ public static class DefaultMachines
 		return new List<MachineConfiguration>
 		{
 			CreateVirtualMachine(),
-			CreateMachine(2, 4841, "Normal", "Normale Produktion mit seltenen Warnungen", 3500, 0.5, 0.5, 8000, 45000, 8000, 45000, 1.0, MachineState.Idle),
+			CreateVirtualPressBrakeMachine(),
 			CreateMachine(3, 4842, "Langsam", "Langsame, stabile Produktion", 8000, 0.4, 0.3, 10000, 60000, 10000, 60000, 0.5, MachineState.Idle),
 			CreateMachine(4, 4843, "Störanfällig", "Leicht erhöhte Störwahrscheinlichkeit, global auf 25 % begrenzt", 2500, 1.0, 1.0, 10000, 90000, 10000, 90000, 1.0, MachineState.Idle)
 		};
@@ -36,6 +36,32 @@ public static class DefaultMachines
 		machine.Id = VirtualMachineContract.MachineId;
 		machine.Name = VirtualMachineContract.DisplayName;
 		machine.PhysicalProfileId = VirtualMachineContract.PhysicalProfileId;
+		machine.UpdateEndpointFromHostPort();
+		return machine;
+	}
+
+	private static MachineConfiguration CreateVirtualPressBrakeMachine()
+	{
+		MachineConfiguration machine = CreateMachine(
+			2,
+			VirtualPressBrakeContract.Port,
+			"Normal",
+			"Virtuelle Biegemaschine für VIGIL-Generalisierungsvalidierung (Machine 2)",
+			1200,
+			0.0,
+			0.0,
+			5000,
+			30000,
+			5000,
+			30000,
+			2.0,
+			MachineState.Idle);
+		machine.Id = VirtualPressBrakeContract.MachineId;
+		machine.Name = VirtualPressBrakeContract.DisplayName;
+		machine.PhysicalProfileId = VirtualPressBrakeContract.PhysicalProfileId;
+		machine.NamespaceUri = VirtualPressBrakeContract.NamespaceUri;
+		machine.ErrorProbabilityPercent = 0.0;
+		machine.DisconnectProbabilityPercent = 0.0;
 		machine.UpdateEndpointFromHostPort();
 		return machine;
 	}
@@ -87,9 +113,9 @@ public static class DefaultMachines
 			StartInErrorState = startInError,
 			Nodes = NodeMappingPresets.GetDefaultForMachine(index)
 		};
-		if ((uint)(index - 1) <= 1u)
+		if ((uint)(index - 1) <= 1u && index != 2)
 		{
-			machineConfiguration.PhysicalProfileId = ((index == 1) ? "laser-processing-machine-300" : "bending-hydraulic-machine-300");
+			machineConfiguration.PhysicalProfileId = index == 1 ? "laser-processing-machine-300" : "bending-hydraulic-machine-300";
 		}
 		machineConfiguration.UpdateEndpointFromHostPort();
 		return machineConfiguration;

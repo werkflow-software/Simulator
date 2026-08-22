@@ -90,7 +90,7 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 		if (!string.IsNullOrWhiteSpace(machine.PhysicalProfileId))
 		{
 			PhysicalMachineSession physicalMachineSession = _sessionFactory.TryCreateSession(machine.Id, machine.Name, machine.PhysicalProfileId) ?? throw new InvalidOperationException($"Physisches Profil '{machine.PhysicalProfileId}' für Maschine '{machine.Name}' wurde nicht gefunden.");
-			int seed = VigilLabRunProfile.ResolveSimulationSeed(machine.Id, simulationSeed) ^ machine.Id.GetHashCode();
+			int seed = ResolveSimulationSeed(machine.Id, simulationSeed) ^ machine.Id.GetHashCode();
 			physicalMachineSession.Simulation.Seed = seed;
 			physicalMachineSession.Simulation.ProductionDrivenJobs = true;
 			physicalMachineSession.Simulation.VerificationMode = PhysicalVerificationSettings.VerificationMode;
@@ -323,6 +323,7 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 			simulation.PhaseStartedAt = DateTimeOffset.UtcNow;
 			simulation.PhaseElapsedSimulationTime = TimeSpan.Zero;
 			LaserKinematicsEngine.OnJobChangeBegin(simulation, nextJob);
+			PressBrakeKinematicsEngine.OnJobChangeBegin(simulation, nextJob);
 		}
 	}
 
@@ -345,6 +346,7 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 			simulation.PhaseStartedAt = DateTimeOffset.UtcNow;
 			simulation.PhaseElapsedSimulationTime = TimeSpan.Zero;
 			LaserKinematicsEngine.OnJobApplied(simulation, context.Seed);
+			PressBrakeKinematicsEngine.OnJobApplied(simulation, context.Seed);
 		}
 	}
 
@@ -357,7 +359,8 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 				return 0;
 			}
 
-			return LaserKinematicsEngine.ConsumePendingPartCompletions(context.Session.Simulation);
+			return LaserKinematicsEngine.ConsumePendingPartCompletions(context.Session.Simulation)
+				+ PressBrakeKinematicsEngine.ConsumePendingPartCompletions(context.Session.Simulation);
 		}
 	}
 
@@ -381,11 +384,21 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 				(DateTimeOffset.UtcNow - simulation.ProductionRunStartedAtUtc.Value).TotalSeconds;
 		}
 
+		if (VirtualPressBrakeMachineRegistry.IsVirtualPressBrakeMachine(context.Session.MachineId))
+		{
+			simulation.FrozenPartRemainingSeconds = 0.0;
+			simulation.FrozenJobRemainingSeconds = 0.0;
+		}
+		else
+		{
+			FixedProductionJobDefinition job = BuildJobDefinition(simulation);
+			simulation.FrozenPartRemainingSeconds = LaserToolpathTimeEstimator.EstimateRemainingPartSeconds(simulation.Kinematics, job, context.Seed);
+			simulation.FrozenJobRemainingSeconds = LaserToolpathTimeEstimator.EstimateRemainingJobSeconds(simulation, job, context.Seed);
+		}
+
 		simulation.IsProductionPaused = true;
-		FixedProductionJobDefinition job = BuildJobDefinition(simulation);
-		simulation.FrozenPartRemainingSeconds = LaserToolpathTimeEstimator.EstimateRemainingPartSeconds(simulation.Kinematics, job, context.Seed);
-		simulation.FrozenJobRemainingSeconds = LaserToolpathTimeEstimator.EstimateRemainingJobSeconds(simulation, job, context.Seed);
 		LaserKinematicsEngine.OnProductionPaused(simulation);
+		PressBrakeKinematicsEngine.OnProductionPaused(simulation);
 		if (context.Publisher != null)
 		{
 			await context.Publisher.PauseAsync().ConfigureAwait(continueOnCapturedContext: false);
@@ -421,6 +434,7 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 		}
 
 		LaserKinematicsEngine.OnProductionResumed(simulation);
+		PressBrakeKinematicsEngine.OnProductionResumed(simulation);
 		if (context.Publisher != null)
 		{
 			await context.Publisher.ResumeAsync().ConfigureAwait(continueOnCapturedContext: false);
@@ -445,6 +459,7 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 			simulation.FrozenProductionElapsedSeconds = 0.0;
 			simulation.ProductionRunStartedAtUtc = null;
 			LaserKinematicsEngine.StopAndResetProduction(simulation, context.Seed);
+			PressBrakeKinematicsEngine.StopAndResetProduction(simulation, context.Seed);
 			PhysicalJobCoordinator.SyncProductionCounters(simulation, 0, simulation.Job.TargetQuantity);
 			if (context.Publisher != null && context.Session.Metrics.State == PhysicalPublisherState.Paused)
 			{
@@ -468,6 +483,7 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 			}
 
 			LaserKinematicsEngine.AbortProductionForJobChange(context.Session.Simulation, nextJob);
+			PressBrakeKinematicsEngine.AbortProductionForJobChange(context.Session.Simulation, nextJob);
 		}
 	}
 
@@ -561,5 +577,15 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 			_contexts.Remove(machineId);
 			_faultScenarioService?.UnregisterSession(machineId);
 		}
+	}
+
+	private static int ResolveSimulationSeed(Guid machineId, int globalSeed)
+	{
+		if (VirtualPressBrakeMachineRegistry.IsVirtualPressBrakeMachine(machineId))
+		{
+			return VirtualPressBrakeRunProfile.ResolveSimulationSeed(machineId, globalSeed);
+		}
+
+		return VigilLabRunProfile.ResolveSimulationSeed(machineId, globalSeed);
 	}
 }
