@@ -1,0 +1,101 @@
+AP-018.194-SIM-P01-R4 - Source Control / FuE / Machine-2 Freeze Closure Handoff
+================================================================================
+Date: 2026-08-23
+Repository: WerkFlow/Coding/Simulation (Werkflow.OpcUaSimulator)
+Branch: feature/ap-018-194-sim-p01-virtual-press-brake
+
+SCOPE (R4)
+----------
+Formal closure only. No simulator feature changes. No signal contract changes.
+Freeze Virtual Press Brake Machine-2 generalization baseline for downstream VIGIL work.
+
+MACHINE-2 FROZEN BASELINE
+-------------------------
+MACHINE2_FROZEN_SIMULATOR_SHA: fb4494ccc345e162638789fe1b922144d01cebdd
+MachineId: c3333333-3333-4333-8333-333333333333
+Endpoint: opc.tcp://localhost:4841
+Profile: vigil-press-brake-reduced
+Signal count: 14
+MACHINE2_SIGNAL_CONTRACT_FROZEN: YES
+
+14-signal contract (frozen):
+  1. Machine.MachineState
+  2. Machine.ProgramId
+  3. Machine.PartId
+  4. Machine.ActualCounter
+  5. Machine.TargetCounter
+  6. Machine.LastProductionChange
+  7. Ram.Position
+  8. Ram.Velocity
+  9. Backgauge.Position
+  10. Process.BendAngle
+  11. Process.FormingForce
+  12. Tool.StationState
+  13. Thermal.HydraulicOilTemp
+  14. Cycle.ActivityState
+
+PRESERVED VERIFIED RESULTS (from R2/R3 — not re-run in R4)
+----------------------------------------------------------
+BEND_ANGLE_LIVE_DYNAMICS: PASS (R2 evidence)
+CATEGORICAL_SIGNAL_TRUTHFULNESS: PASS (R3 evidence)
+LAST_PRODUCTION_CHANGE_TRUTHFULNESS: PASS (R3 evidence)
+GT_OPC_EXPOSURE: NONE
+LASER_REGRESSION: PASS
+FROZEN_LASER_BEHAVIOR_CHANGED: NO
+Targeted tests at R3 freeze: 21/21 PASS
+
+SOURCE CONTROL (SIM-P01 lineage)
+--------------------------------
+e998961 — SIM-P01 virtual press brake (Machine 2)
+99b7d4e — SIM-P01-R1 live OPC + GT runtime wiring
+b7b83fc — SIM-P01-R2 BendAngle publish correction
+fb4494c — SIM-P01-R3 categorical leakage + LastProductionChange semantics
+(R4)    — this closure handoff only
+
+WORKTREE ISOLATION
+------------------
+SIM_P01_UNCOMMITTED_REQUIRED_FILES: 0
+Unrelated dirty/untracked files remain outside SIM-P01 commits (scratch, probes, legacy handoff churn).
+
+FuE
+---
+Verified in FuE-Zeiterfassung_August.csv:
+  AP-018.194-SIM-P01-R1, R2, R3, R4
+Gap reported (no row found, duration not invented):
+  AP-018.194-SIM-P01 (base architecture AP prior to R1 split)
+
+VIGIL BOUNDARY
+--------------
+VIGIL cognition changed: NO
+VIGIL ingestion changed: NO
+VIGIL RUN registered: NO
+RUN-012 started: NO
+
+HANDOFF INTEGRITY
+-----------------
+Predecessor archived (byte-identical):
+  Source: .cursor/handoff/AP-018.194-SIM-P01-R3-categorical-leakage-last-production-change-correction-handoff.txt
+  Archive: .cursor/handoff/archive/AP-018.194-SIM-P01-R3-categorical-leakage-last-production-change-correction-handoff-archived-20260823.txt
+  SourceBytes: 3647
+  ArchiveBytes: 3647
+  SourceSHA256: CC47EEF53FDFE5FA9A15DFB8F8C9B78A3434FAF43EF12131668FEF9592F7ECDE
+  ArchiveSHA256: CC47EEF53FDFE5FA9A15DFB8F8C9B78A3434FAF43EF12131668FEF9592F7ECDE
+  SIZE_MATCH: True
+  SHA256_MATCH: True
+  SOURCE_REMOVED: True
+
+ACTIVE HANDOFF ROOT FILES
+-------------------------
+- AP-018.194-SIM-P01-R4-source-control-fue-machine2-freeze-closure-handoff.txt
+
+ACTIVE_HANDOFF_COUNT: 1
+OBSOLETE_ACTIVE_HANDOFF_COUNT: 0
+
+STATUS
+------
+SIM-P01 formally closed: YES
+Machine-2 frozen: YES
+
+RECOMMENDED NEXT AP
+-------------------
+AP-018.194-EXT-P01 — TRUMPF OPC UA Machine Demo Server / Independent Dataset Feasibility Audit
