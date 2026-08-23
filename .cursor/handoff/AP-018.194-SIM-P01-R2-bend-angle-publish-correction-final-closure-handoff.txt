@@ -1,0 +1,92 @@
+AP-018.194-SIM-P01-R2 - BendAngle Publish Correction & Final SIM-P01 Closure Handoff
+====================================================================================
+Date: 2026-08-23
+Branch: feature/ap-018-194-sim-p01-virtual-press-brake
+Repository: WerkFlow/Coding/Simulation (Werkflow.OpcUaSimulator)
+
+SCOPE (R2)
+----------
+Narrow defect correction for Process.BendAngle OPC reads staying at 0 while forming was active.
+Formal closure of SIM-P01 Machine-2 simulator basis. No VIGIL changes. No new machine features.
+
+ROOT CAUSE
+----------
+PressBrakeKinematicsEngine allowed physically inconsistent state where Process.FormingForce remained
+positive while BendAngleDeg was 0 (forming force used a 0.2 progress floor; approach/return decay
+zeroed angle before force). Phase-transition ticks could also enter Forming without applying forming
+kinematics on the same tick, leaving BendAngle at 0 until the next engine tick.
+
+CORRECTION
+----------
+- Align FormingForceKn with forming progress (removed 0.2 base offset).
+- SyncForceToBendAngle: force goes to 0 when angle reaches 0 outside active forming/hold.
+- Phase overflow chaining on RamApproach->Forming, Forming->Hold, Hold->RamReturn so bend state
+  updates within the same tick when simulation dt spans phase boundaries.
+- Live harness: peak-range OPC sampling for BendAngle/FormingForce/Ram; BendAngle dynamics require
+  non-zero OPC peak (GT fallback removed).
+- Regression test SIM_P01_R2_BendAngle_TracksFormingPhase_InRuntimeAndOpcPath.
+
+BUILD
+-----
+Command: dotnet build Werkflow.OpcUaSimulator.sln -c Release
+Result: PASS (warnings only).
+
+TESTS (Release filter VirtualPressBrake / PressBrake)
+-----------------------------------------------------
+Result: 13 passed, 0 failed (~43s).
+
+LIVE OPC SMOKE
+--------------
+Endpoint: opc.tcp://localhost:4841
+MachineId: c3333333-3333-4333-8333-333333333333
+Profile: vigil-press-brake-reduced (14 signals)
+Resolved: 14/14 | Readable: 14/14
+BEND_ANGLE_LIVE_DYNAMICS: PASS (peak OPC BendAngle ~38.25 deg observed)
+Evidence: .cursor/handoff/evidence/AP-018.194-SIM-P01-R2-live-opc-verification.json
+
+GT (runtime)
+------------
+Event types observed: approach_end, bend_step_end, bend_step_start, cycle_completion, forming_end,
+forming_start, inter_part_wait, operator_wait_start, part_end, part_start, return_end, return_start,
+setup_end, setup_start
+GT_OPC_EXPOSURE: NONE
+
+LASER REGRESSION
+----------------
+SIM_P01_LaserContract_Unchanged_Port4840: PASS
+FROZEN_LASER_BEHAVIOR_CHANGED: NO
+
+CODE TOUCHED
+------------
+- Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Kinematics/PressBrakeKinematicsEngine.cs
+- Werkflow.OpcUaSimulator.Tests/PressBrakeOpcUaLiveVerificationHarness.cs
+- Werkflow.OpcUaSimulator.Tests/VirtualPressBrakeSimP01R1Tests.cs
+- .cursor/handoff/evidence/AP-018.194-SIM-P01-R2-live-opc-verification.json
+
+HANDOFF INTEGRITY
+-----------------
+Predecessor archived (byte-identical):
+  Source: .cursor/handoff/AP-018.194-SIM-P01-R1-virtual-press-brake-completion-live-opc-verification-handoff.txt
+  Archive: .cursor/handoff/archive/AP-018.194-SIM-P01-R1-virtual-press-brake-completion-live-opc-verification-handoff-archived-20260823.txt
+  SourceBytes: 3826
+  ArchiveBytes: 3826
+  SourceSHA256: F0FFF8222F883EB9A3C0EAEF371993D84E1604152D3EB1A65540EE92F18BF8B9
+  ArchiveSHA256: F0FFF8222F883EB9A3C0EAEF371993D84E1604152D3EB1A65540EE92F18BF8B9
+  SIZE_MATCH: True
+  SHA256_MATCH: True
+  SOURCE_REMOVED: True
+
+ACTIVE HANDOFF ROOT FILES (direct)
+----------------------------------
+- AP-018.194-SIM-P01-R2-bend-angle-publish-correction-final-closure-handoff.txt
+
+ACTIVE_HANDOFF_COUNT: 1
+OBSOLETE_ACTIVE_HANDOFF_COUNT: 0
+
+SIM-P01 STATUS
+--------------
+Formally complete. Machine-2 virtual press brake basis ready for VIGIL ingestion audit.
+
+RECOMMENDED NEXT AP
+-------------------
+AP-018.194-VIGIL-P01 - Machine-2 VIGIL ingestion/readiness audit

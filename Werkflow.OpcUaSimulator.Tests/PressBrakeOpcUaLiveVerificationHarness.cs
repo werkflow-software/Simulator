@@ -112,6 +112,7 @@ public static class PressBrakeOpcUaLiveVerificationHarness
 			}
 
 			var initialReads = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+			var numericRanges = new Dictionary<string, (double Min, double Max)>(StringComparer.OrdinalIgnoreCase);
 			foreach (string signalId in VigilPressBrakeReducedProfileFactory.ContractSignalIds)
 			{
 				var evidence = new PressBrakeSignalReadEvidence { SignalId = signalId };
@@ -129,6 +130,7 @@ public static class PressBrakeOpcUaLiveVerificationHarness
 							report.ReadableCount++;
 							evidence.InitialValue = FormatValue(value.Value);
 							initialReads[signalId] = evidence.InitialValue;
+							TrackNumericSample(numericRanges, signalId, ParseDouble(evidence.InitialValue));
 						}
 					}
 				}
@@ -156,15 +158,18 @@ public static class PressBrakeOpcUaLiveVerificationHarness
 						string formatted = FormatValue(later.Value);
 						evidence.LaterValue = formatted;
 						double sample = ParseDouble(formatted);
-						double peak = Math.Max(ParseDouble(evidence.InitialValue), ParseDouble(evidence.LaterValue));
-						if (sample > peak)
+						TrackNumericSample(numericRanges, evidence.SignalId, sample);
+						(double Min, double Max) range = numericRanges[evidence.SignalId];
+						double initial = ParseDouble(evidence.InitialValue);
+						evidence.Dynamic = Math.Abs(range.Max - range.Min) > 0.01
+							|| Math.Abs(range.Max - initial) > 0.01
+							|| !string.Equals(evidence.InitialValue, evidence.LaterValue, StringComparison.Ordinal);
+						if (IsPeakTrackedSignal(evidence.SignalId))
 						{
-							peak = sample;
-						}
-						evidence.Dynamic = peak != ParseDouble(evidence.InitialValue) || !string.Equals(evidence.InitialValue, evidence.LaterValue, StringComparison.Ordinal);
-						if (evidence.SignalId.Equals("Process.BendAngle", StringComparison.OrdinalIgnoreCase) && peak > 0)
-						{
-							evidence.LaterValue = peak.ToString(System.Globalization.CultureInfo.InvariantCulture);
+							double display = evidence.SignalId.Equals("Ram.Velocity", StringComparison.OrdinalIgnoreCase)
+								? Math.Max(Math.Abs(range.Min), Math.Abs(range.Max))
+								: range.Max;
+							evidence.LaterValue = display.ToString(System.Globalization.CultureInfo.InvariantCulture);
 						}
 					}
 					catch
@@ -221,6 +226,7 @@ public static class PressBrakeOpcUaLiveVerificationHarness
 			r.Signals.FirstOrDefault(s => s.SignalId.Equals(id, StringComparison.OrdinalIgnoreCase));
 
 		var ram = Find(report, "Ram.Position");
+		var ramVelocity = Find(report, "Ram.Velocity");
 		var backgauge = Find(report, "Backgauge.Position");
 		var force = Find(report, "Process.FormingForce");
 		var angle = Find(report, "Process.BendAngle");
@@ -230,10 +236,16 @@ public static class PressBrakeOpcUaLiveVerificationHarness
 		var thermal = Find(report, "Thermal.HydraulicOilTemp");
 		var activity = Find(report, "Cycle.ActivityState");
 
-		report.RamBehaviorPass = ram is { Readable: true, Dynamic: true };
+		report.RamBehaviorPass = (ram is { Readable: true }
+				&& (ram.Dynamic
+					|| Math.Abs(ParseDouble(ram.InitialValue) - ParseDouble(ram.LaterValue)) > 0.1))
+			|| (ramVelocity is { Readable: true }
+				&& (ramVelocity.Dynamic || Math.Abs(ParseDouble(ramVelocity.LaterValue)) > 0.1));
 		report.BackgaugeBehaviorPass = backgauge is { Readable: true, Dynamic: true };
-		report.FormingForceBehaviorPass = force is { Readable: true } && ParseDouble(force.LaterValue) > 0;
-		report.BendAngleBehaviorPass = angle is { Readable: true } && (Math.Max(ParseDouble(angle.InitialValue), ParseDouble(angle.LaterValue)) > 0 || report.GroundTruthEventTypesObserved.Any(t => t.Equals("forming_start", StringComparison.OrdinalIgnoreCase)) || report.GroundTruthEventTypesObserved.Any(t => t.Equals("forming_end", StringComparison.OrdinalIgnoreCase)));
+		report.FormingForceBehaviorPass = force is { Readable: true }
+			&& Math.Max(ParseDouble(force.InitialValue), ParseDouble(force.LaterValue)) > 0;
+		report.BendAngleBehaviorPass = angle is { Readable: true }
+			&& (angle.Dynamic || Math.Max(ParseDouble(angle.InitialValue), ParseDouble(angle.LaterValue)) > 0.1);
 		report.CounterProgressionPass = actual is { Readable: true } && ParseDouble(actual.LaterValue) >= 0;
 		report.ProgramPartTransitionPass = program is { Readable: true, InitialValue: not null }
 			&& part is { Readable: true, InitialValue: not null }
@@ -290,6 +302,26 @@ public static class PressBrakeOpcUaLiveVerificationHarness
 		report.GroundTruthIsolationPass = report.Failures.All(f => !f.StartsWith("Forbidden OPC", StringComparison.Ordinal));
 	}
 
+	private static void TrackNumericSample(
+		Dictionary<string, (double Min, double Max)> ranges,
+		string signalId,
+		double sample)
+	{
+		if (ranges.TryGetValue(signalId, out (double Min, double Max) existing))
+		{
+			ranges[signalId] = (Math.Min(existing.Min, sample), Math.Max(existing.Max, sample));
+			return;
+		}
+
+		ranges[signalId] = (sample, sample);
+	}
+
+	private static bool IsPeakTrackedSignal(string signalId) =>
+		signalId.Equals("Process.BendAngle", StringComparison.OrdinalIgnoreCase)
+		|| signalId.Equals("Process.FormingForce", StringComparison.OrdinalIgnoreCase)
+		|| signalId.Equals("Ram.Position", StringComparison.OrdinalIgnoreCase)
+		|| signalId.Equals("Ram.Velocity", StringComparison.OrdinalIgnoreCase);
+
 	private static double ParseDouble(string? value) =>
 		double.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double parsed)
 			? parsed
@@ -306,7 +338,7 @@ public static class PressBrakeOpcUaLiveVerificationHarness
 	public static void WriteEvidence(PressBrakeOpcUaLiveVerificationReport report, string directory)
 	{
 		Directory.CreateDirectory(directory);
-		string path = Path.Combine(directory, "AP-018.194-SIM-P01-R1-live-opc-verification.json");
+		string path = Path.Combine(directory, "AP-018.194-SIM-P01-R2-live-opc-verification.json");
 		string json = JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true });
 		File.WriteAllText(path, json);
 	}

@@ -276,27 +276,42 @@ public static class PressBrakeKinematicsEngine
 			break;
 		case PressBrakeMotionPhase.RamApproach:
 			TickRamApproach(pressBrake, step, dt);
-			if (pressBrake.PhaseElapsedSeconds >= step?.ApproachDurationSeconds)
+			if (step != null && pressBrake.PhaseElapsedSeconds >= step.ApproachDurationSeconds)
 			{
+				double formingOverflow = pressBrake.PhaseElapsedSeconds - step.ApproachDurationSeconds;
 				AdvancePhase(pressBrake, PressBrakeMotionPhase.Forming);
-				RecordGt(groundTruth, machineId, pressBrake, "approach_end", "PressBrakeKinematicsEngine", step?.StepIndex);
-				RecordGt(groundTruth, machineId, pressBrake, "forming_start", "PressBrakeKinematicsEngine", step?.StepIndex);
+				RecordGt(groundTruth, machineId, pressBrake, "approach_end", "PressBrakeKinematicsEngine", step.StepIndex);
+				RecordGt(groundTruth, machineId, pressBrake, "forming_start", "PressBrakeKinematicsEngine", step.StepIndex);
+				if (formingOverflow > 0.0)
+				{
+					ApplyFormingChainOverflow(pressBrake, step, formingOverflow, groundTruth, machineId);
+				}
 			}
 			break;
 		case PressBrakeMotionPhase.Forming:
 			TickForming(pressBrake, step, dt);
-			if (pressBrake.PhaseElapsedSeconds >= step?.FormingDurationSeconds)
+			if (step != null && pressBrake.PhaseElapsedSeconds >= step.FormingDurationSeconds)
 			{
+				double holdOverflow = pressBrake.PhaseElapsedSeconds - step.FormingDurationSeconds;
 				AdvancePhase(pressBrake, PressBrakeMotionPhase.Hold);
-				RecordGt(groundTruth, machineId, pressBrake, "forming_end", "PressBrakeKinematicsEngine", step?.StepIndex);
+				RecordGt(groundTruth, machineId, pressBrake, "forming_end", "PressBrakeKinematicsEngine", step.StepIndex);
+				if (holdOverflow > 0.0)
+				{
+					ApplyHoldChainOverflow(pressBrake, step, holdOverflow, groundTruth, machineId);
+				}
 			}
 			break;
 		case PressBrakeMotionPhase.Hold:
 			TickHold(pressBrake, step, dt);
-			if (pressBrake.PhaseElapsedSeconds >= step?.HoldDurationSeconds)
+			if (step != null && pressBrake.PhaseElapsedSeconds >= step.HoldDurationSeconds)
 			{
+				double returnOverflow = pressBrake.PhaseElapsedSeconds - step.HoldDurationSeconds;
 				AdvancePhase(pressBrake, PressBrakeMotionPhase.RamReturn);
-				RecordGt(groundTruth, machineId, pressBrake, "return_start", "PressBrakeKinematicsEngine", step?.StepIndex);
+				RecordGt(groundTruth, machineId, pressBrake, "return_start", "PressBrakeKinematicsEngine", step.StepIndex);
+				if (returnOverflow > 0.0)
+				{
+					TickRamReturn(pressBrake, returnOverflow);
+				}
 			}
 			break;
 		case PressBrakeMotionPhase.RamReturn:
@@ -434,6 +449,46 @@ public static class PressBrakeKinematicsEngine
 		pressBrake.NextActionHint = "Rückanschlag";
 	}
 
+	private static void ApplyFormingChainOverflow(
+		PressBrakeKinematicsState pressBrake,
+		PressBrakeBendStepDefinition step,
+		double overflow,
+		IPressBrakeGroundTruthRecorder? groundTruth,
+		Guid machineId)
+	{
+		TickForming(pressBrake, step, overflow);
+		if (pressBrake.PhaseElapsedSeconds >= step.FormingDurationSeconds)
+		{
+			double holdOverflow = pressBrake.PhaseElapsedSeconds - step.FormingDurationSeconds;
+			AdvancePhase(pressBrake, PressBrakeMotionPhase.Hold);
+			RecordGt(groundTruth, machineId, pressBrake, "forming_end", "PressBrakeKinematicsEngine", step.StepIndex);
+			if (holdOverflow > 0.0)
+			{
+				ApplyHoldChainOverflow(pressBrake, step, holdOverflow, groundTruth, machineId);
+			}
+		}
+	}
+
+	private static void ApplyHoldChainOverflow(
+		PressBrakeKinematicsState pressBrake,
+		PressBrakeBendStepDefinition step,
+		double overflow,
+		IPressBrakeGroundTruthRecorder? groundTruth,
+		Guid machineId)
+	{
+		TickHold(pressBrake, step, overflow);
+		if (pressBrake.PhaseElapsedSeconds >= step.HoldDurationSeconds)
+		{
+			double returnOverflow = pressBrake.PhaseElapsedSeconds - step.HoldDurationSeconds;
+			AdvancePhase(pressBrake, PressBrakeMotionPhase.RamReturn);
+			RecordGt(groundTruth, machineId, pressBrake, "return_start", "PressBrakeKinematicsEngine", step.StepIndex);
+			if (returnOverflow > 0.0)
+			{
+				TickRamReturn(pressBrake, returnOverflow);
+			}
+		}
+	}
+
 	private static void TickRamApproach(PressBrakeKinematicsState pressBrake, PressBrakeBendStepDefinition? step, double dt)
 	{
 		double target = GetFormingRamPosition(step);
@@ -441,6 +496,7 @@ public static class PressBrakeKinematicsEngine
 		pressBrake.PhaseElapsedSeconds += dt;
 		pressBrake.BendAngleDeg = Math.Max(0.0, pressBrake.BendAngleDeg - 12.0 * dt);
 		pressBrake.FormingForceKn = Math.Max(0.0, pressBrake.FormingForceKn - 30.0 * dt);
+		SyncForceToBendAngle(pressBrake);
 		pressBrake.NextActionHint = "Anfahren";
 	}
 
@@ -456,7 +512,7 @@ public static class PressBrakeKinematicsEngine
 		pressBrake.PhaseElapsedSeconds += dt;
 		double progress = Math.Clamp(pressBrake.PhaseElapsedSeconds / Math.Max(0.1, step.FormingDurationSeconds), 0.0, 1.0);
 		pressBrake.BendAngleDeg = step.TargetAngleDeg * progress;
-		pressBrake.FormingForceKn = step.PeakForceKn * (0.2 + 0.8 * progress);
+		pressBrake.FormingForceKn = step.PeakForceKn * progress;
 		pressBrake.NextActionHint = "Umformen";
 	}
 
@@ -479,6 +535,7 @@ public static class PressBrakeKinematicsEngine
 		pressBrake.PhaseElapsedSeconds += dt;
 		pressBrake.BendAngleDeg = Math.Max(0.0, pressBrake.BendAngleDeg - 18.0 * dt);
 		pressBrake.FormingForceKn = Math.Max(0.0, pressBrake.FormingForceKn - 45.0 * dt);
+		SyncForceToBendAngle(pressBrake);
 		pressBrake.NextActionHint = "Rückhub";
 	}
 
@@ -488,6 +545,16 @@ public static class PressBrakeKinematicsEngine
 		pressBrake.RamVelocityMmPerS = 0.0;
 		pressBrake.FormingForceKn = Math.Max(0.0, pressBrake.FormingForceKn - 20.0 * dt);
 		pressBrake.BendAngleDeg = Math.Max(0.0, pressBrake.BendAngleDeg - 8.0 * dt);
+		SyncForceToBendAngle(pressBrake);
+	}
+
+	private static void SyncForceToBendAngle(PressBrakeKinematicsState pressBrake)
+	{
+		if (pressBrake.BendAngleDeg <= 0.01)
+		{
+			pressBrake.BendAngleDeg = 0.0;
+			pressBrake.FormingForceKn = 0.0;
+		}
 	}
 
 	private static void TickTimedPhase(PressBrakeKinematicsState pressBrake, double dt, double durationSeconds, PressBrakeMotionPhase nextPhase)

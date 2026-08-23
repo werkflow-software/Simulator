@@ -77,6 +77,58 @@ public class VirtualPressBrakeSimP01R1Tests
 	}
 
 	[Fact]
+	public void SIM_P01_R2_BendAngle_TracksFormingPhase_InRuntimeAndOpcPath()
+	{
+		PhysicalMachineProfile profile = VigilPressBrakeReducedProfileFactory.Create();
+		PhysicalSimulationEngine engine = new(
+			new HiddenProcessStateEngine(),
+			new SignalCalculationEngine(),
+			new PhysicalModelValidator());
+		PhysicalMachineSession session = new()
+		{
+			MachineId = VirtualPressBrakeContract.MachineId,
+			MachineName = VirtualPressBrakeContract.DisplayName,
+			Profile = profile,
+			Runtime = new PhysicalMachineRuntimeFactory().Create(profile, null)
+		};
+		session.Simulation.TimeFactor = 20.0;
+		session.Simulation.Job.TargetQuantity = 6;
+		engine.Initialize(session, 194);
+		PhysicalJobCoordinator.ApplyDefinition(
+			session.Simulation,
+			VirtualPressBrakeRunProfile.ResolveJobDefinition(session.MachineId, 0),
+			session.Runtime);
+		PressBrakeKinematicsEngine.OnJobApplied(session.Simulation, 194);
+		session.Simulation.IsProductionMotionActive = true;
+
+		double maxAngle = 0.0;
+		double maxForce = 0.0;
+		double maxPublishedAngle = 0.0;
+		bool formingPhaseSeen = false;
+		for (int i = 0; i < 2500; i++)
+		{
+			engine.Tick(session, TimeSpan.FromMilliseconds(20));
+			maxAngle = Math.Max(maxAngle, session.Simulation.PressBrake.BendAngleDeg);
+			maxForce = Math.Max(maxForce, session.Simulation.PressBrake.FormingForceKn);
+			var angleSignal = session.Runtime.Signals.First(s => s.SignalId == "Process.BendAngle");
+			maxPublishedAngle = Math.Max(maxPublishedAngle, angleSignal.CurrentValue);
+			if (session.Simulation.PressBrake.MotionPhase is PressBrakeMotionPhase.Forming or PressBrakeMotionPhase.Hold
+				&& session.Simulation.PressBrake.BendAngleDeg > 0.1)
+			{
+				formingPhaseSeen = true;
+				var forceSignal = session.Runtime.Signals.First(s => s.SignalId == "Process.FormingForce");
+				Assert.True(forceSignal.CurrentValue > 0.1);
+				Assert.Equal(session.Simulation.PressBrake.BendAngleDeg, angleSignal.CurrentValue, precision: 3);
+			}
+		}
+
+		Assert.True(formingPhaseSeen);
+		Assert.True(maxAngle > 10.0);
+		Assert.True(maxForce > 10.0);
+		Assert.True(maxPublishedAngle > 10.0);
+	}
+
+	[Fact]
 	public void SIM_P01_R1_StructuralIndependence_ProcessTopologyDiffersFromLaser()
 	{
 		Assert.Contains(PressBrakeMotionPhase.RamApproach, Enum.GetValues<PressBrakeMotionPhase>());
