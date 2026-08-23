@@ -36,7 +36,8 @@ public static class PressBrakeKinematicsEngine
 		pressBrake.InterruptRequested = false;
 		pressBrake.ToolChangeRequired = false;
 		pressBrake.NextActionHint = "Bereit";
-		SetOpaqueTokens(pressBrake, PressBrakeMotionPhase.Idle);
+		pressBrake.LastProductionChangeUtc = DateTime.UtcNow;
+		PressBrakeExposedSignalSemantics.ApplyExposedTokens(pressBrake, PressBrakeMotionPhase.Idle, context);
 		LoadProgram(context, seed, 0);
 	}
 
@@ -116,6 +117,7 @@ public static class PressBrakeKinematicsEngine
 		context.PressBrake.PhaseElapsedSeconds = 0.0;
 		context.PressBrake.MotionPhase = PressBrakeMotionPhase.Setup;
 		context.PressBrake.TargetParts = Math.Max(1, context.Job.TargetQuantity);
+		PressBrakeExposedSignalSemantics.StampLastProductionChange(context.PressBrake);
 	}
 
 	public static int ConsumePendingPartCompletions(PhysicalSimulationContext context)
@@ -187,6 +189,7 @@ public static class PressBrakeKinematicsEngine
 		if (context.IsProductionPaused)
 		{
 			pressBrake.RamVelocityMmPerS = 0.0;
+			PressBrakeExposedSignalSemantics.ApplyExposedTokens(pressBrake, pressBrake.MotionPhase, context);
 			context.CurrentPhase = MapToProcessPhase(pressBrake.MotionPhase);
 			ApplySignals(runtime, pressBrake);
 			UpdateThermal(pressBrake, dt, forming: false);
@@ -196,6 +199,7 @@ public static class PressBrakeKinematicsEngine
 		if (!context.IsProductionMotionActive && !context.IsJobChangePauseActive)
 		{
 			TickIdleHold(pressBrake, dt);
+			PressBrakeExposedSignalSemantics.ApplyExposedTokens(pressBrake, pressBrake.MotionPhase, context);
 			context.CurrentPhase = MapToProcessPhase(pressBrake.MotionPhase);
 			ApplySignals(runtime, pressBrake);
 			UpdateThermal(pressBrake, dt, forming: false);
@@ -216,6 +220,7 @@ public static class PressBrakeKinematicsEngine
 			TickProduction(context, pressBrake, seed, dt, groundTruth, machineId);
 		}
 
+		PressBrakeExposedSignalSemantics.ApplyExposedTokens(pressBrake, pressBrake.MotionPhase, context);
 		context.CurrentPhase = MapToProcessPhase(pressBrake.MotionPhase);
 		ApplySignals(runtime, pressBrake);
 		UpdateThermal(pressBrake, dt, pressBrake.MotionPhase is PressBrakeMotionPhase.Forming or PressBrakeMotionPhase.Hold);
@@ -346,8 +351,6 @@ public static class PressBrakeKinematicsEngine
 			AdvancePhase(pressBrake, PressBrakeMotionPhase.Setup);
 			break;
 		}
-
-		SetOpaqueTokens(pressBrake, pressBrake.MotionPhase);
 	}
 
 	private static void CompleteBendStep(
@@ -374,6 +377,7 @@ public static class PressBrakeKinematicsEngine
 		pressBrake.ProducedParts++;
 		pressBrake.PendingPartCompletions++;
 		context.Job.ProducedQuantity = pressBrake.ProducedParts;
+		PressBrakeExposedSignalSemantics.StampLastProductionChange(pressBrake);
 		RecordGt(groundTruth, machineId, pressBrake, "cycle_completion", "PressBrakeKinematicsEngine");
 
 		if (pressBrake.ProducedParts >= pressBrake.TargetParts)
@@ -678,16 +682,6 @@ public static class PressBrakeKinematicsEngine
 	private static bool ShouldOperatorWait(PressBrakePartDefinition part, int seed, int producedParts) =>
 		(seed + producedParts) % 7 == 0 && part.OperatorWaitChance > 0.1;
 
-	private static void SetOpaqueTokens(PressBrakeKinematicsState pressBrake, PressBrakeMotionPhase phase)
-	{
-		int machineIndex = (int)phase % VirtualPressBrakeKinematicsConfig.MachineStateTokens.Length;
-		int activityIndex = ((int)phase * 2 + pressBrake.BendStepIndex) % VirtualPressBrakeKinematicsConfig.ActivityStateTokens.Length;
-		int toolIndex = (pressBrake.ProgramIndex + pressBrake.PartIndex) % VirtualPressBrakeKinematicsConfig.ToolStationTokens.Length;
-		pressBrake.MachineStateToken = VirtualPressBrakeKinematicsConfig.MachineStateTokens[machineIndex];
-		pressBrake.ActivityStateToken = VirtualPressBrakeKinematicsConfig.ActivityStateTokens[activityIndex];
-		pressBrake.ToolStationToken = VirtualPressBrakeKinematicsConfig.ToolStationTokens[toolIndex];
-	}
-
 	private static void ApplySignals(PhysicalMachineRuntime runtime, PressBrakeKinematicsState pressBrake)
 	{
 		foreach (SignalRuntimeState signal in runtime.Signals)
@@ -712,7 +706,7 @@ public static class PressBrakeKinematicsEngine
 				signal.TargetValue = pressBrake.TargetParts;
 				break;
 			case "Machine.LastProductionChange":
-				signal.CurrentDateTimeUtc = DateTime.UtcNow;
+				signal.CurrentDateTimeUtc = pressBrake.LastProductionChangeUtc;
 				break;
 			case "Ram.Position":
 				signal.CurrentValue = pressBrake.RamPositionMm;

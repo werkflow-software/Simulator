@@ -35,6 +35,8 @@ public sealed class PressBrakeOpcUaLiveVerificationReport
 	public bool DynamicSignalSmokePass { get; set; }
 	public bool GroundTruthGenerationPass { get; set; }
 	public bool GroundTruthIsolationPass { get; set; }
+	public bool CategoricalSignalTruthfulnessPass { get; set; }
+	public bool LastProductionChangeTruthfulnessPass { get; set; }
 	public string? GroundTruthArtifactPath { get; set; }
 	public List<string> GroundTruthEventTypesObserved { get; set; } = [];
 	public List<PressBrakeSignalReadEvidence> Signals { get; set; } = [];
@@ -113,6 +115,8 @@ public static class PressBrakeOpcUaLiveVerificationHarness
 
 			var initialReads = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
 			var numericRanges = new Dictionary<string, (double Min, double Max)>(StringComparer.OrdinalIgnoreCase);
+			var lastProductionSamples = new List<string>();
+			var categoricalSamples = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 			foreach (string signalId in VigilPressBrakeReducedProfileFactory.ContractSignalIds)
 			{
 				var evidence = new PressBrakeSignalReadEvidence { SignalId = signalId };
@@ -130,7 +134,14 @@ public static class PressBrakeOpcUaLiveVerificationHarness
 							report.ReadableCount++;
 							evidence.InitialValue = FormatValue(value.Value);
 							initialReads[signalId] = evidence.InitialValue;
-							TrackNumericSample(numericRanges, signalId, ParseDouble(evidence.InitialValue));
+							if (IsCategoricalSignal(signalId))
+							{
+								TrackCategoricalSample(categoricalSamples, signalId, evidence.InitialValue);
+							}
+							else
+							{
+								TrackNumericSample(numericRanges, signalId, ParseDouble(evidence.InitialValue));
+							}
 						}
 					}
 				}
@@ -157,19 +168,33 @@ public static class PressBrakeOpcUaLiveVerificationHarness
 						}
 						string formatted = FormatValue(later.Value);
 						evidence.LaterValue = formatted;
-						double sample = ParseDouble(formatted);
-						TrackNumericSample(numericRanges, evidence.SignalId, sample);
-						(double Min, double Max) range = numericRanges[evidence.SignalId];
-						double initial = ParseDouble(evidence.InitialValue);
-						evidence.Dynamic = Math.Abs(range.Max - range.Min) > 0.01
-							|| Math.Abs(range.Max - initial) > 0.01
-							|| !string.Equals(evidence.InitialValue, evidence.LaterValue, StringComparison.Ordinal);
-						if (IsPeakTrackedSignal(evidence.SignalId))
+						if (IsCategoricalSignal(evidence.SignalId))
 						{
-							double display = evidence.SignalId.Equals("Ram.Velocity", StringComparison.OrdinalIgnoreCase)
-								? Math.Max(Math.Abs(range.Min), Math.Abs(range.Max))
-								: range.Max;
-							evidence.LaterValue = display.ToString(System.Globalization.CultureInfo.InvariantCulture);
+							TrackCategoricalSample(categoricalSamples, evidence.SignalId, formatted);
+							evidence.Dynamic = categoricalSamples[evidence.SignalId].Count > 1
+								|| !string.Equals(evidence.InitialValue, evidence.LaterValue, StringComparison.Ordinal);
+						}
+						else
+						{
+							double sample = ParseDouble(formatted);
+							TrackNumericSample(numericRanges, evidence.SignalId, sample);
+							(double Min, double Max) range = numericRanges[evidence.SignalId];
+							double initial = ParseDouble(evidence.InitialValue);
+							evidence.Dynamic = Math.Abs(range.Max - range.Min) > 0.01
+								|| Math.Abs(range.Max - initial) > 0.01
+								|| !string.Equals(evidence.InitialValue, evidence.LaterValue, StringComparison.Ordinal);
+							if (IsPeakTrackedSignal(evidence.SignalId))
+							{
+								double display = evidence.SignalId.Equals("Ram.Velocity", StringComparison.OrdinalIgnoreCase)
+									? Math.Max(Math.Abs(range.Min), Math.Abs(range.Max))
+									: range.Max;
+								evidence.LaterValue = display.ToString(System.Globalization.CultureInfo.InvariantCulture);
+							}
+						}
+
+						if (evidence.SignalId.Equals("Machine.LastProductionChange", StringComparison.OrdinalIgnoreCase))
+						{
+							lastProductionSamples.Add(formatted);
 						}
 					}
 					catch
@@ -180,6 +205,7 @@ public static class PressBrakeOpcUaLiveVerificationHarness
 			}
 			EvaluateGroundTruth(report, session);
 			EvaluateDynamics(report);
+			EvaluateSemanticTruthfulness(report, lastProductionSamples);
 			EvaluateIsolation(report);
 		}
 		finally
@@ -209,6 +235,8 @@ public static class PressBrakeOpcUaLiveVerificationHarness
 			&& report.ProgramPartTransitionPass
 			&& report.ThermalEvolutionPass
 			&& report.ActivityStateBehaviorPass
+			&& report.CategoricalSignalTruthfulnessPass
+			&& report.LastProductionChangeTruthfulnessPass
 			&& report.GroundTruthGenerationPass
 			&& report.GroundTruthIsolationPass;
 
@@ -255,6 +283,54 @@ public static class PressBrakeOpcUaLiveVerificationHarness
 
 		int dynamicCount = report.Signals.Count(s => s.Dynamic);
 		report.DynamicSignalSmokePass = dynamicCount >= 8;
+	}
+
+	private static void EvaluateSemanticTruthfulness(
+		PressBrakeOpcUaLiveVerificationReport report,
+		List<string> lastProductionSamples)
+	{
+		static PressBrakeSignalReadEvidence? Find(PressBrakeOpcUaLiveVerificationReport r, string id) =>
+			r.Signals.FirstOrDefault(s => s.SignalId.Equals(id, StringComparison.OrdinalIgnoreCase));
+
+		var lastProduction = Find(report, "Machine.LastProductionChange");
+		var machineState = Find(report, "Machine.MachineState");
+		var activity = Find(report, "Cycle.ActivityState");
+		var actual = Find(report, "Machine.ActualCounter");
+
+		int pollChangeCount = 0;
+		for (int i = 1; i < lastProductionSamples.Count; i++)
+		{
+			if (!string.Equals(lastProductionSamples[i], lastProductionSamples[i - 1], StringComparison.Ordinal))
+			{
+				pollChangeCount++;
+			}
+		}
+
+		double counterDelta = ParseDouble(actual?.LaterValue) - ParseDouble(actual?.InitialValue);
+		bool notUpdatedEveryPoll = pollChangeCount < lastProductionSamples.Count;
+		bool changedWhenCounterProgressed = counterDelta <= 0
+			|| pollChangeCount >= 1
+			|| !string.Equals(lastProduction?.InitialValue, lastProduction?.LaterValue, StringComparison.Ordinal);
+		bool boundedEventDrivenChanges = pollChangeCount <= Math.Max(1.0, counterDelta) + 1.0;
+
+		report.LastProductionChangeTruthfulnessPass = lastProduction is { Readable: true }
+			&& notUpdatedEveryPoll
+			&& changedWhenCounterProgressed
+			&& boundedEventDrivenChanges;
+
+		report.CategoricalSignalTruthfulnessPass = machineState is { Readable: true }
+			&& activity is { Readable: true }
+			&& (machineState.Dynamic || activity.Dynamic);
+
+		if (!report.LastProductionChangeTruthfulnessPass)
+		{
+			report.Failures.Add("LastProductionChange was not stable/event-driven as required.");
+		}
+
+		if (!report.CategoricalSignalTruthfulnessPass)
+		{
+			report.Failures.Add("Categorical MachineState/ActivityState transitions were insufficient or static.");
+		}
 	}
 
 	private static void EvaluateGroundTruth(
@@ -316,6 +392,32 @@ public static class PressBrakeOpcUaLiveVerificationHarness
 		ranges[signalId] = (sample, sample);
 	}
 
+	private static bool IsCategoricalSignal(string signalId) =>
+		signalId.Equals("Machine.MachineState", StringComparison.OrdinalIgnoreCase)
+		|| signalId.Equals("Cycle.ActivityState", StringComparison.OrdinalIgnoreCase)
+		|| signalId.Equals("Tool.StationState", StringComparison.OrdinalIgnoreCase)
+		|| signalId.Equals("Machine.ProgramId", StringComparison.OrdinalIgnoreCase)
+		|| signalId.Equals("Machine.PartId", StringComparison.OrdinalIgnoreCase);
+
+	private static void TrackCategoricalSample(
+		Dictionary<string, HashSet<string>> samples,
+		string signalId,
+		string? value)
+	{
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			return;
+		}
+
+		if (!samples.TryGetValue(signalId, out HashSet<string>? set))
+		{
+			set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			samples[signalId] = set;
+		}
+
+		set.Add(value);
+	}
+
 	private static bool IsPeakTrackedSignal(string signalId) =>
 		signalId.Equals("Process.BendAngle", StringComparison.OrdinalIgnoreCase)
 		|| signalId.Equals("Process.FormingForce", StringComparison.OrdinalIgnoreCase)
@@ -338,7 +440,7 @@ public static class PressBrakeOpcUaLiveVerificationHarness
 	public static void WriteEvidence(PressBrakeOpcUaLiveVerificationReport report, string directory)
 	{
 		Directory.CreateDirectory(directory);
-		string path = Path.Combine(directory, "AP-018.194-SIM-P01-R2-live-opc-verification.json");
+		string path = Path.Combine(directory, "AP-018.194-SIM-P01-R3-live-opc-verification.json");
 		string json = JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true });
 		File.WriteAllText(path, json);
 	}

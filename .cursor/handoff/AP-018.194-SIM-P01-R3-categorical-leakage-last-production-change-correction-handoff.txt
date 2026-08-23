@@ -1,0 +1,80 @@
+AP-018.194-SIM-P01-R3 - Categorical Leakage & LastProductionChange Semantic Correction Handoff
+==============================================================================================
+Date: 2026-08-23
+Branch: feature/ap-018-194-sim-p01-virtual-press-brake
+Repository: WerkFlow/Coding/Simulation (Werkflow.OpcUaSimulator)
+
+SCOPE (R3)
+----------
+Narrow simulator truthfulness correction before Machine 2 freeze:
+- Machine.LastProductionChange event semantics (no per-tick refresh)
+- Machine.MachineState coarse controller abstraction (non-reversible MotionPhase mapping)
+- Cycle.ActivityState observable activity abstraction (no BendStepIndex / phase encoding)
+No VIGIL changes. 14-signal contract preserved.
+
+LASTPRODUCTIONCHANGE SEMANTICS
+------------------------------
+Previous: ApplySignals wrote DateTime.UtcNow on every tick.
+Corrected: PressBrakeKinematicsState.LastProductionChangeUtc stamped only on:
+  1) production job applied (OnJobApplied — batch/program assignment)
+  2) completed part (ProducedParts increment in CompleteBendStep)
+Aligned with legacy Laser IncrementCounter semantics.
+
+MACHINESTATE DERIVATION
+-----------------------
+Previous: (int)MotionPhase % 6 — direct phase proxy.
+Corrected: PressBrakeExposedSignalSemantics.ResolveMachineStateIndex maps to coarse
+controller buckets (ready, preparing, automatic, paused, recovering). Many internal
+phases collapse to one token; not reversible to MotionPhase identity.
+
+ACTIVITYSTATE DERIVATION
+------------------------
+Previous: ((int)MotionPhase * 2 + BendStepIndex) % 10 — encoded phase + bend step.
+Corrected: ResolveActivityStateIndex maps to observable activity classes only:
+  inactive / axis-motion / process-load / recovery. BendStepIndex not used.
+
+TESTS
+-----
+Added VirtualPressBrakeSimP01R3Tests + VirtualPressBrakeSimP01R3LiveTests.
+Harness semantic truthfulness checks for LastProductionChange and categoricals.
+Release filter VirtualPressBrake|PressBrake: 21/21 PASS.
+
+LIVE OPC SMOKE
+--------------
+Endpoint: opc.tcp://localhost:4841
+14/14 resolved, 14/14 readable
+CATEGORICAL_SIGNAL_TRUTHFULNESS: PASS
+LAST_PRODUCTION_CHANGE_TRUTHFULNESS: PASS
+Evidence: .cursor/handoff/evidence/AP-018.194-SIM-P01-R3-live-opc-verification.json
+
+CODE TOUCHED
+------------
+- Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Kinematics/PressBrakeExposedSignalSemantics.cs (new)
+- Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Kinematics/PressBrakeKinematicsState.cs
+- Werkflow.OpcUaSimulator.Core/PhysicalSimulation/Kinematics/PressBrakeKinematicsEngine.cs
+- Werkflow.OpcUaSimulator.Tests/VirtualPressBrakeSimP01R3Tests.cs (new)
+- Werkflow.OpcUaSimulator.Tests/PressBrakeOpcUaLiveVerificationHarness.cs
+
+HANDOFF INTEGRITY
+-----------------
+Predecessor archived (byte-identical):
+  Source: .cursor/handoff/AP-018.194-SIM-P01-R2-bend-angle-publish-correction-final-closure-handoff.txt
+  Archive: .cursor/handoff/archive/AP-018.194-SIM-P01-R2-bend-angle-publish-correction-final-closure-handoff-archived-20260823.txt
+  SourceBytes: 3946
+  ArchiveBytes: 3946
+  SourceSHA256: DD5E5D34E9F8D95009CFDF95150A84BC2E3F99CD766F3C2B94D0DF3C45F80560
+  ArchiveSHA256: DD5E5D34E9F8D95009CFDF95150A84BC2E3F99CD766F3C2B94D0DF3C45F80560
+  SIZE_MATCH: True
+  SHA256_MATCH: True
+  SOURCE_REMOVED: True
+
+ACTIVE HANDOFF ROOT FILES
+-------------------------
+- AP-018.194-SIM-P01-R3-categorical-leakage-last-production-change-correction-handoff.txt
+
+ACTIVE_HANDOFF_COUNT: 1
+OBSOLETE_ACTIVE_HANDOFF_COUNT: 0
+
+RECOMMENDED NEXT AP
+-------------------
+AP-018.194-VIGIL-P01 - Machine-2 VIGIL ingestion/readiness audit

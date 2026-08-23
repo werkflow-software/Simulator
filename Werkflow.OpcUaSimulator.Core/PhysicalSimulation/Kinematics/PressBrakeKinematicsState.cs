@@ -72,5 +72,7 @@ public sealed class PressBrakeKinematicsState
 
 	public string NextActionHint { get; set; } = "Bereit";
 
+	public DateTime LastProductionChangeUtc { get; set; } = DateTime.UtcNow;
+
 	public bool ControlsSignal(string signalId) => IsEnabled && ControlledSignals.Contains(signalId);
 }

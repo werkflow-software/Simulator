@@ -1,0 +1,157 @@
+{
+  "Passed": true,
+  "Endpoint": "opc.tcp://localhost:4841",
+  "MachineId": "c3333333-3333-4333-8333-333333333333",
+  "ProfileId": "vigil-press-brake-reduced",
+  "EnabledSignalCount": 14,
+  "ResolvedCount": 14,
+  "ReadableCount": 14,
+  "OpcSessionEstablished": true,
+  "SimulatorStarted": true,
+  "ProductionMotionActive": true,
+  "RamBehaviorPass": true,
+  "BackgaugeBehaviorPass": true,
+  "FormingForceBehaviorPass": true,
+  "BendAngleBehaviorPass": true,
+  "CounterProgressionPass": true,
+  "ProgramPartTransitionPass": true,
+  "ThermalEvolutionPass": true,
+  "ActivityStateBehaviorPass": true,
+  "DynamicSignalSmokePass": true,
+  "GroundTruthGenerationPass": true,
+  "GroundTruthIsolationPass": true,
+  "CategoricalSignalTruthfulnessPass": true,
+  "LastProductionChangeTruthfulnessPass": true,
+  "GroundTruthArtifactPath": "C:\\Users\\tobib\\AppData\\Local\\Werkflow\\OpcUaSimulator\\press-brake-ground-truth\\pb-gt-c3333333333343338333333333333333--2147483534.jsonl",
+  "GroundTruthEventTypesObserved": [
+    "approach_end",
+    "bend_step_end",
+    "bend_step_start",
+    "cycle_completion",
+    "forming_end",
+    "forming_start",
+    "inter_part_wait",
+    "operator_wait_start",
+    "part_end",
+    "part_start",
+    "return_end",
+    "return_start",
+    "setup_end",
+    "setup_start"
+  ],
+  "Signals": [
+    {
+      "SignalId": "Machine.MachineState",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "PB_ST_02",
+      "LaterValue": "PB_ST_00",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Machine.ProgramId",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "PRG-7F2A",
+      "LaterValue": "PRG-7F2A",
+      "Dynamic": false
+    },
+    {
+      "SignalId": "Machine.PartId",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "PRT-19C3",
+      "LaterValue": "PRT-19C4",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Machine.ActualCounter",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "4",
+      "LaterValue": "10",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Machine.TargetCounter",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "10",
+      "LaterValue": "10",
+      "Dynamic": false
+    },
+    {
+      "SignalId": "Machine.LastProductionChange",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "2026-08-23T17:10:32.0177232Z",
+      "LaterValue": "2026-08-23T17:10:45.9236004Z",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Ram.Position",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "185",
+      "LaterValue": "185",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Ram.Velocity",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "0",
+      "LaterValue": "5.521997282782833",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Backgauge.Position",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "310",
+      "LaterValue": "95",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Process.BendAngle",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "4.1943350000000095",
+      "LaterValue": "69.952275",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Process.FormingForce",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "41.26647500000004",
+      "LaterValue": "189.28068749999997",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Tool.StationState",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "TL_ST_00",
+      "LaterValue": "TL_ST_01",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Thermal.HydraulicOilTemp",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "38.32526871000003",
+      "LaterValue": "37.46849528000002",
+      "Dynamic": true
+    },
+    {
+      "SignalId": "Cycle.ActivityState",
+      "Resolved": true,
+      "Readable": true,
+      "InitialValue": "CY_AC_00",
+      "LaterValue": "CY_AC_00",
+      "Dynamic": true
+    }
+  ],
+  "Failures": []
+}
