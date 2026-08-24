@@ -23,7 +23,7 @@ Source-control freeze
 ---------------------
 START_HEAD: 72761042f96b3a9c27a534e8ffe4b645e1fa7b73
 SIM_P02_IMPLEMENTATION_COMMIT_SHA: d80b29f667c25f5516c86aff756cce68dc640ef5
-CURRENT_HEAD: d80b29f667c25f5516c86aff756cce68dc640ef5 (pre-R1-closure; R1 docs commit follows)
+CURRENT_HEAD: 787e0fce59a9d74b84e27175055aeb3ecdffdddb
 LOCAL_BRANCH: feature/ap-018-194-sim-p01-virtual-press-brake
 REMOTE_BRANCH: origin/feature/ap-018-194-sim-p01-virtual-press-brake
 REMOTE_SHA: d80b29f667c25f5516c86aff756cce68dc640ef5
