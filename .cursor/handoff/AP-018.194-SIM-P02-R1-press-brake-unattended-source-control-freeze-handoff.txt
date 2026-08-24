@@ -1,0 +1,83 @@
+AP-018.194-SIM-P02-R1 - Press Brake Unattended Source-Control / Validation Freeze Closure
+==========================================================================================
+
+Repository: C:\WerkFlow\Coding\Simulation
+Branch: feature/ap-018-194-sim-p01-virtual-press-brake
+Date: 2026-08-24
+Mode: FORMAL_CLOSURE_ONLY
+
+SIM-P02 preserved capabilities
+------------------------------
+- Unattended automatic part continuation
+- Unattended automatic program continuation
+- Baseline probabilistic OperatorWait disabled / auto-resolved
+- Truthful phase observability (German labels)
+- Elapsed / total / remaining from frozen phase duration
+- Explicit automatic vs operator-required continuation
+- Start disabled during automatic run
+- Frozen 14-signal OPC contract unchanged
+- GT internal-only unchanged
+- SIMULATOR_LONG_RUN_READY = READY
+
+Source-control freeze
+---------------------
+START_HEAD: 72761042f96b3a9c27a534e8ffe4b645e1fa7b73
+SIM_P02_IMPLEMENTATION_COMMIT_SHA: d80b29f667c25f5516c86aff756cce68dc640ef5
+CURRENT_HEAD: d80b29f667c25f5516c86aff756cce68dc640ef5 (pre-R1-closure; R1 docs commit follows)
+LOCAL_BRANCH: feature/ap-018-194-sim-p01-virtual-press-brake
+REMOTE_BRANCH: origin/feature/ap-018-194-sim-p01-virtual-press-brake
+REMOTE_SHA: d80b29f667c25f5516c86aff756cce68dc640ef5
+PUSH_VERIFIED: YES
+LOCAL_REMOTE_SHA_MATCH: YES
+SIM_P02_REQUIRED_UNCOMMITTED_FILES: 0
+
+Validation (2026-08-24)
+-----------------------
+Build: PASS (0 errors)
+Tests passed: 18
+Tests failed: 0
+Filter: VirtualPressBrakeSimP02 + VirtualPressBrakeContract + PressBrakeKinematicsPlausibility + PressBrakeGroundTruth + PressBrakeStructuralIndependence
+
+Targeted results:
+- Automatic next-part: PASS (SIM_P02_AutomaticPartContinuation_WithoutManualStart)
+- Automatic next-program: PASS (SIM_P02_ProgramTransition_ContinuesAutomatically)
+- Full baseline continuation: PASS (composite: part+program auto + OperatorWait disabled + baseline duration estimate)
+- Countdown observability: PASS (SIM_P02_PhaseRemaining_IsMonotonicDuringSetup)
+- Start-button semantics: PASS (code-verified CanStartProduction + evidence ManualHmiClickRequired=false)
+- Accelerated integration validation: PASS (.cursor/handoff/evidence/AP-018.194-SIM-P02-accelerated-integration-validation.json)
+- Laser regression: PASS (SIM_P01_LaserContract_Unchanged_Port4840, SIM_P02_LaserContract_Unchanged)
+- GT isolation: PASS (SIM_P01_GroundTruth_IsInternalOnly_AndDeterministic)
+- 14-signal contract: PASS (SIM_P01_Profile_HasExactly14EnabledSignals, SIM_P02_FrozenOpcContract_Remains14Signals)
+
+VIGIL boundary
+--------------
+VIGIL_MACHINE2_SIGNAL_COUNT: 14
+MACHINE2_CONTRACT_CHANGED: NO
+GT_VISIBLE_TO_VIGIL: NO
+GT_SEMANTICS_CHANGED: NO
+VIGIL changed: NO
+RUN registered: NO
+
+SIM-P02 predecessor archive (rotation)
+--------------------------------------
+Predecessor: AP-018.194-SIM-P02-press-brake-unattended-continuation-handoff.txt
+Archive: archive/AP-018.194-SIM-P02-press-brake-unattended-continuation-handoff.txt
+SourceBytes: 2204
+ArchiveBytes: 2204
+SourceSHA256: 6187BB0EAE3FCA7E8520BA1A5B0357F7798D28305996342811F4EA3848BA394C
+ArchiveSHA256: 6187BB0EAE3FCA7E8520BA1A5B0357F7798D28305996342811F4EA3848BA394C
+SIZE_MATCH: True
+SHA256_MATCH: True
+SOURCE_REMOVED: True
+
+Handoff inventory
+-----------------
+ACTIVE_HANDOFF_COUNT=1
+OBSOLETE_ACTIVE_HANDOFF_COUNT=0
+ACTIVE_HANDOFF: AP-018.194-SIM-P02-R1-press-brake-unattended-source-control-freeze-handoff.txt
+
+FuE: FuE-Zeiterfassung_August.csv AP-018.194-SIM-P02-R1 (entry complete)
+
+SIMULATOR_LONG_RUN_FREEZE: READY
+
+Recommended next step: Return to VIGIL and register TRUMPF EXT-B as RUN-015
