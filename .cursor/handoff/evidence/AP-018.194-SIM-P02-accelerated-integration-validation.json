@@ -1,0 +1,19 @@
+{
+  "ApId": "AP-018.194-SIM-P02",
+  "ValidationMode": "ACCELERATED_INTEGRATION_NO_VIGIL_RUN",
+  "TimestampUtc": "2026-08-24T21:30:00Z",
+  "Results": {
+    "BaselineStartsOnce": true,
+    "AutomaticNextPart": true,
+    "AutomaticProgramTransition": true,
+    "PhaseCountdownFromSimulatorState": true,
+    "ManualHmiClickRequired": false,
+    "NextStateIndicated": true,
+    "TestsExecuted": [
+      "SIM_P02_AutomaticPartContinuation_WithoutManualStart",
+      "SIM_P02_ProgramTransition_ContinuesAutomatically",
+      "SIM_P02_PhaseRemaining_IsMonotonicDuringSetup",
+      "SIM_P02_ContinuationIndicator_ShowsAutomaticWaitDuringSetup"
+    ]
+  }
+}

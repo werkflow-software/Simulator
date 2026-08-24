@@ -1,0 +1,51 @@
+AP-018.194-SIM-P02 - Press Brake Unattended Continuation / HMI Observability Handoff
+==================================================================================
+
+Repository: C:\WerkFlow\Coding\Simulation
+Date: 2026-08-24
+Mode: SIMULATOR_CORRECTION_ONLY
+
+Purpose
+-------
+Enable unattended multi-hour VIGIL LAB runs on Virtual Press Brake with automatic
+part/program continuation, truthful phase timing on HMI, and explicit automatic vs
+operator-required continuation semantics. No VIGIL cognition/harness changes.
+
+Key corrections
+---------------
+- PressBrakePhaseObservability: German phase labels, elapsed/total/remaining from frozen phase duration
+- Unattended baseline disables probabilistic OperatorWait gates (auto-resolves as AUTO_WAIT)
+- Press-brake job-change wall pause aligned to kinematic transition+setup (not random 60-300s overlay)
+- HMI shows phase progress, continuation indicator, next program/step; Start disabled during auto-run
+- Frozen 14-signal OPC contract unchanged; GT internal-only unchanged
+
+Artifact
+--------
+.cursor/AP-018.194-SIM-P02-press-brake-unattended-continuation-evaluation.json
+.cursor/handoff/evidence/AP-018.194-SIM-P02-accelerated-integration-validation.json
+
+START_HEAD: 72761042f96b3a9c27a534e8ffe4b645e1fa7b73
+
+SIM-P01-R4-R1 predecessor archive (rotation)
+--------------------------------------------
+Predecessor: AP-018.194-SIM-P01-R4-R1-machine2-freeze-push-verification-handoff.txt
+Archive: archive/AP-018.194-SIM-P01-R4-R1-machine2-freeze-push-verification-handoff.txt
+SourceBytes: 2348
+ArchiveBytes: 2348
+SourceSHA256: D1544E5696BE497B8F89C863EE092C93C9EC5068AE3418ACFB2657A1FF1A8DBD
+ArchiveSHA256: D1544E5696BE497B8F89C863EE092C93C9EC5068AE3418ACFB2657A1FF1A8DBD
+SIZE_MATCH: True
+SHA256_MATCH: True
+SOURCE_REMOVED: True
+
+Handoff inventory
+-----------------
+ACTIVE_HANDOFF_COUNT=1
+OBSOLETE_ACTIVE_HANDOFF_COUNT=0
+ACTIVE_HANDOFF: AP-018.194-SIM-P02-press-brake-unattended-continuation-handoff.txt
+
+FuE: FuE-Zeiterfassung_August.csv AP-018.194-SIM-P02 (entry complete)
+
+SIMULATOR_LONG_RUN_READY: READY
+
+Recommended next AP: AP-018.194-P26 (VIGIL harness autonomous summary observability correction)

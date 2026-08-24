@@ -510,6 +510,11 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 				return (simulation.FrozenPartRemainingSeconds, simulation.FrozenJobRemainingSeconds);
 			}
 
+			if (VirtualPressBrakeMachineRegistry.IsVirtualPressBrakeMachine(machineId))
+			{
+				return PressBrakeProductionTimeEstimator.EstimateRemaining(context.Session.Simulation, context.Seed);
+			}
+
 			FixedProductionJobDefinition job = BuildJobDefinition(simulation);
 			double part = LaserToolpathTimeEstimator.EstimateRemainingPartSeconds(simulation.Kinematics, job, context.Seed);
 			double jobRemaining = LaserToolpathTimeEstimator.EstimateRemainingJobSeconds(simulation, job, context.Seed);
@@ -524,6 +529,17 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 			if (!_contexts.TryGetValue(machineId, out MachineContext context))
 			{
 				return 0.0;
+			}
+
+			if (VirtualPressBrakeMachineRegistry.IsVirtualPressBrakeMachine(machineId))
+			{
+				PressBrakeKinematicsState pressBrake = context.Session.Simulation.PressBrake;
+				if (!pressBrake.IsEnabled)
+				{
+					return 0.0;
+				}
+
+				return PressBrakeKinematicsEngine.GetPhaseRemainingSeconds(pressBrake, context.Seed);
 			}
 
 			return LaserToolpathTimeEstimator.EstimateSetupRemainingSeconds(context.Session.Simulation);

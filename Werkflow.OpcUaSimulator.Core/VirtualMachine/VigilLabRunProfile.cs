@@ -69,9 +69,16 @@ public static class VigilLabRunProfile
 
 	public static void ResolveJobChangePauseRange(
 		Guid machineId,
+		int nextCatalogIndex,
 		out int minPauseSeconds,
 		out int maxPauseSeconds)
 	{
+		if (VirtualPressBrakeMachineRegistry.IsVirtualPressBrakeMachine(machineId))
+		{
+			VirtualPressBrakeRunProfile.ResolveJobChangePauseRange(machineId, nextCatalogIndex, out minPauseSeconds, out maxPauseSeconds);
+			return;
+		}
+
 		if (machineId == VigilLabMachineContract.MachineId)
 		{
 			minPauseSeconds = Run004MinJobChangePauseSeconds;

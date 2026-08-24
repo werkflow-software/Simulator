@@ -1,5 +1,6 @@
 using Werkflow.OpcUaSimulator.Core.Defaults;
 using Werkflow.OpcUaSimulator.Core.Models;
+using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Kinematics;
 
 namespace Werkflow.OpcUaSimulator.Core.VirtualMachine;
 
@@ -13,6 +14,10 @@ public static class VirtualPressBrakeRunProfile
 	public static readonly int[] BaselineProgramIndices = [0, 1, 2];
 
 	public const int BaselineBatchQuantity = 10;
+
+	public const bool UnattendedBaselineEnabled = true;
+
+	public const bool DisableOperatorWaitsInUnattendedBaseline = true;
 
 	/// <summary>Approximate baseline wall-clock duration at 1x simulation speed with 2x machine factor (~18-22 min).</summary>
 	public const int ApproximateBaselineWallClockMinutes = 20;
@@ -66,5 +71,78 @@ public static class VirtualPressBrakeRunProfile
 		job.MaterialThicknessMm = definition.MaterialThicknessMm;
 		job.RecipeName = definition.RecipeName;
 		job.ProgramName = definition.ProgramName;
+	}
+
+	public static void ResolveJobChangePauseRange(
+		Guid machineId,
+		int nextCatalogIndex,
+		out int minPauseSeconds,
+		out int maxPauseSeconds)
+	{
+		if (machineId != VirtualPressBrakeContract.MachineId)
+		{
+			minPauseSeconds = FixedSimulationCatalog.MinJobChangePauseSeconds;
+			maxPauseSeconds = FixedSimulationCatalog.MaxJobChangePauseSeconds;
+			return;
+		}
+
+		FixedProductionJobDefinition nextJob = ResolveJobDefinition(machineId, nextCatalogIndex);
+		int pauseSeconds = (int)Math.Ceiling(
+			PressBrakePhaseObservability.EstimateJobChangePauseSeconds(
+				machineId,
+				nextJob,
+				RandomSeed));
+		minPauseSeconds = pauseSeconds;
+		maxPauseSeconds = pauseSeconds;
+	}
+
+	public static (double MinimumSeconds, double NominalSeconds, double MaximumSeconds) EstimateCompleteBaselineWallClockSeconds(
+		double simulationSpeedFactor = 1.0,
+		double productionSpeedFactor = 2.0)
+	{
+		double speedFactor = Math.Max(0.1, simulationSpeedFactor * productionSpeedFactor);
+		double minimum = 0.0;
+		double nominal = 0.0;
+		double maximum = 0.0;
+		for (int programIndex = 0; programIndex < BaselineProgramIndices.Length; programIndex++)
+		{
+			int catalogIndex = BaselineProgramIndices[programIndex];
+			PressBrakeProgramDefinition program = PressBrakeProgramCatalog.GetProgram(catalogIndex);
+			double partCycle = EstimateAveragePartCycleSeconds(program);
+			double batch = partCycle * BaselineBatchQuantity;
+			double transition = programIndex == 0
+				? 0.0
+				: PressBrakePhaseObservability.EstimateJobChangePauseSeconds(
+					VirtualPressBrakeContract.MachineId,
+					ResolveJobDefinition(VirtualPressBrakeContract.MachineId, catalogIndex),
+					RandomSeed);
+			minimum += (batch + transition) * 0.92;
+			nominal += batch + transition;
+			maximum += (batch + transition) * 1.08;
+		}
+
+		return (minimum / speedFactor, nominal / speedFactor, maximum / speedFactor);
+	}
+
+	private static double EstimateAveragePartCycleSeconds(PressBrakeProgramDefinition program)
+	{
+		if (program.Parts.Count == 0)
+		{
+			return 30.0;
+		}
+
+		double total = 0.0;
+		foreach (PressBrakePartDefinition part in program.Parts)
+		{
+			double bendSeconds = part.BendSteps.Sum(step =>
+				step.ApproachDurationSeconds
+				+ step.FormingDurationSeconds
+				+ step.HoldDurationSeconds
+				+ step.ReturnDurationSeconds
+				+ step.InterStepWaitSeconds);
+			total += bendSeconds + part.InterPartWaitSeconds + program.SetupDurationSeconds / Math.Max(1, program.Parts.Count);
+		}
+
+		return total / program.Parts.Count;
 	}
 }

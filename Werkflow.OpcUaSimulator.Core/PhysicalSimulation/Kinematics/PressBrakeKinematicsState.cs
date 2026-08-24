@@ -74,5 +74,17 @@ public sealed class PressBrakeKinematicsState
 
 	public DateTime LastProductionChangeUtc { get; set; } = DateTime.UtcNow;
 
+	public double PhaseTotalDurationSeconds { get; set; }
+
+	public PressBrakeContinuationKind ContinuationKind { get; set; } = PressBrakeContinuationKind.ActiveProduction;
+
+	public bool OperatorInteractionRequired { get; set; }
+
+	public bool UnattendedBaselineEnabled { get; set; } = true;
+
+	public string NextProgramIdPreview { get; set; } = "—";
+
+	public string NextPartIdPreview { get; set; } = "—";
+
 	public bool ControlsSignal(string signalId) => IsEnabled && ControlledSignals.Contains(signalId);
 }

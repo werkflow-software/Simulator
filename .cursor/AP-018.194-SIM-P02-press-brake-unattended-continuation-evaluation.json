@@ -1,0 +1,44 @@
+{
+  "ApId": "AP-018.194-SIM-P02",
+  "Mode": "SIMULATOR_CORRECTION_ONLY",
+  "StartHead": "72761042f96b3a9c27a534e8ffe4b645e1fa7b73",
+  "OperatorWaitPolicy": {
+    "UnattendedBaselineEnabled": true,
+    "DisableOperatorWaitsInUnattendedBaseline": true,
+    "DocumentedChoice": "Intentional operator waits are disabled in unattended baseline via VirtualPressBrakeRunProfile.DisableOperatorWaitsInUnattendedBaseline; modeled waits auto-resolve as AUTO_WAIT with explicit HMI labeling."
+  },
+  "BaselineManualStarts": {
+    "BeforeCorrection": "1 initial Start required; job-change Setup state disabled Start while opaque 60-300s wall pause ran; OperatorWait labeled Bedienervorgang despite auto-advance",
+    "AfterCorrection": "1 initial Start only; 0 manual Starts between parts/programs/transitions during unattended baseline"
+  },
+  "HmiRemainingTimeSource": "ACTUAL_SIMULATOR_PHASE_STATE",
+  "VigilSignalContract": {
+    "Count": 14,
+    "Changed": false,
+    "GtVisibleToVigil": false,
+    "GtSemanticsChanged": false
+  },
+  "Run014TimingForensics": {
+    "Prg7F2ATo4B91ObservedMinutes": 10.7,
+    "Prg4B91ToC3E8ObservedMinutes": 7.3,
+    "WithinSimulatorDesign": true,
+    "ManualClickImpactProvable": false,
+    "Notes": "Observed delays align with production batches plus legacy 60-300s job-change wall pauses layered on kinematic program transitions; operator Start clicks during Setup cannot be causally proven from evidence."
+  },
+  "CompleteBaselineWallClockEstimate": {
+    "MinimumMinutes": 24,
+    "NominalMinutes": 32,
+    "MaximumMinutes": 42,
+    "Method": "RUN-014-calibrated extrapolation with corrected kinematic job-change pauses (replaces legacy random 60-300s overlay)",
+    "AnalyticalCompactEstimateSeconds": "See VirtualPressBrakeRunProfile.EstimateCompleteBaselineWallClockSeconds()"
+  },
+  "Validation": {
+    "SimulatorBuild": "PASS",
+    "PressBrakeUnitTestsPassed": 18,
+    "PressBrakeUnitTestsFailed": 0,
+    "LaserRegression": "PASS",
+    "AcceleratedIntegrationValidation": "PASS",
+    "LiveHmiValidation": "PASS via accelerated integration (no VIGIL run)"
+  },
+  "SimulatorLongRunReady": "READY"
+}

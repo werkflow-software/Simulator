@@ -451,9 +451,13 @@ public sealed class VirtualMachineHmiWindow : Window
 		stack.Children.Add(MakeSectionTitle("ZEITEN"));
 		stack.Children.Add(BuildTimeRow("Teil", nameof(VirtualMachineHmiViewModel.PartRemainingText)));
 		stack.Children.Add(BuildTimeRow("Auftrag", nameof(VirtualMachineHmiViewModel.JobRemainingText)));
-		stack.Children.Add(BuildTimeRow("Einrichten", nameof(VirtualMachineHmiViewModel.SetupRemainingText)));
+		stack.Children.Add(BuildTimeRow("Phasenfortschritt", nameof(VirtualMachineHmiViewModel.PhaseProgressText)));
+		stack.Children.Add(BuildTimeRow("Phasenrest", nameof(VirtualMachineHmiViewModel.SetupRemainingText)));
+		stack.Children.Add(BuildTimeRow("Rest", nameof(VirtualMachineHmiViewModel.PhaseRemainingDetailText)));
 		stack.Children.Add(BuildTimeRow("Düsenwechsel", nameof(VirtualMachineHmiViewModel.NozzleRemainingText)));
 		stack.Children.Add(BuildTimeRow("Laufzeit", nameof(VirtualMachineHmiViewModel.JobElapsedText)));
+		stack.Children.Add(MakeBoundBlock(nameof(VirtualMachineHmiViewModel.ContinuationIndicatorText), 13, FontWeights.SemiBold, "{0}"));
+		stack.Children.Add(MakeBoundBlock(nameof(VirtualMachineHmiViewModel.NextStepPreviewText), 12, FontWeights.Normal, "{0}"));
 		border.Child = stack;
 		return border;
 	}

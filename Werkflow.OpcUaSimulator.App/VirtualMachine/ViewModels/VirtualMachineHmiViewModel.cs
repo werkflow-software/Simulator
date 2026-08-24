@@ -83,6 +83,11 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	private string _setupRemainingText = "—";
 	private string _nozzleRemainingText = "—";
 	private string _jobElapsedText = "—";
+	private string _phaseProgressText = "—";
+	private string _phaseRemainingDetailText = "—";
+	private string _continuationIndicatorText = "—";
+	private string _nextStepPreviewText = "—";
+	private bool _isPressBrakeMachine;
 
 	public ObservableCollection<HmiMetricItem> OverviewMetrics { get; } = [];
 	public ObservableCollection<HmiAxisPanelViewModel> AxisPanels { get; } = [];
@@ -165,6 +170,11 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	public string SetupRemainingText => _setupRemainingText;
 	public string NozzleRemainingText => _nozzleRemainingText;
 	public string JobElapsedText => _jobElapsedText;
+	public string PhaseProgressText => _phaseProgressText;
+	public string PhaseRemainingDetailText => _phaseRemainingDetailText;
+	public string ContinuationIndicatorText => _continuationIndicatorText;
+	public string NextStepPreviewText => _nextStepPreviewText;
+	public bool IsPressBrakeMachine => _isPressBrakeMachine;
 
 	public CuttingPlanViewModel CuttingPlan { get; } = new();
 
@@ -881,20 +891,37 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	private void RefreshProcessMotionState(PhysicalMachineSession session)
 	{
 		PressBrakeKinematicsState pressBrake = session.Simulation.PressBrake;
+		_isPressBrakeMachine = pressBrake.IsEnabled;
 		if (pressBrake.IsEnabled)
 		{
-			_processPhaseText = pressBrake.MotionPhase.ToString();
+			PressBrakePhaseSnapshot snapshot = PressBrakePhaseObservability.BuildSnapshot(
+				pressBrake,
+				session.Simulation.Seed,
+				pressBrake.NextProgramIdPreview,
+				pressBrake.NextPartIdPreview);
+			_processPhaseText = snapshot.PhaseDisplayName;
 			_processPhaseEnglish = pressBrake.MotionPhase.ToString();
 			_laserActiveText = "NEIN";
 			_cuttingActiveText = pressBrake.MotionPhase is PressBrakeMotionPhase.Forming or PressBrakeMotionPhase.Hold ? "JA" : "NEIN";
 			_positioningActiveText = pressBrake.MotionPhase is PressBrakeMotionPhase.RamApproach or PressBrakeMotionPhase.BackgaugeMove ? "JA" : "NEIN";
-			_nextActionText = pressBrake.NextActionHint;
+			_nextActionText = snapshot.ContinuationIndicator;
+			_continuationIndicatorText = snapshot.ContinuationIndicator;
+			_nextStepPreviewText = snapshot.NextStepPreview;
+			_phaseProgressText = PressBrakePhaseObservability.FormatProgress(snapshot.ElapsedSeconds, snapshot.TotalDurationSeconds);
+			_phaseRemainingDetailText = PressBrakePhaseObservability.FormatRemaining(snapshot.RemainingSeconds);
 			_pathSpeedText = $"{Math.Abs(pressBrake.RamVelocityMmPerS):0.#} mm/s";
 			_focusText = $"{pressBrake.BendAngleDeg:0.#}°";
-			_statusTone = _errorActive ? "error" : pressBrake.MotionPhase == PressBrakeMotionPhase.Forming ? "cutting" : "running";
+			_statusTone = _errorActive
+				? "error"
+				: pressBrake.ContinuationKind == PressBrakeContinuationKind.AutoWait
+					? "setup"
+					: pressBrake.MotionPhase == PressBrakeMotionPhase.Forming
+						? "cutting"
+						: "running";
 		}
 		else
 		{
+			_isPressBrakeMachine = false;
 			LaserKinematicsState kinematics = session.Simulation.Kinematics;
 			if (kinematics.IsEnabled)
 			{
@@ -961,8 +988,18 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 			|| session?.Simulation.Kinematics.MotionPhase is LaserMotionPhase.JobChange
 				or LaserMotionPhase.Setup
 				or LaserMotionPhase.NozzleChange;
+		bool isPressBrake = session?.Simulation.PressBrake.IsEnabled == true;
 
-		if (isJobChange)
+		if (isPressBrake)
+		{
+			(double partSeconds, double jobSeconds) = _simulationEngine.GetProductionTimeEstimates(_machine.Id);
+			_partRemainingText = partSeconds > 0.0 ? FormatDuration(partSeconds) : "—";
+			_jobRemainingText = jobSeconds > 0.0 ? FormatDuration(jobSeconds) : "—";
+			double phaseRemaining = _simulationEngine.GetSetupRemainingSeconds(_machine.Id);
+			_setupRemainingText = phaseRemaining > 0.0 ? FormatDuration(phaseRemaining) : "—";
+			_nozzleRemainingText = "—";
+		}
+		else if (isJobChange)
 		{
 			_partRemainingText = "—";
 			_jobRemainingText = "—";
@@ -999,6 +1036,11 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		OnPropertyChanged(nameof(SetupRemainingText));
 		OnPropertyChanged(nameof(NozzleRemainingText));
 		OnPropertyChanged(nameof(JobElapsedText));
+		OnPropertyChanged(nameof(PhaseProgressText));
+		OnPropertyChanged(nameof(PhaseRemainingDetailText));
+		OnPropertyChanged(nameof(ContinuationIndicatorText));
+		OnPropertyChanged(nameof(NextStepPreviewText));
+		OnPropertyChanged(nameof(IsPressBrakeMachine));
 	}
 
 	private static string FormatDuration(double seconds)
@@ -1029,6 +1071,11 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		OnPropertyChanged(nameof(FocusText));
 		OnPropertyChanged(nameof(StatusTone));
 		OnPropertyChanged(nameof(RemainingCounterText));
+		OnPropertyChanged(nameof(PhaseProgressText));
+		OnPropertyChanged(nameof(PhaseRemainingDetailText));
+		OnPropertyChanged(nameof(ContinuationIndicatorText));
+		OnPropertyChanged(nameof(NextStepPreviewText));
+		OnPropertyChanged(nameof(IsPressBrakeMachine));
 	}
 
 	private void UpdateJobPoolSummary()
@@ -1255,10 +1302,33 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	private bool CanChangeOrSelectJob() =>
 		_machine != null && _isMachineRunning && _runtime != null && !_runtime.IsJobChangeActive;
 
-	private bool CanStartProduction() =>
-		_machine != null && _isMachineRunning && _runtime != null &&
-		!_runtime.ErrorActive && !_runtime.IsJobChangeActive &&
-		_runtime.State is MachineState.Idle or MachineState.Paused;
+	private bool CanStartProduction()
+	{
+		if (_machine == null || !_isMachineRunning || _runtime == null ||
+			_runtime.ErrorActive || _runtime.IsJobChangeActive)
+		{
+			return false;
+		}
+
+		PhysicalMachineSession? session = _coordinator.GetSession(_machine.Id);
+		if (session?.Simulation.PressBrake.IsEnabled == true)
+		{
+			if (_runtime.State == MachineState.Paused)
+			{
+				return true;
+			}
+
+			if (_runtime.IsProducing && _runtime.State == MachineState.Running
+				&& session.Simulation.IsProductionMotionActive)
+			{
+				return false;
+			}
+
+			return _runtime.State is MachineState.Idle or MachineState.Paused;
+		}
+
+		return _runtime.State is MachineState.Idle or MachineState.Paused;
+	}
 
 	private bool CanStopProduction() =>
 		_machine != null && _isMachineRunning && _runtime != null &&

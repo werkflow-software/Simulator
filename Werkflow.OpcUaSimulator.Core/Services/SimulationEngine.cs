@@ -945,7 +945,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 			}
 
 			FixedProductionJobDefinition nextDefinition = ResolveJobDefinition(machine.Id, nextCatalogIndex);
-			VigilLabRunProfile.ResolveJobChangePauseRange(machine.Id, out int minPauseSeconds, out int maxPauseSeconds);
+			VigilLabRunProfile.ResolveJobChangePauseRange(machine.Id, nextCatalogIndex, out int minPauseSeconds, out int maxPauseSeconds);
 			int pauseSeconds = SimulationRandom.NextInRange(
 				_random,
 				minPauseSeconds,

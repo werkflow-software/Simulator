@@ -37,6 +37,7 @@ public static class PressBrakeKinematicsEngine
 		pressBrake.ToolChangeRequired = false;
 		pressBrake.NextActionHint = "Bereit";
 		pressBrake.LastProductionChangeUtc = DateTime.UtcNow;
+		pressBrake.UnattendedBaselineEnabled = VirtualPressBrakeRunProfile.UnattendedBaselineEnabled;
 		PressBrakeExposedSignalSemantics.ApplyExposedTokens(pressBrake, PressBrakeMotionPhase.Idle, context);
 		LoadProgram(context, seed, 0);
 	}
@@ -86,8 +87,8 @@ public static class PressBrakeKinematicsEngine
 		context.IsProductionMotionActive = false;
 		context.PressBrake.PendingPartCompletions = 0;
 		context.PressBrake.ToolChangeRequired = nextJob.CatalogIndex % 2 == 0;
-		context.PressBrake.MotionPhase = PressBrakeMotionPhase.ProgramTransition;
-		context.PressBrake.PhaseElapsedSeconds = 0.0;
+		UpdateTransitionPreview(context.PressBrake, nextJob);
+		AdvancePhase(context.PressBrake, PressBrakeMotionPhase.ProgramTransition, context.Seed);
 	}
 
 	public static void OnJobChangeBegin(PhysicalSimulationContext context, FixedProductionJobDefinition nextJob)
@@ -98,8 +99,8 @@ public static class PressBrakeKinematicsEngine
 		}
 
 		context.PressBrake.ToolChangeRequired = nextJob.CatalogIndex % 3 == 0;
-		context.PressBrake.MotionPhase = PressBrakeMotionPhase.ProgramTransition;
-		context.PressBrake.PhaseElapsedSeconds = 0.0;
+		UpdateTransitionPreview(context.PressBrake, nextJob);
+		AdvancePhase(context.PressBrake, PressBrakeMotionPhase.ProgramTransition, context.Seed);
 	}
 
 	public static void OnJobApplied(PhysicalSimulationContext context, int seed)
@@ -114,9 +115,9 @@ public static class PressBrakeKinematicsEngine
 		context.PressBrake.ProducedParts = 0;
 		context.PressBrake.PartIndex = 0;
 		context.PressBrake.BendStepIndex = 0;
-		context.PressBrake.PhaseElapsedSeconds = 0.0;
-		context.PressBrake.MotionPhase = PressBrakeMotionPhase.Setup;
 		context.PressBrake.TargetParts = Math.Max(1, context.Job.TargetQuantity);
+		context.PressBrake.UnattendedBaselineEnabled = VirtualPressBrakeRunProfile.UnattendedBaselineEnabled;
+		AdvancePhase(context.PressBrake, PressBrakeMotionPhase.Setup, seed);
 		PressBrakeExposedSignalSemantics.StampLastProductionChange(context.PressBrake);
 	}
 
@@ -208,7 +209,7 @@ public static class PressBrakeKinematicsEngine
 
 		if (context.IsJobChangePauseActive)
 		{
-			TickProgramTransition(context, pressBrake, dt, groundTruth, machineId);
+			TickProgramTransition(context, pressBrake, dt, groundTruth, machineId, seed);
 		}
 		else if (pressBrake.ProducedParts >= pressBrake.TargetParts && pressBrake.TargetParts > 0)
 		{
@@ -222,6 +223,7 @@ public static class PressBrakeKinematicsEngine
 
 		PressBrakeExposedSignalSemantics.ApplyExposedTokens(pressBrake, pressBrake.MotionPhase, context);
 		context.CurrentPhase = MapToProcessPhase(pressBrake.MotionPhase);
+		RefreshPhasePresentation(pressBrake, seed, context);
 		ApplySignals(runtime, pressBrake);
 		UpdateThermal(pressBrake, dt, pressBrake.MotionPhase is PressBrakeMotionPhase.Forming or PressBrakeMotionPhase.Hold);
 	}
@@ -241,20 +243,18 @@ public static class PressBrakeKinematicsEngine
 
 		PressBrakePartDefinition? part = GetCurrentPart(pressBrake);
 		PressBrakeBendStepDefinition? step = GetCurrentStep(pressBrake, part);
-		double phaseDuration = GetPhaseDuration(pressBrake, part, step, seed);
+		double phaseDuration = ResolvePhaseDurationSeconds(pressBrake, part, step, seed);
 
 		if (pressBrake.InterruptRequested && pressBrake.MotionPhase is not PressBrakeMotionPhase.InterruptRecovery)
 		{
-			pressBrake.MotionPhase = PressBrakeMotionPhase.InterruptRecovery;
-			pressBrake.PhaseElapsedSeconds = 0.0;
+			AdvancePhase(pressBrake, PressBrakeMotionPhase.InterruptRecovery, seed);
 			RecordGt(groundTruth, machineId, pressBrake, "interruption_start", "PressBrakeKinematicsEngine");
 		}
 
 		switch (pressBrake.MotionPhase)
 		{
 		case PressBrakeMotionPhase.Setup:
-			TickTimedPhase(pressBrake, dt, pressBrake.ActiveProgram!.SetupDurationSeconds, PressBrakeMotionPhase.BackgaugeMove);
-			pressBrake.NextActionHint = "Einrichten";
+			TickTimedPhase(pressBrake, dt, pressBrake.ActiveProgram!.SetupDurationSeconds, PressBrakeMotionPhase.BackgaugeMove, seed);
 			RecordGtOnce(groundTruth, machineId, pressBrake, "setup_start", "PressBrakeKinematicsEngine", pressBrake.PhaseElapsedSeconds <= dt);
 			if (pressBrake.MotionPhase == PressBrakeMotionPhase.BackgaugeMove)
 			{
@@ -262,20 +262,18 @@ public static class PressBrakeKinematicsEngine
 			}
 			break;
 		case PressBrakeMotionPhase.OperatorWait:
-			TickTimedPhase(pressBrake, dt, 8.0 + (seed % 7), PressBrakeMotionPhase.BackgaugeMove);
-			pressBrake.NextActionHint = "Bedienervorgang";
+			TickTimedPhase(pressBrake, dt, ResolveOperatorWaitDurationSeconds(seed), PressBrakeMotionPhase.BackgaugeMove, seed);
 			RecordGtOnce(groundTruth, machineId, pressBrake, "operator_wait_start", "PressBrakeKinematicsEngine", pressBrake.PhaseElapsedSeconds <= dt);
 			break;
 		case PressBrakeMotionPhase.ToolChange:
-			TickTimedPhase(pressBrake, dt, pressBrake.ActiveProgram!.ToolChangeDurationSeconds, PressBrakeMotionPhase.Setup);
-			pressBrake.NextActionHint = "Werkzeugwechsel";
+			TickTimedPhase(pressBrake, dt, pressBrake.ActiveProgram!.ToolChangeDurationSeconds, PressBrakeMotionPhase.Setup, seed);
 			RecordGtOnce(groundTruth, machineId, pressBrake, "tooling_change_start", "PressBrakeKinematicsEngine", pressBrake.PhaseElapsedSeconds <= dt);
 			break;
 		case PressBrakeMotionPhase.BackgaugeMove:
 			TickBackgaugeMove(pressBrake, step, dt);
 			if (pressBrake.PhaseElapsedSeconds >= GetBackgaugeDuration(pressBrake, step))
 			{
-				AdvancePhase(pressBrake, PressBrakeMotionPhase.RamApproach);
+				AdvancePhase(pressBrake, PressBrakeMotionPhase.RamApproach, seed);
 				RecordGt(groundTruth, machineId, pressBrake, "bend_step_start", "PressBrakeKinematicsEngine", step?.StepIndex);
 			}
 			break;
@@ -284,12 +282,12 @@ public static class PressBrakeKinematicsEngine
 			if (step != null && pressBrake.PhaseElapsedSeconds >= step.ApproachDurationSeconds)
 			{
 				double formingOverflow = pressBrake.PhaseElapsedSeconds - step.ApproachDurationSeconds;
-				AdvancePhase(pressBrake, PressBrakeMotionPhase.Forming);
+				AdvancePhase(pressBrake, PressBrakeMotionPhase.Forming, seed);
 				RecordGt(groundTruth, machineId, pressBrake, "approach_end", "PressBrakeKinematicsEngine", step.StepIndex);
 				RecordGt(groundTruth, machineId, pressBrake, "forming_start", "PressBrakeKinematicsEngine", step.StepIndex);
 				if (formingOverflow > 0.0)
 				{
-					ApplyFormingChainOverflow(pressBrake, step, formingOverflow, groundTruth, machineId);
+					ApplyFormingChainOverflow(pressBrake, step, formingOverflow, groundTruth, machineId, seed);
 				}
 			}
 			break;
@@ -298,11 +296,11 @@ public static class PressBrakeKinematicsEngine
 			if (step != null && pressBrake.PhaseElapsedSeconds >= step.FormingDurationSeconds)
 			{
 				double holdOverflow = pressBrake.PhaseElapsedSeconds - step.FormingDurationSeconds;
-				AdvancePhase(pressBrake, PressBrakeMotionPhase.Hold);
+				AdvancePhase(pressBrake, PressBrakeMotionPhase.Hold, seed);
 				RecordGt(groundTruth, machineId, pressBrake, "forming_end", "PressBrakeKinematicsEngine", step.StepIndex);
 				if (holdOverflow > 0.0)
 				{
-					ApplyHoldChainOverflow(pressBrake, step, holdOverflow, groundTruth, machineId);
+					ApplyHoldChainOverflow(pressBrake, step, holdOverflow, groundTruth, machineId, seed);
 				}
 			}
 			break;
@@ -311,7 +309,7 @@ public static class PressBrakeKinematicsEngine
 			if (step != null && pressBrake.PhaseElapsedSeconds >= step.HoldDurationSeconds)
 			{
 				double returnOverflow = pressBrake.PhaseElapsedSeconds - step.HoldDurationSeconds;
-				AdvancePhase(pressBrake, PressBrakeMotionPhase.RamReturn);
+				AdvancePhase(pressBrake, PressBrakeMotionPhase.RamReturn, seed);
 				RecordGt(groundTruth, machineId, pressBrake, "return_start", "PressBrakeKinematicsEngine", step.StepIndex);
 				if (returnOverflow > 0.0)
 				{
@@ -329,12 +327,10 @@ public static class PressBrakeKinematicsEngine
 			}
 			break;
 		case PressBrakeMotionPhase.InterStepWait:
-			TickTimedPhase(pressBrake, dt, step?.InterStepWaitSeconds ?? 1.0, PressBrakeMotionPhase.BackgaugeMove);
-			pressBrake.NextActionHint = "Zwischenschritt";
+			TickTimedPhase(pressBrake, dt, step?.InterStepWaitSeconds ?? 1.0, PressBrakeMotionPhase.BackgaugeMove, seed);
 			break;
 		case PressBrakeMotionPhase.InterPartWait:
-			TickTimedPhase(pressBrake, dt, part?.InterPartWaitSeconds ?? 4.0, PressBrakeMotionPhase.BackgaugeMove);
-			pressBrake.NextActionHint = "Teilepause";
+			TickTimedPhase(pressBrake, dt, part?.InterPartWaitSeconds ?? 4.0, PressBrakeMotionPhase.BackgaugeMove, seed);
 			RecordGtOnce(groundTruth, machineId, pressBrake, "inter_part_wait", "PressBrakeKinematicsEngine", pressBrake.PhaseElapsedSeconds <= dt);
 			if (pressBrake.MotionPhase == PressBrakeMotionPhase.BackgaugeMove)
 			{
@@ -342,13 +338,12 @@ public static class PressBrakeKinematicsEngine
 			}
 			break;
 		case PressBrakeMotionPhase.InterruptRecovery:
-			TickTimedPhase(pressBrake, dt, 2.5, PressBrakeMotionPhase.BackgaugeMove);
+			TickTimedPhase(pressBrake, dt, 2.5, PressBrakeMotionPhase.BackgaugeMove, seed);
 			pressBrake.InterruptRequested = false;
-			pressBrake.NextActionHint = "Unterbrechung";
 			RecordGtOnce(groundTruth, machineId, pressBrake, "interruption_end", "PressBrakeKinematicsEngine", pressBrake.PhaseElapsedSeconds <= dt);
 			break;
 		default:
-			AdvancePhase(pressBrake, PressBrakeMotionPhase.Setup);
+			AdvancePhase(pressBrake, PressBrakeMotionPhase.Setup, seed);
 			break;
 		}
 	}
@@ -369,7 +364,7 @@ public static class PressBrakeKinematicsEngine
 		pressBrake.BendStepIndex++;
 		if (pressBrake.BendStepIndex < part.BendSteps.Count)
 		{
-			AdvancePhase(pressBrake, PressBrakeMotionPhase.InterStepWait);
+			AdvancePhase(pressBrake, PressBrakeMotionPhase.InterStepWait, seed);
 			return;
 		}
 
@@ -390,13 +385,14 @@ public static class PressBrakeKinematicsEngine
 		pressBrake.PartIndex = (pressBrake.PartIndex + 1) % pressBrake.ActiveProgram!.Parts.Count;
 		pressBrake.BendStepIndex = 0;
 		LoadCurrentPart(pressBrake);
-		if (ShouldOperatorWait(part, seed, pressBrake.ProducedParts))
+		if (ShouldOperatorWait(part, seed, pressBrake.ProducedParts, pressBrake))
 		{
-			AdvancePhase(pressBrake, PressBrakeMotionPhase.OperatorWait);
+			pressBrake.OperatorInteractionRequired = false;
+			AdvancePhase(pressBrake, PressBrakeMotionPhase.OperatorWait, seed);
 			return;
 		}
 
-		AdvancePhase(pressBrake, PressBrakeMotionPhase.InterPartWait);
+		AdvancePhase(pressBrake, PressBrakeMotionPhase.InterPartWait, seed);
 	}
 
 	private static void TickProgramTransition(
@@ -404,7 +400,8 @@ public static class PressBrakeKinematicsEngine
 		PressBrakeKinematicsState pressBrake,
 		double dt,
 		IPressBrakeGroundTruthRecorder? groundTruth,
-		Guid machineId)
+		Guid machineId,
+		int seed)
 	{
 		double duration = pressBrake.ToolChangeRequired
 			? pressBrake.ActiveProgram?.ToolChangeDurationSeconds ?? 40.0
@@ -414,13 +411,11 @@ public static class PressBrakeKinematicsEngine
 			: PressBrakeMotionPhase.Setup;
 		if (pressBrake.MotionPhase != PressBrakeMotionPhase.ToolChange && pressBrake.MotionPhase != PressBrakeMotionPhase.ProgramTransition)
 		{
-			pressBrake.MotionPhase = PressBrakeMotionPhase.ProgramTransition;
-			pressBrake.PhaseElapsedSeconds = 0.0;
+			AdvancePhase(pressBrake, PressBrakeMotionPhase.ProgramTransition, seed);
 			RecordGt(groundTruth, machineId, pressBrake, "program_transition_start", "PressBrakeKinematicsEngine");
 		}
 
-		TickTimedPhase(pressBrake, dt, duration, next);
-		pressBrake.NextActionHint = "Programmwechsel";
+		TickTimedPhase(pressBrake, dt, duration, next, seed);
 		if (pressBrake.MotionPhase == next)
 		{
 			RecordGt(groundTruth, machineId, pressBrake, "program_transition_end", "PressBrakeKinematicsEngine");
@@ -458,17 +453,18 @@ public static class PressBrakeKinematicsEngine
 		PressBrakeBendStepDefinition step,
 		double overflow,
 		IPressBrakeGroundTruthRecorder? groundTruth,
-		Guid machineId)
+		Guid machineId,
+		int seed)
 	{
 		TickForming(pressBrake, step, overflow);
 		if (pressBrake.PhaseElapsedSeconds >= step.FormingDurationSeconds)
 		{
 			double holdOverflow = pressBrake.PhaseElapsedSeconds - step.FormingDurationSeconds;
-			AdvancePhase(pressBrake, PressBrakeMotionPhase.Hold);
+			AdvancePhase(pressBrake, PressBrakeMotionPhase.Hold, seed);
 			RecordGt(groundTruth, machineId, pressBrake, "forming_end", "PressBrakeKinematicsEngine", step.StepIndex);
 			if (holdOverflow > 0.0)
 			{
-				ApplyHoldChainOverflow(pressBrake, step, holdOverflow, groundTruth, machineId);
+				ApplyHoldChainOverflow(pressBrake, step, holdOverflow, groundTruth, machineId, seed);
 			}
 		}
 	}
@@ -478,13 +474,14 @@ public static class PressBrakeKinematicsEngine
 		PressBrakeBendStepDefinition step,
 		double overflow,
 		IPressBrakeGroundTruthRecorder? groundTruth,
-		Guid machineId)
+		Guid machineId,
+		int seed)
 	{
 		TickHold(pressBrake, step, overflow);
 		if (pressBrake.PhaseElapsedSeconds >= step.HoldDurationSeconds)
 		{
 			double returnOverflow = pressBrake.PhaseElapsedSeconds - step.HoldDurationSeconds;
-			AdvancePhase(pressBrake, PressBrakeMotionPhase.RamReturn);
+			AdvancePhase(pressBrake, PressBrakeMotionPhase.RamReturn, seed);
 			RecordGt(groundTruth, machineId, pressBrake, "return_start", "PressBrakeKinematicsEngine", step.StepIndex);
 			if (returnOverflow > 0.0)
 			{
@@ -561,20 +558,95 @@ public static class PressBrakeKinematicsEngine
 		}
 	}
 
-	private static void TickTimedPhase(PressBrakeKinematicsState pressBrake, double dt, double durationSeconds, PressBrakeMotionPhase nextPhase)
+	private static void TickTimedPhase(
+		PressBrakeKinematicsState pressBrake,
+		double dt,
+		double durationSeconds,
+		PressBrakeMotionPhase nextPhase,
+		int seed)
 	{
 		pressBrake.PhaseElapsedSeconds += dt;
 		pressBrake.RamVelocityMmPerS = 0.0;
 		if (pressBrake.PhaseElapsedSeconds >= durationSeconds)
 		{
-			AdvancePhase(pressBrake, nextPhase);
+			AdvancePhase(pressBrake, nextPhase, seed);
 		}
 	}
 
-	private static void AdvancePhase(PressBrakeKinematicsState pressBrake, PressBrakeMotionPhase nextPhase)
+	private static void AdvancePhase(PressBrakeKinematicsState pressBrake, PressBrakeMotionPhase nextPhase, int seed)
 	{
 		pressBrake.MotionPhase = nextPhase;
 		pressBrake.PhaseElapsedSeconds = 0.0;
+		PressBrakePartDefinition? part = GetCurrentPart(pressBrake);
+		PressBrakeBendStepDefinition? step = GetCurrentStep(pressBrake, part);
+		pressBrake.PhaseTotalDurationSeconds = ResolvePhaseDurationSeconds(pressBrake, part, step, seed);
+	}
+
+	public static double ResolvePhaseDurationSeconds(
+		PressBrakeKinematicsState pressBrake,
+		PressBrakePartDefinition? part,
+		PressBrakeBendStepDefinition? step,
+		int seed) =>
+		pressBrake.MotionPhase switch
+		{
+			PressBrakeMotionPhase.Setup => pressBrake.ActiveProgram?.SetupDurationSeconds ?? 28.0,
+			PressBrakeMotionPhase.OperatorWait => ResolveOperatorWaitDurationSeconds(seed),
+			PressBrakeMotionPhase.ToolChange => pressBrake.ActiveProgram?.ToolChangeDurationSeconds ?? 40.0,
+			PressBrakeMotionPhase.ProgramTransition => pressBrake.ToolChangeRequired
+				? pressBrake.ActiveProgram?.ToolChangeDurationSeconds ?? 40.0
+				: pressBrake.ActiveProgram?.ProgramTransitionSeconds ?? 18.0,
+			PressBrakeMotionPhase.BackgaugeMove => GetBackgaugeDuration(pressBrake, step),
+			PressBrakeMotionPhase.RamApproach => step?.ApproachDurationSeconds ?? 2.8,
+			PressBrakeMotionPhase.Forming => step?.FormingDurationSeconds ?? 1.6,
+			PressBrakeMotionPhase.Hold => step?.HoldDurationSeconds ?? 0.7,
+			PressBrakeMotionPhase.RamReturn => step?.ReturnDurationSeconds ?? 2.2,
+			PressBrakeMotionPhase.InterStepWait => step?.InterStepWaitSeconds ?? 1.1,
+			PressBrakeMotionPhase.InterPartWait => part?.InterPartWaitSeconds ?? 4.5,
+			PressBrakeMotionPhase.InterruptRecovery => 2.5,
+			_ => 1.0
+		};
+
+	public static double GetPhaseRemainingSeconds(PressBrakeKinematicsState pressBrake, int seed)
+	{
+		PressBrakePartDefinition? part = GetCurrentPart(pressBrake);
+		PressBrakeBendStepDefinition? step = GetCurrentStep(pressBrake, part);
+		double total = pressBrake.PhaseTotalDurationSeconds > 0.0
+			? pressBrake.PhaseTotalDurationSeconds
+			: ResolvePhaseDurationSeconds(pressBrake, part, step, seed);
+		return Math.Max(0.0, total - pressBrake.PhaseElapsedSeconds);
+	}
+
+	private static double ResolveOperatorWaitDurationSeconds(int seed) => 8.0 + (seed % 7);
+
+	private static void RefreshPhasePresentation(
+		PressBrakeKinematicsState pressBrake,
+		int seed,
+		PhysicalSimulationContext? context)
+	{
+		string? nextProgram = context?.PendingJobDefinition != null
+			? PressBrakeProgramCatalog.GetProgram(
+				Math.Max(0, context.PendingJobDefinition.CatalogIndex) % PressBrakeProgramCatalog.ProgramCount).ProgramId
+			: null;
+		string? nextPart = context?.PendingJobDefinition != null
+			? PressBrakeProgramCatalog.GetProgram(
+				Math.Max(0, context.PendingJobDefinition.CatalogIndex) % PressBrakeProgramCatalog.ProgramCount).Parts[0].PartId
+			: null;
+		PressBrakePhaseSnapshot snapshot = PressBrakePhaseObservability.BuildSnapshot(
+			pressBrake,
+			seed,
+			nextProgram,
+			nextPart);
+		pressBrake.ContinuationKind = snapshot.ContinuationKind;
+		pressBrake.OperatorInteractionRequired = snapshot.OperatorInteractionRequired;
+		pressBrake.NextActionHint = snapshot.ContinuationIndicator;
+	}
+
+	private static void UpdateTransitionPreview(PressBrakeKinematicsState pressBrake, FixedProductionJobDefinition nextJob)
+	{
+		int programIndex = Math.Max(0, nextJob.CatalogIndex) % PressBrakeProgramCatalog.ProgramCount;
+		PressBrakeProgramDefinition program = PressBrakeProgramCatalog.GetProgram(programIndex);
+		pressBrake.NextProgramIdPreview = program.ProgramId;
+		pressBrake.NextPartIdPreview = program.Parts.Count > 0 ? program.Parts[0].PartId : "—";
 	}
 
 	private static void MoveRam(PressBrakeKinematicsState pressBrake, double targetMm, double speedMmPerS, double dt)
@@ -614,21 +686,6 @@ public static class PressBrakeKinematicsEngine
 		double distance = Math.Abs(step.BackgaugePositionMm - pressBrake.BackgaugePositionMm);
 		return Math.Max(1.2, distance / VirtualPressBrakeKinematicsConfig.BackgaugeSpeedMmPerS + 0.4);
 	}
-
-	private static double GetPhaseDuration(PressBrakeKinematicsState pressBrake, PressBrakePartDefinition? part, PressBrakeBendStepDefinition? step, int seed) =>
-		pressBrake.MotionPhase switch
-		{
-			PressBrakeMotionPhase.Setup => pressBrake.ActiveProgram?.SetupDurationSeconds ?? 28.0,
-			PressBrakeMotionPhase.ToolChange => pressBrake.ActiveProgram?.ToolChangeDurationSeconds ?? 40.0,
-			PressBrakeMotionPhase.BackgaugeMove => GetBackgaugeDuration(pressBrake, step),
-			PressBrakeMotionPhase.RamApproach => step?.ApproachDurationSeconds ?? 2.8,
-			PressBrakeMotionPhase.Forming => step?.FormingDurationSeconds ?? 1.6,
-			PressBrakeMotionPhase.Hold => step?.HoldDurationSeconds ?? 0.7,
-			PressBrakeMotionPhase.RamReturn => step?.ReturnDurationSeconds ?? 2.2,
-			PressBrakeMotionPhase.InterStepWait => step?.InterStepWaitSeconds ?? 1.1,
-			PressBrakeMotionPhase.InterPartWait => part?.InterPartWaitSeconds ?? 4.5,
-			_ => 1.0
-		};
 
 	private static void UpdateThermal(PressBrakeKinematicsState pressBrake, double dt, bool forming)
 	{
@@ -679,8 +736,19 @@ public static class PressBrakeKinematicsEngine
 			? part.BendSteps[pressBrake.BendStepIndex]
 			: null;
 
-	private static bool ShouldOperatorWait(PressBrakePartDefinition part, int seed, int producedParts) =>
-		(seed + producedParts) % 7 == 0 && part.OperatorWaitChance > 0.1;
+	private static bool ShouldOperatorWait(
+		PressBrakePartDefinition part,
+		int seed,
+		int producedParts,
+		PressBrakeKinematicsState pressBrake)
+	{
+		if (pressBrake.UnattendedBaselineEnabled && VirtualPressBrakeRunProfile.DisableOperatorWaitsInUnattendedBaseline)
+		{
+			return false;
+		}
+
+		return (seed + producedParts) % 7 == 0 && part.OperatorWaitChance > 0.1;
+	}
 
 	private static void ApplySignals(PhysicalMachineRuntime runtime, PressBrakeKinematicsState pressBrake)
 	{

@@ -71,6 +71,7 @@ public sealed class VigilLabVirtualMachineP14Tests
 	{
 		VigilLabRunProfile.ResolveJobChangePauseRange(
 			VigilLabMachineContract.MachineId,
+			0,
 			out int minPauseSeconds,
 			out int maxPauseSeconds);
 
@@ -154,6 +155,7 @@ public sealed class VigilLabVirtualMachineP14Tests
 		var existingLaser = DefaultMachines.Create().First(m => m.Id == VirtualMachineContract.MachineId);
 		VigilLabRunProfile.ResolveJobChangePauseRange(
 			existingLaser.Id,
+			0,
 			out int minPauseSeconds,
 			out int maxPauseSeconds);
 

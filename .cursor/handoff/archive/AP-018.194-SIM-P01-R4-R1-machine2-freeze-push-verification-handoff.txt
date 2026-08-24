@@ -1,0 +1,62 @@
+AP-018.194-SIM-P01-R4-R1 - Machine-2 Freeze Push Verification Handoff
+======================================================================
+Date: 2026-08-23
+Repository: WerkFlow/Coding/Simulation (Werkflow.OpcUaSimulator)
+Branch: feature/ap-018-194-sim-p01-virtual-press-brake
+
+SCOPE (R4-R1)
+-------------
+Formal verification only. No code, simulator, or VIGIL changes.
+
+MACHINE-2 FROZEN BASELINE (AUTHORITATIVE)
+-----------------------------------------
+MACHINE2_FROZEN_SIMULATOR_SHA: fb4494ccc345e162638789fe1b922144d01cebdd
+Commit message: fix(sim-p01-r3): correct categorical leakage and LastProductionChange semantics
+
+PUSH VERIFICATION
+-----------------
+Local HEAD (branch tip): b58951008821c31adcbe3fe4316acd351cf6e4b1
+Remote branch: origin/feature/ap-018-194-sim-p01-virtual-press-brake
+Remote commit SHA: b58951008821c31adcbe3fe4316acd351cf6e4b1
+Frozen SHA on remote: YES (fb4494c is ancestor of remote branch tip)
+PUSH_VERIFIED: YES
+LOCAL_REMOTE_SHA_MATCH: YES (local HEAD == remote tip)
+
+Note: Branch tip (b589510) is R4 docs-only closure commit atop frozen functional baseline (fb4494c).
+Functional Machine-2 freeze reference remains fb4494c.
+
+FuE
+---
+Base-gap preserved: AP-018.194-SIM-P01 (base) has no dedicated FuE row — duration not invented.
+
+VIGIL BOUNDARY
+--------------
+VIGIL changed: NO | RUN registered: NO
+
+HANDOFF INTEGRITY
+-----------------
+Predecessor archived (byte-identical):
+  Source: .cursor/handoff/AP-018.194-SIM-P01-R4-source-control-fue-machine2-freeze-closure-handoff.txt
+  Archive: .cursor/handoff/archive/AP-018.194-SIM-P01-R4-source-control-fue-machine2-freeze-closure-handoff-archived-20260823.txt
+  SourceBytes: 3501
+  ArchiveBytes: 3501
+  SourceSHA256: A3B6759AFBCE4D8521807FC096D320A29418D93357F94688194562728087346E
+  ArchiveSHA256: A3B6759AFBCE4D8521807FC096D320A29418D93357F94688194562728087346E
+  SIZE_MATCH: True
+  SHA256_MATCH: True
+  SOURCE_REMOVED: True
+
+ACTIVE HANDOFF ROOT FILES
+-------------------------
+- AP-018.194-SIM-P01-R4-R1-machine2-freeze-push-verification-handoff.txt
+
+ACTIVE_HANDOFF_COUNT: 1
+OBSOLETE_ACTIVE_HANDOFF_COUNT: 0
+
+STATUS
+------
+MACHINE-2 FREEZE FORMALLY COMPLETE: YES
+
+RECOMMENDED NEXT AP
+-------------------
+AP-018.194-EXT-P01 — TRUMPF OPC UA Machine Demo Server / Independent Dataset Feasibility Audit
