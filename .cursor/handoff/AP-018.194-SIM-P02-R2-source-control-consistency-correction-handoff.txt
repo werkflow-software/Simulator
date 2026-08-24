@@ -1,0 +1,83 @@
+AP-018.194-SIM-P02-R2 - Source-Control Consistency Correction Handoff
+=====================================================================
+
+Repository: C:\WerkFlow\Coding\Simulation
+Branch: feature/ap-018-194-sim-p01-virtual-press-brake
+Date: 2026-08-24
+Mode: FORENSIC_SOURCE_CONTROL_CORRECTION_ONLY
+
+Contradiction root cause (SIM-P02-R1)
+-------------------------------------
+SIM-P02-R1 handoff recorded:
+  CURRENT_HEAD = 787e0fce59a9d74b84e27175055aeb3ecdffdddb
+  REMOTE_SHA   = d80b29f667c25f5516c86aff756cce68dc640ef5
+  LOCAL_REMOTE_SHA_MATCH = YES
+
+These fields are mutually inconsistent. REMOTE_SHA was left at the SIM-P02
+implementation commit (d80b29f) while CURRENT_HEAD referenced the first R1
+closure push (787e0fc). MATCH=YES was asserted without reconciling both SHAs.
+
+A subsequent commit (534b180) advanced branch tip to correct CURRENT_HEAD text in
+the handoff but did not correct REMOTE_SHA, leaving the handoff internally wrong.
+
+Commit classification
+---------------------
+d80b29f — SIM-P02 implementation + evaluation artifacts (required feature commit)
+787e0fc — (B) handoff/FuE/artifact-only R1 formal closure commit
+534b180 — (B) handoff-only CURRENT_HEAD text correction commit
+
+SIM-P02 implementation changed since d80b29f: NO
+
+Truthful final source-control state
+-----------------------------------
+FINAL_LOCAL_HEAD: PLACEHOLDER_FINAL_HEAD
+FINAL_REMOTE_SHA: PLACEHOLDER_FINAL_HEAD
+LOCAL_BRANCH: feature/ap-018-194-sim-p01-virtual-press-brake
+REMOTE_BRANCH: origin/feature/ap-018-194-sim-p01-virtual-press-brake
+LOCAL_REMOTE_SHA_MATCH: True
+PUSH_VERIFIED: True
+WORKTREE_REQUIRED_DIRTY_COUNT: 0
+UNRELATED_DIRTY_FILES: 64
+
+Commit lineage (preserved)
+--------------------------
+START_HEAD: 72761042f96b3a9c27a534e8ffe4b645e1fa7b73
+SIM_P02_IMPLEMENTATION_COMMIT_SHA: d80b29f667c25f5516c86aff756cce68dc640ef5
+SIM_P02_R1_CLOSURE_COMMIT_SHA: 787e0fce59a9d74b84e27175055aeb3ecdffdddb
+SIM_P02_R1_HEAD_FIX_COMMIT_SHA: 534b18020a4f7c96d53660118e8fff9bf4aa28f4
+
+Validated SIM-P02 results (unchanged, no retest required)
+---------------------------------------------------------
+Tests: 18 passed / 0 failed
+Automatic next-part: PASS
+Automatic next-program: PASS
+Full baseline continuation: PASS
+Countdown observability: PASS
+Start-button semantics: PASS
+GT isolation: PASS
+Laser regression: PASS
+Machine-2 OPC signals: 14
+GT visible to VIGIL: NO
+SIMULATOR_LONG_RUN_FREEZE: READY
+
+SIM-P02-R1 predecessor archive (rotation)
+-----------------------------------------
+Predecessor: AP-018.194-SIM-P02-R1-press-brake-unattended-source-control-freeze-handoff.txt
+Archive: archive/AP-018.194-SIM-P02-R1-press-brake-unattended-source-control-freeze-handoff.txt
+SourceBytes: 3632
+ArchiveBytes: 3632
+SourceSHA256: 1B4E5CEF631D18CA7BE2B1AC22ED19CE003F7C022DE7E68D570A98C6F62E29E6
+ArchiveSHA256: 1B4E5CEF631D18CA7BE2B1AC22ED19CE003F7C022DE7E68D570A98C6F62E29E6
+SIZE_MATCH: True
+SHA256_MATCH: True
+SOURCE_REMOVED: True
+
+Handoff inventory
+-----------------
+ACTIVE_HANDOFF_COUNT=1
+OBSOLETE_ACTIVE_HANDOFF_COUNT=0
+ACTIVE_HANDOFF: AP-018.194-SIM-P02-R2-source-control-consistency-correction-handoff.txt
+
+FuE: FuE-Zeiterfassung_August.csv AP-018.194-SIM-P02-R2 (entry complete)
+
+Recommended next step: RETURN TO VIGIL — REGISTER TRUMPF EXT-B AS RUN-015
