@@ -30,8 +30,8 @@ SIM-P02 implementation changed since d80b29f: NO
 
 Truthful final source-control state
 -----------------------------------
-FINAL_LOCAL_HEAD: 45aee2e31e1738f7b232f8927e25432ea4912526
-FINAL_REMOTE_SHA: 45aee2e31e1738f7b232f8927e25432ea4912526
+FINAL_LOCAL_HEAD: 451add3d59b48fa14450cc4ffbdbd9afbc96bd5d
+FINAL_REMOTE_SHA: 451add3d59b48fa14450cc4ffbdbd9afbc96bd5d
 LOCAL_BRANCH: feature/ap-018-194-sim-p01-virtual-press-brake
 REMOTE_BRANCH: origin/feature/ap-018-194-sim-p01-virtual-press-brake
 LOCAL_REMOTE_SHA_MATCH: True
