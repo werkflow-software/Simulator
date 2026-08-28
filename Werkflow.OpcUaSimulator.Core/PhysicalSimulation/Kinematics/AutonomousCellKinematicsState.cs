@@ -154,6 +154,8 @@ public sealed class AutonomousCellKinematicsState
 
 	public int ContainerExchangeEvents { get; set; }
 
+	public int PendingPartCompletions { get; set; }
+
 	public string HiddenAmrTaskState { get; set; } = "idle";
 
 	public double HiddenAmrPositionM { get; set; }

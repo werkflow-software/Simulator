@@ -88,6 +88,13 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	private string _continuationIndicatorText = "—";
 	private string _nextStepPreviewText = "—";
 	private bool _isPressBrakeMachine;
+	private bool _isAutonomousCellMachine;
+	private string _activeStationText = "—";
+	private string _materialStatusText = "—";
+	private string _containerStatusText = "—";
+	private string _automaticWaitText = "—";
+	private string _partOrdinalText = "—";
+	private string _productVariantText = "—";
 
 	public ObservableCollection<HmiMetricItem> OverviewMetrics { get; } = [];
 	public ObservableCollection<HmiAxisPanelViewModel> AxisPanels { get; } = [];
@@ -175,6 +182,13 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	public string ContinuationIndicatorText => _continuationIndicatorText;
 	public string NextStepPreviewText => _nextStepPreviewText;
 	public bool IsPressBrakeMachine => _isPressBrakeMachine;
+	public bool IsAutonomousCellMachine => _isAutonomousCellMachine;
+	public string ActiveStationText => _activeStationText;
+	public string MaterialStatusText => _materialStatusText;
+	public string ContainerStatusText => _containerStatusText;
+	public string AutomaticWaitText => _automaticWaitText;
+	public string PartOrdinalText => _partOrdinalText;
+	public string ProductVariantText => _productVariantText;
 
 	public CuttingPlanViewModel CuttingPlan { get; } = new();
 
@@ -902,17 +916,54 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		if (autonomousCell.IsEnabled)
 		{
 			_isPressBrakeMachine = false;
-			_processPhaseText = autonomousCell.MotionPhase.ToString();
+			_isAutonomousCellMachine = true;
+			AutonomousCellHmiSnapshot snapshot = AutonomousCellPhaseObservability.BuildSnapshot(
+				autonomousCell,
+				session.Simulation.Seed);
+			_processPhaseText = snapshot.PhaseDisplayName;
 			_processPhaseEnglish = autonomousCell.MotionPhase.ToString();
 			_laserActiveText = "NEIN";
 			_cuttingActiveText = autonomousCell.MotionPhase == AutonomousCellMotionPhase.ProcessPressFit ? "JA" : "NEIN";
 			_positioningActiveText = autonomousCell.MotionPhase is AutonomousCellMotionPhase.LoadPick or AutonomousCellMotionPhase.TransferPickup ? "JA" : "NEIN";
-			_nextActionText = $"Teil {autonomousCell.CompletedParts}/{autonomousCell.TargetParts}";
+			_nextActionText = snapshot.IsCompleted
+				? $"{snapshot.TargetParts} / {snapshot.TargetParts} COMPLETED"
+				: $"Teil {snapshot.CurrentPartOrdinal} / {snapshot.TargetParts}";
 			_pathSpeedText = $"{autonomousCell.LoadVelocityMmPerS:0.#} mm/s";
-			_focusText = $"Pallet {autonomousCell.PalletQuantityRemaining}";
-			_statusTone = autonomousCell.MotionPhase == AutonomousCellMotionPhase.Complete ? "idle" : "running";
+			_focusText = $"Station: {snapshot.ActiveStation}";
+			_jobName = snapshot.ScenarioJobDisplayName;
+			_partName = $"Variante {snapshot.ProductVariant}";
+			_counterText = $"{snapshot.CompletedParts} / {snapshot.TargetParts}";
+			_productVariantText = snapshot.ProductVariant;
+			_partOrdinalText = $"{snapshot.CurrentPartOrdinal} / {snapshot.TargetParts}";
+			_activeStationText = snapshot.ActiveStation;
+			_materialStatusText = $"Rohmaterial: {snapshot.PalletRemaining} / {snapshot.PalletCapacity}";
+			_containerStatusText = $"Behälter: {snapshot.ContainerFillParts} / {snapshot.ContainerCapacity}";
+			_automaticWaitText = string.IsNullOrWhiteSpace(snapshot.AutomaticWaitMessage) ? "—" : snapshot.AutomaticWaitMessage;
+			_phaseProgressText = AutonomousCellPhaseObservability.FormatPartElapsed(snapshot.PartElapsedSeconds);
+			_phaseRemainingDetailText = AutonomousCellPhaseObservability.FormatEstimatedRemaining(snapshot.PartRemainingSeconds);
+			_continuationIndicatorText = _automaticWaitText;
+			_nextStepPreviewText = $"Station: {snapshot.ActiveStation}";
+			_remainingCounterText = Math.Max(0, snapshot.TargetParts - snapshot.CompletedParts).ToString();
+			_statusTone = snapshot.IsCompleted
+				? "idle"
+				: snapshot.AutomaticWaitKind != AutonomousCellAutomaticWaitKind.None
+					? "setup"
+					: autonomousCell.MotionPhase == AutonomousCellMotionPhase.ProcessPressFit
+						? "cutting"
+						: "running";
+			OnPropertyChanged(nameof(JobName));
+			OnPropertyChanged(nameof(PartName));
+			OnPropertyChanged(nameof(CounterText));
 			return;
 		}
+
+		_isAutonomousCellMachine = false;
+		_activeStationText = "—";
+		_materialStatusText = "—";
+		_containerStatusText = "—";
+		_automaticWaitText = "—";
+		_partOrdinalText = "—";
+		_productVariantText = "—";
 
 		PressBrakeKinematicsState pressBrake = session.Simulation.PressBrake;
 		_isPressBrakeMachine = pressBrake.IsEnabled;
@@ -1013,8 +1064,24 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 				or LaserMotionPhase.Setup
 				or LaserMotionPhase.NozzleChange;
 		bool isPressBrake = session?.Simulation.PressBrake.IsEnabled == true;
+		bool isAutonomousCell = session?.Simulation.AutonomousCell.IsEnabled == true;
 
-		if (isPressBrake)
+		if (isAutonomousCell)
+		{
+			(double partSeconds, double jobSeconds) = _simulationEngine.GetProductionTimeEstimates(_machine.Id);
+			_partRemainingText = partSeconds > 0.0
+				? AutonomousCellPhaseObservability.FormatEstimatedRemaining(partSeconds)
+				: "00:00";
+			_jobRemainingText = jobSeconds > 0.0
+				? $"Restzeit gesamt: {AutonomousCellPhaseObservability.FormatEstimatedRemaining(jobSeconds)}"
+				: "Restzeit gesamt: 00:00";
+			double phaseRemaining = _simulationEngine.GetSetupRemainingSeconds(_machine.Id);
+			_setupRemainingText = phaseRemaining > 0.0
+				? AutonomousCellPhaseObservability.FormatEstimatedRemaining(phaseRemaining)
+				: "—";
+			_nozzleRemainingText = "—";
+		}
+		else if (isPressBrake)
 		{
 			(double partSeconds, double jobSeconds) = _simulationEngine.GetProductionTimeEstimates(_machine.Id);
 			_partRemainingText = partSeconds > 0.0 ? FormatDuration(partSeconds) : "—";
@@ -1065,6 +1132,13 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		OnPropertyChanged(nameof(ContinuationIndicatorText));
 		OnPropertyChanged(nameof(NextStepPreviewText));
 		OnPropertyChanged(nameof(IsPressBrakeMachine));
+		OnPropertyChanged(nameof(IsAutonomousCellMachine));
+		OnPropertyChanged(nameof(ActiveStationText));
+		OnPropertyChanged(nameof(MaterialStatusText));
+		OnPropertyChanged(nameof(ContainerStatusText));
+		OnPropertyChanged(nameof(AutomaticWaitText));
+		OnPropertyChanged(nameof(PartOrdinalText));
+		OnPropertyChanged(nameof(ProductVariantText));
 	}
 
 	private static string FormatDuration(double seconds)
@@ -1100,6 +1174,13 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		OnPropertyChanged(nameof(ContinuationIndicatorText));
 		OnPropertyChanged(nameof(NextStepPreviewText));
 		OnPropertyChanged(nameof(IsPressBrakeMachine));
+		OnPropertyChanged(nameof(IsAutonomousCellMachine));
+		OnPropertyChanged(nameof(ActiveStationText));
+		OnPropertyChanged(nameof(MaterialStatusText));
+		OnPropertyChanged(nameof(ContainerStatusText));
+		OnPropertyChanged(nameof(AutomaticWaitText));
+		OnPropertyChanged(nameof(PartOrdinalText));
+		OnPropertyChanged(nameof(ProductVariantText));
 	}
 
 	private void UpdateJobPoolSummary()
@@ -1323,8 +1404,20 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		return HmiSignalCatalog.FormatValue(def, value);
 	}
 
-	private bool CanChangeOrSelectJob() =>
-		_machine != null && _isMachineRunning && _runtime != null && !_runtime.IsJobChangeActive;
+	private bool CanChangeOrSelectJob()
+	{
+		if (_machine == null || !_isMachineRunning || _runtime == null || _runtime.IsJobChangeActive)
+		{
+			return false;
+		}
+
+		if (_isAutonomousCellMachine && _runtime.IsProducing)
+		{
+			return false;
+		}
+
+		return true;
+	}
 
 	private bool CanStartProduction()
 	{
@@ -1335,6 +1428,21 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		}
 
 		PhysicalMachineSession? session = _coordinator.GetSession(_machine.Id);
+		if (session?.Simulation.AutonomousCell.IsEnabled == true)
+		{
+			if (_runtime.State == MachineState.Paused)
+			{
+				return true;
+			}
+
+			if (_runtime.IsProducing && _runtime.State == MachineState.Running)
+			{
+				return false;
+			}
+
+			return _runtime.State is MachineState.Idle or MachineState.Paused;
+		}
+
 		if (session?.Simulation.PressBrake.IsEnabled == true)
 		{
 			if (_runtime.State == MachineState.Paused)
@@ -1405,6 +1513,13 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		_focusText = "—";
 		_statusTone = "idle";
 		_remainingCounterText = "—";
+		_isAutonomousCellMachine = false;
+		_activeStationText = "—";
+		_materialStatusText = "—";
+		_containerStatusText = "—";
+		_automaticWaitText = "—";
+		_partOrdinalText = "—";
+		_productVariantText = "—";
 
 		ResetMetricCollection(OverviewMetrics);
 		ResetMetricCollection(ProcessMetrics);

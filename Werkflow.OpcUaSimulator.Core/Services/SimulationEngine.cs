@@ -1055,6 +1055,7 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 		definition = ResolveJobDefinition(machine.Id, definition.CatalogIndex);
 		VigilLabRunProfile.SynchronizeSimulationJob(job, machine.Id);
 		VirtualPressBrakeRunProfile.SynchronizeSimulationJob(job, machine.Id);
+		VirtualAutonomousCellRunProfile.SynchronizeSimulationJob(job, machine.Id);
 		runtime.AssignedJobId = job.Id;
 		runtime.CurrentJobCatalogIndex = definition.CatalogIndex;
 		runtime.PartName = definition.PartName;
@@ -1499,6 +1500,11 @@ public sealed class SimulationEngine : ISimulationEngine, IDisposable
 
 	private static FixedProductionJobDefinition ResolveJobDefinition(Guid machineId, int catalogIndex)
 	{
+		if (VirtualAutonomousCellMachineRegistry.IsVirtualAutonomousCellMachine(machineId))
+		{
+			return VirtualAutonomousCellRunProfile.ResolveJobDefinition(machineId, catalogIndex);
+		}
+
 		if (VirtualPressBrakeMachineRegistry.IsVirtualPressBrakeMachine(machineId))
 		{
 			return VirtualPressBrakeRunProfile.ResolveJobDefinition(machineId, catalogIndex);

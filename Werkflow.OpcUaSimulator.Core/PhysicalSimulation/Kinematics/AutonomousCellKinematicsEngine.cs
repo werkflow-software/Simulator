@@ -30,6 +30,32 @@ public static class AutonomousCellKinematicsEngine
 	public static bool ShouldEnable(Guid machineId) =>
 		VirtualAutonomousCellMachineRegistry.IsVirtualAutonomousCellMachine(machineId);
 
+	public static int ConsumePendingPartCompletions(PhysicalSimulationContext context)
+	{
+		if (!context.AutonomousCell.IsEnabled)
+		{
+			return 0;
+		}
+
+		int pending = context.AutonomousCell.PendingPartCompletions;
+		context.AutonomousCell.PendingPartCompletions = 0;
+		return pending;
+	}
+
+	public static void StopAndResetProduction(PhysicalSimulationContext context, int seed)
+	{
+		if (!context.AutonomousCell.IsEnabled)
+		{
+			return;
+		}
+
+		Initialize(context, seed, VirtualAutonomousProductionCellContract.MachineId);
+		context.IsProductionMotionActive = false;
+	}
+
+	public static double GetPhaseRemainingSeconds(AutonomousCellKinematicsState cell) =>
+		Math.Max(0.0, cell.PhaseDurationSeconds - cell.PhaseElapsedSeconds);
+
 	public static void Initialize(PhysicalSimulationContext context, int seed, Guid machineId)
 	{
 		if (!ShouldEnable(machineId))
@@ -230,6 +256,7 @@ public static class AutonomousCellKinematicsEngine
 	private static void CompletePart(AutonomousCellKinematicsState cell, IAutonomousCellGroundTruthRecorder? groundTruth, Guid machineId)
 	{
 		cell.CompletedParts++;
+		cell.PendingPartCompletions++;
 		cell.ContainerParts++;
 		cell.ContainerFillLevel = Math.Min(1.0, cell.ContainerParts / (double)VirtualAutonomousCellRunProfile.ContainerCapacity);
 		cell.OutputContainerFillPercent = cell.ContainerFillLevel * 100.0;

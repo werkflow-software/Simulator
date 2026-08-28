@@ -27,6 +27,12 @@ public static class VirtualAutonomousCellRunProfile
 	public const double NominalPartCycleSeconds = 55.0;
 	public const bool UnattendedBaselineEnabled = true;
 
+	public const string BaselineScenarioDisplayName = "Machine-3 Baseline";
+
+	public const int ApproximateBaselineWallClockMinutesMin = 25;
+
+	public const int ApproximateBaselineWallClockMinutesMax = 30;
+
 	public static int ResolveSimulationSeed(Guid machineId, int globalSeed) =>
 		machineId == VirtualAutonomousProductionCellContract.MachineId ? MasterSeed : globalSeed;
 
@@ -49,7 +55,7 @@ public static class VirtualAutonomousCellRunProfile
 		return new FixedProductionJobDefinition
 		{
 			CatalogIndex = 0,
-			JobName = "M3-BASELINE",
+			JobName = BaselineScenarioDisplayName,
 			PartName = "M3-PART",
 			TargetQuantity = TotalParts,
 			MaterialName = definition.MaterialName,
@@ -74,4 +80,22 @@ public static class VirtualAutonomousCellRunProfile
 
 	public static bool RequiresExchangeAfterPart(int completedParts) =>
 		completedParts == ExchangeAfterPart1 || completedParts == ExchangeAfterPart2;
+
+	public static void SynchronizeSimulationJob(SimulationJob job, Guid machineId)
+	{
+		ArgumentNullException.ThrowIfNull(job);
+		if (!VirtualAutonomousCellMachineRegistry.IsVirtualAutonomousCellMachine(machineId))
+		{
+			return;
+		}
+
+		FixedProductionJobDefinition definition = ResolveJobDefinition(machineId, 0);
+		job.JobName = definition.JobName;
+		job.PartName = definition.PartName;
+		job.TargetQuantity = definition.TargetQuantity;
+		job.MaterialName = definition.MaterialName;
+		job.MaterialThicknessMm = definition.MaterialThicknessMm;
+		job.RecipeName = definition.RecipeName;
+		job.ProgramName = definition.ProgramName;
+	}
 }

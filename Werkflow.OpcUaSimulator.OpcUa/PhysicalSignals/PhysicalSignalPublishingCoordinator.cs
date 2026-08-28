@@ -361,6 +361,7 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 			simulation.PhaseElapsedSimulationTime = TimeSpan.Zero;
 			LaserKinematicsEngine.OnJobApplied(simulation, context.Seed);
 			PressBrakeKinematicsEngine.OnJobApplied(simulation, context.Seed);
+			AutonomousCellKinematicsEngine.OnJobApplied(simulation, context.Seed);
 		}
 	}
 
@@ -374,7 +375,8 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 			}
 
 			return LaserKinematicsEngine.ConsumePendingPartCompletions(context.Session.Simulation)
-				+ PressBrakeKinematicsEngine.ConsumePendingPartCompletions(context.Session.Simulation);
+				+ PressBrakeKinematicsEngine.ConsumePendingPartCompletions(context.Session.Simulation)
+				+ AutonomousCellKinematicsEngine.ConsumePendingPartCompletions(context.Session.Simulation);
 		}
 	}
 
@@ -474,6 +476,7 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 			simulation.ProductionRunStartedAtUtc = null;
 			LaserKinematicsEngine.StopAndResetProduction(simulation, context.Seed);
 			PressBrakeKinematicsEngine.StopAndResetProduction(simulation, context.Seed);
+			AutonomousCellKinematicsEngine.StopAndResetProduction(simulation, context.Seed);
 			PhysicalJobCoordinator.SyncProductionCounters(simulation, 0, simulation.Job.TargetQuantity);
 			if (context.Publisher != null && context.Session.Metrics.State == PhysicalPublisherState.Paused)
 			{
@@ -516,6 +519,17 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 				return (simulation.FrozenPartRemainingSeconds, simulation.FrozenJobRemainingSeconds);
 			}
 
+			if (VirtualAutonomousCellMachineRegistry.IsVirtualAutonomousCellMachine(machineId))
+			{
+				return (
+					AutonomousCellProductionTimeEstimator.EstimateCurrentPartRemainingSeconds(
+						simulation.AutonomousCell,
+						context.Seed),
+					AutonomousCellProductionTimeEstimator.EstimateJobRemainingSeconds(
+						simulation.AutonomousCell,
+						context.Seed));
+			}
+
 			if (VirtualPressBrakeMachineRegistry.IsVirtualPressBrakeMachine(machineId))
 			{
 				return PressBrakeProductionTimeEstimator.EstimateRemaining(context.Session.Simulation, context.Seed);
@@ -535,6 +549,14 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 			if (!_contexts.TryGetValue(machineId, out MachineContext context))
 			{
 				return 0.0;
+			}
+
+			if (VirtualAutonomousCellMachineRegistry.IsVirtualAutonomousCellMachine(machineId))
+			{
+				AutonomousCellKinematicsState cell = context.Session.Simulation.AutonomousCell;
+				return cell.IsEnabled
+					? AutonomousCellKinematicsEngine.GetPhaseRemainingSeconds(cell)
+					: 0.0;
 			}
 
 			if (VirtualPressBrakeMachineRegistry.IsVirtualPressBrakeMachine(machineId))
@@ -611,6 +633,11 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 
 	private static int ResolveSimulationSeed(Guid machineId, int globalSeed)
 	{
+		if (VirtualAutonomousCellMachineRegistry.IsVirtualAutonomousCellMachine(machineId))
+		{
+			return VirtualAutonomousCellRunProfile.ResolveSimulationSeed(machineId, globalSeed);
+		}
+
 		if (VirtualPressBrakeMachineRegistry.IsVirtualPressBrakeMachine(machineId))
 		{
 			return VirtualPressBrakeRunProfile.ResolveSimulationSeed(machineId, globalSeed);

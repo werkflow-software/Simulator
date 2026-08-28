@@ -130,6 +130,8 @@ public sealed class VirtualMachineHmiWindow : Window
 			grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 		}
 		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
 		var selector = new ComboBox
 		{
@@ -166,16 +168,20 @@ public sealed class VirtualMachineHmiWindow : Window
 		Grid.SetColumn(phase, 5);
 		grid.Children.Add(phase);
 
-		var job = MakeBoundBlock("JobName", 12, FontWeights.Normal, "Job: {0}");
+		var job = MakeBoundBlock("JobName", 12, FontWeights.Normal, "Szenario: {0}");
 		Grid.SetColumn(job, 6);
 		grid.Children.Add(job);
 
+		var product = MakeBoundBlock("ProductVariantText", 12, FontWeights.SemiBold, "Produkt: {0}");
+		Grid.SetColumn(product, 7);
+		grid.Children.Add(product);
+
 		var counter = MakeBoundBlock("CounterText", 12, FontWeights.Normal, "Ist/Soll: {0}");
-		Grid.SetColumn(counter, 7);
+		Grid.SetColumn(counter, 8);
 		grid.Children.Add(counter);
 
 		var opc = MakeBoundBlock("OpcUaStatus", 12, FontWeights.SemiBold, "OPC UA: {0}");
-		Grid.SetColumn(opc, 8);
+		Grid.SetColumn(opc, 9);
 		grid.Children.Add(opc);
 
 		var right = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
@@ -183,7 +189,7 @@ public sealed class VirtualMachineHmiWindow : Window
 		right.Children.Add(MakeButton("Vollbild", (_, _) =>
 			WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized));
 		right.Children.Add(MakeButton("Maschine beenden", async (_, _) => await _viewModel.ShutdownMachineCommand.ExecuteAsync(null)));
-		Grid.SetColumn(right, 9);
+		Grid.SetColumn(right, 10);
 		grid.Children.Add(right);
 
 		panel.Child = grid;
@@ -191,13 +197,19 @@ public sealed class VirtualMachineHmiWindow : Window
 
 		var statusBar = new Border
 		{
-			Height = 22,
+			MinHeight = 22,
 			Background = HmiVisualTheme.StatusBarIdle,
 			Padding = new Thickness(12, 2, 12, 2)
 		};
+		var statusStack = new StackPanel { Orientation = Orientation.Horizontal };
 		var statusText = MakeBoundBlock("ProcessPhaseText", 12, FontWeights.SemiBold, "Prozess: {0}");
 		statusText.Foreground = HmiVisualTheme.TextOnDark;
-		statusBar.Child = statusText;
+		statusStack.Children.Add(statusText);
+		var waitText = MakeBoundBlock("AutomaticWaitText", 12, FontWeights.Normal, " | {0}");
+		waitText.Foreground = HmiVisualTheme.TextOnDark;
+		waitText.Margin = new Thickness(8, 0, 0, 0);
+		statusStack.Children.Add(waitText);
+		statusBar.Child = statusStack;
 		_viewModel.PropertyChanged += (_, e) =>
 		{
 			if (e.PropertyName is nameof(VirtualMachineHmiViewModel.StatusTone) or nameof(VirtualMachineHmiViewModel.ProcessPhaseText))
@@ -449,13 +461,17 @@ public sealed class VirtualMachineHmiWindow : Window
 		};
 		var stack = new StackPanel();
 		stack.Children.Add(MakeSectionTitle("ZEITEN"));
-		stack.Children.Add(BuildTimeRow("Teil", nameof(VirtualMachineHmiViewModel.PartRemainingText)));
-		stack.Children.Add(BuildTimeRow("Auftrag", nameof(VirtualMachineHmiViewModel.JobRemainingText)));
-		stack.Children.Add(BuildTimeRow("Phasenfortschritt", nameof(VirtualMachineHmiViewModel.PhaseProgressText)));
+		stack.Children.Add(BuildTimeRow("Teil (Rest gesch.)", nameof(VirtualMachineHmiViewModel.PartRemainingText)));
+		stack.Children.Add(BuildTimeRow("Gesamt", nameof(VirtualMachineHmiViewModel.JobRemainingText)));
+		stack.Children.Add(BuildTimeRow("Teil (verstrichen)", nameof(VirtualMachineHmiViewModel.PhaseProgressText)));
+		stack.Children.Add(BuildTimeRow("Teil (Fortschritt)", nameof(VirtualMachineHmiViewModel.PartOrdinalText)));
+		stack.Children.Add(BuildTimeRow("Station", nameof(VirtualMachineHmiViewModel.ActiveStationText)));
+		stack.Children.Add(BuildTimeRow("Material", nameof(VirtualMachineHmiViewModel.MaterialStatusText)));
+		stack.Children.Add(BuildTimeRow("Behälter", nameof(VirtualMachineHmiViewModel.ContainerStatusText)));
 		stack.Children.Add(BuildTimeRow("Phasenrest", nameof(VirtualMachineHmiViewModel.SetupRemainingText)));
-		stack.Children.Add(BuildTimeRow("Rest", nameof(VirtualMachineHmiViewModel.PhaseRemainingDetailText)));
+		stack.Children.Add(BuildTimeRow("Teilrest Detail", nameof(VirtualMachineHmiViewModel.PhaseRemainingDetailText)));
 		stack.Children.Add(BuildTimeRow("Düsenwechsel", nameof(VirtualMachineHmiViewModel.NozzleRemainingText)));
-		stack.Children.Add(BuildTimeRow("Laufzeit", nameof(VirtualMachineHmiViewModel.JobElapsedText)));
+		stack.Children.Add(BuildTimeRow("Laufzeit gesamt", nameof(VirtualMachineHmiViewModel.JobElapsedText)));
 		stack.Children.Add(MakeBoundBlock(nameof(VirtualMachineHmiViewModel.ContinuationIndicatorText), 13, FontWeights.SemiBold, "{0}"));
 		stack.Children.Add(MakeBoundBlock(nameof(VirtualMachineHmiViewModel.NextStepPreviewText), 12, FontWeights.Normal, "{0}"));
 		border.Child = stack;
