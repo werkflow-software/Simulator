@@ -66,6 +66,8 @@ public sealed class PhysicalSimulationContext
 
 	public PressBrakeKinematicsState PressBrake { get; } = new PressBrakeKinematicsState();
 
+	public AutonomousCellKinematicsState AutonomousCell { get; } = new AutonomousCellKinematicsState();
+
 	public void ResetPhaseState()
 	{
 		CurrentPhase = ProcessPhase.Idle;

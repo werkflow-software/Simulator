@@ -106,6 +106,12 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 				recorder.BeginSession(machine.Id, seed);
 				physicalMachineSession.PressBrakeGroundTruth = recorder;
 			}
+			if (VirtualAutonomousCellMachineRegistry.IsVirtualAutonomousCellMachine(machine.Id))
+			{
+				var recorder = new AutonomousCellGroundTruthRecorder();
+				recorder.BeginSession(machine.Id, seed);
+				physicalMachineSession.AutonomousCellGroundTruth = recorder;
+			}
 
 			MachineContext value = new MachineContext
 			{

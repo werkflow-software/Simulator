@@ -201,6 +201,17 @@ public sealed class ConfigurationService : IConfigurationService
 			machine.DisconnectProbabilityPercent = 0.0;
 			machine.UpdateEndpointFromHostPort();
 		}
+		else if (machine.Port == VirtualAutonomousProductionCellContract.Port || machine.Id == VirtualAutonomousProductionCellContract.MachineId)
+		{
+			machine.Id = VirtualAutonomousProductionCellContract.MachineId;
+			machine.Name = VirtualAutonomousProductionCellContract.DisplayName;
+			machine.PhysicalProfileId ??= VirtualAutonomousProductionCellContract.PhysicalProfileIdCore24;
+			machine.NamespaceUri = VirtualAutonomousProductionCellContract.NamespaceUri;
+			machine.Host = "localhost";
+			machine.ErrorProbabilityPercent = 0.0;
+			machine.DisconnectProbabilityPercent = 0.0;
+			machine.UpdateEndpointFromHostPort();
+		}
 
 		machine.ErrorProbabilityPercent = Math.Min(machine.ErrorProbabilityPercent, 1.5);
 		machine.DisconnectProbabilityPercent = Math.Min(machine.DisconnectProbabilityPercent, 1.5);

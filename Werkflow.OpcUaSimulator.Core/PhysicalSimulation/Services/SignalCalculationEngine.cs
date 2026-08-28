@@ -29,7 +29,10 @@ public sealed class SignalCalculationEngine : ISignalCalculationEngine
 			{
 				continue;
 			}
-			if (context.Kinematics.ControlsSignal(item.SignalId) || context.PressBrake.ControlsSignal(item.SignalId))
+			if (context.Kinematics.ControlsSignal(item.SignalId) || context.PressBrake.ControlsSignal(item.SignalId)
+			    || (context.AutonomousCell.IsEnabled && (context.AutonomousCell.ControlsSignal(item.SignalId)
+			        || context.AutonomousCell.ControlsExpandedSignal(item.SignalId)
+			        || item.SignalId.StartsWith("Bank.", StringComparison.OrdinalIgnoreCase))))
 			{
 				continue;
 			}

@@ -12,7 +12,7 @@ public static class DefaultMachines
 		{
 			CreateVirtualMachine(),
 			CreateVirtualPressBrakeMachine(),
-			CreateMachine(3, 4842, "Langsam", "Langsame, stabile Produktion", 8000, 0.4, 0.3, 10000, 60000, 10000, 60000, 0.5, MachineState.Idle),
+			CreateVirtualAutonomousCellMachine(),
 			CreateMachine(4, 4843, "Störanfällig", "Leicht erhöhte Störwahrscheinlichkeit, global auf 25 % begrenzt", 2500, 1.0, 1.0, 10000, 90000, 10000, 90000, 1.0, MachineState.Idle)
 		};
 	}
@@ -36,6 +36,32 @@ public static class DefaultMachines
 		machine.Id = VirtualMachineContract.MachineId;
 		machine.Name = VirtualMachineContract.DisplayName;
 		machine.PhysicalProfileId = VirtualMachineContract.PhysicalProfileId;
+		machine.UpdateEndpointFromHostPort();
+		return machine;
+	}
+
+	private static MachineConfiguration CreateVirtualAutonomousCellMachine()
+	{
+		MachineConfiguration machine = CreateMachine(
+			3,
+			VirtualAutonomousProductionCellContract.Port,
+			"Normal",
+			"Virtuelle autonome Produktionszelle für VIGIL-Generalisierungsvalidierung (Machine 3)",
+			1200,
+			0.0,
+			0.0,
+			5000,
+			30000,
+			5000,
+			30000,
+			2.0,
+			MachineState.Idle);
+		machine.Id = VirtualAutonomousProductionCellContract.MachineId;
+		machine.Name = VirtualAutonomousProductionCellContract.DisplayName;
+		machine.PhysicalProfileId = VirtualAutonomousProductionCellContract.PhysicalProfileIdCore24;
+		machine.NamespaceUri = VirtualAutonomousProductionCellContract.NamespaceUri;
+		machine.ErrorProbabilityPercent = 0.0;
+		machine.DisconnectProbabilityPercent = 0.0;
 		machine.UpdateEndpointFromHostPort();
 		return machine;
 	}

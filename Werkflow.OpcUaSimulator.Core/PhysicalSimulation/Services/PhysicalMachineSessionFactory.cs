@@ -68,6 +68,8 @@ public sealed class PhysicalMachineSessionFactory : IPhysicalMachineSessionFacto
 		RegisterProfile(LaserProcessingMachine300ProfileFactory.Create());
 		RegisterProfile(VigilLabLaserReducedProfileFactory.Create());
 		RegisterProfile(VigilPressBrakeReducedProfileFactory.Create());
+		RegisterProfile(VigilAutonomousCellProfileFactory.CreateCore24());
+		RegisterProfile(VigilAutonomousCellProfileFactory.CreateExpanded48());
 		RegisterProfile(BendingHydraulicMachine300ProfileFactory.Create());
 		string path = PhysicalMachineProfilePaths.ResolveProfilesDirectory();
 		if (!Directory.Exists(path))

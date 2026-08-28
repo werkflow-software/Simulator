@@ -55,6 +55,7 @@ public sealed class PhysicalSimulationEngine : IPhysicalSimulationEngine
 		_signalEngine.Initialize(session.Profile, session.Runtime, session.Simulation, random);
 		LaserKinematicsEngine.Initialize(session.Simulation, seed, session.MachineId);
 		PressBrakeKinematicsEngine.Initialize(session.Simulation, seed, session.MachineId);
+		AutonomousCellKinematicsEngine.Initialize(session.Simulation, seed, session.MachineId);
 	}
 
 	public void Tick(PhysicalMachineSession session, TimeSpan deltaTime)
@@ -81,6 +82,14 @@ public sealed class PhysicalSimulationEngine : IPhysicalSimulationEngine
 			session.Simulation.Seed,
 			session.MachineId,
 			session.PressBrakeGroundTruth);
+		AutonomousCellKinematicsEngine.Tick(
+			session.Profile,
+			session.Runtime,
+			session.Simulation,
+			deltaTime2,
+			session.Simulation.Seed,
+			session.MachineId,
+			session.AutonomousCellGroundTruth);
 		_signalEngine.CalculateSignals(session.Profile, session.Runtime, session.Simulation, random, deltaTime2);
 		_faultScenarioEngine?.EvaluateThresholdsAfterSignals(session, _faultBridge);
 		_faultScenarioEngine?.ApplySignalOverrides(session, _faultBridge);
@@ -112,6 +121,7 @@ public sealed class PhysicalSimulationEngine : IPhysicalSimulationEngine
 		session.Simulation.PhysicsState.Reset();
 		session.Simulation.ResetPhaseState();
 		session.PressBrakeGroundTruth?.Flush();
+		session.AutonomousCellGroundTruth?.Flush();
 		_rateWatches.Remove(session.MachineId);
 		_ticksInWindow.Remove(session.MachineId);
 	}

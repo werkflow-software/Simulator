@@ -7,5 +7,6 @@ public static class VirtualKinematicsMachineRegistry
 {
 	public static bool IsKinematicsDrivenMachine(Guid machineId) =>
 		VirtualLaserMachineRegistry.IsVirtualLaserMachine(machineId)
-		|| VirtualPressBrakeMachineRegistry.IsVirtualPressBrakeMachine(machineId);
+		|| VirtualPressBrakeMachineRegistry.IsVirtualPressBrakeMachine(machineId)
+		|| VirtualAutonomousCellMachineRegistry.IsVirtualAutonomousCellMachine(machineId);
 }

@@ -19,6 +19,8 @@ public sealed class PhysicalMachineSession
 
 	public IPressBrakeGroundTruthRecorder? PressBrakeGroundTruth { get; set; }
 
+	public IAutonomousCellGroundTruthRecorder? AutonomousCellGroundTruth { get; set; }
+
 	public int OpcUaNodeCount { get; set; }
 
 	public bool IsPublisherManualOverride { get; set; }
