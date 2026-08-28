@@ -444,6 +444,14 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 			machine.NamespaceUri = VigilLabMachineContract.NamespaceUri;
 			machine.UpdateEndpointFromHostPort();
 		}
+		else if (machine.Port == VirtualAutonomousProductionCellContract.Port || machine.Id == VirtualAutonomousProductionCellContract.MachineId)
+		{
+			machine.Id = VirtualAutonomousProductionCellContract.MachineId;
+			machine.Name = VirtualAutonomousProductionCellContract.DisplayName;
+			machine.PhysicalProfileId ??= VirtualAutonomousProductionCellContract.PhysicalProfileIdCore24;
+			machine.NamespaceUri = VirtualAutonomousProductionCellContract.NamespaceUri;
+			machine.UpdateEndpointFromHostPort();
+		}
 	}
 
 	private void LoadFaultScenarios()
@@ -890,6 +898,22 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 
 	private void RefreshProcessMotionState(PhysicalMachineSession session)
 	{
+		AutonomousCellKinematicsState autonomousCell = session.Simulation.AutonomousCell;
+		if (autonomousCell.IsEnabled)
+		{
+			_isPressBrakeMachine = false;
+			_processPhaseText = autonomousCell.MotionPhase.ToString();
+			_processPhaseEnglish = autonomousCell.MotionPhase.ToString();
+			_laserActiveText = "NEIN";
+			_cuttingActiveText = autonomousCell.MotionPhase == AutonomousCellMotionPhase.ProcessPressFit ? "JA" : "NEIN";
+			_positioningActiveText = autonomousCell.MotionPhase is AutonomousCellMotionPhase.LoadPick or AutonomousCellMotionPhase.TransferPickup ? "JA" : "NEIN";
+			_nextActionText = $"Teil {autonomousCell.CompletedParts}/{autonomousCell.TargetParts}";
+			_pathSpeedText = $"{autonomousCell.LoadVelocityMmPerS:0.#} mm/s";
+			_focusText = $"Pallet {autonomousCell.PalletQuantityRemaining}";
+			_statusTone = autonomousCell.MotionPhase == AutonomousCellMotionPhase.Complete ? "idle" : "running";
+			return;
+		}
+
 		PressBrakeKinematicsState pressBrake = session.Simulation.PressBrake;
 		_isPressBrakeMachine = pressBrake.IsEnabled;
 		if (pressBrake.IsEnabled)

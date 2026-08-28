@@ -156,14 +156,18 @@ public sealed class ConfigurationService : IConfigurationService
 			?? DefaultMachines.CreateVigilLabMachine();
 		MachineConfiguration pressBrake = ResolveVirtualMachineMachine(VirtualPressBrakeContract.MachineId, VirtualPressBrakeContract.Port)
 			?? DefaultMachines.Create().First(m => m.Port == VirtualPressBrakeContract.Port);
+		MachineConfiguration autonomousCell = ResolveVirtualMachineMachine(VirtualAutonomousProductionCellContract.MachineId, VirtualAutonomousProductionCellContract.Port)
+			?? DefaultMachines.Create().First(m => m.Port == VirtualAutonomousProductionCellContract.Port);
 
 		existingLaser.IsActive = true;
 		vigilLabLaser.IsActive = true;
 		pressBrake.IsActive = true;
+		autonomousCell.IsActive = true;
 		NormalizeMachine(existingLaser);
 		NormalizeMachine(vigilLabLaser);
 		NormalizeMachine(pressBrake);
-		Configuration.Machines = [existingLaser, pressBrake, vigilLabLaser];
+		NormalizeMachine(autonomousCell);
+		Configuration.Machines = [existingLaser, pressBrake, autonomousCell, vigilLabLaser];
 	}
 
 	private MachineConfiguration? ResolveVirtualMachineMachine(Guid machineId, int port) =>
