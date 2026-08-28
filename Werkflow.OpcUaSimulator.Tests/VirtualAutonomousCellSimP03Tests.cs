@@ -159,6 +159,7 @@ public class VirtualAutonomousCellBaselineTests
 		engine.Initialize(session, seed);
 		PhysicalJobCoordinator.ApplyDefinition(session.Simulation, VirtualAutonomousCellRunProfile.ResolveJobDefinition(session.MachineId, 0), session.Runtime);
 		AutonomousCellKinematicsEngine.OnJobApplied(session.Simulation, seed);
+		AutonomousCellKinematicsEngine.OnProductionResumed(session.Simulation, seed);
 		session.Simulation.IsProductionMotionActive = true;
 
 		List<char> variants = [];

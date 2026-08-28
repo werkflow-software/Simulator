@@ -451,6 +451,7 @@ public sealed class PhysicalSignalPublishingCoordinator : IPhysicalSignalPublish
 
 		LaserKinematicsEngine.OnProductionResumed(simulation);
 		PressBrakeKinematicsEngine.OnProductionResumed(simulation);
+		AutonomousCellKinematicsEngine.OnProductionResumed(simulation, context.Seed);
 		if (context.Publisher != null)
 		{
 			await context.Publisher.ResumeAsync().ConfigureAwait(continueOnCapturedContext: false);

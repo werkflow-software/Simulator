@@ -319,6 +319,7 @@ public class VirtualAutonomousCellHmiObservabilityP20R2Tests
 			VirtualAutonomousCellRunProfile.ResolveJobDefinition(session.MachineId, 0),
 			session.Runtime);
 		AutonomousCellKinematicsEngine.OnJobApplied(session.Simulation, Seed);
+		AutonomousCellKinematicsEngine.OnProductionResumed(session.Simulation, Seed);
 		session.Simulation.IsProductionMotionActive = true;
 	}
 

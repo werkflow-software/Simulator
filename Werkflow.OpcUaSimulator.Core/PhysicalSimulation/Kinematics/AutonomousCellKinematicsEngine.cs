@@ -84,7 +84,9 @@ public static class AutonomousCellKinematicsEngine
 		cell.AuxiliaryConveyorEncoder = 0;
 		ResetIrrelevantStreams(cell);
 		AutonomousCellExposedSignalSemantics.ApplyTokens(cell);
-		AdvancePhase(cell, AutonomousCellMotionPhase.HiddenInboundDelivery, seed, ResolveDuration(seed, AutonomousCellMotionPhase.HiddenInboundDelivery, Machine3SeedArchitecture.LogisticsAmrSeed));
+		cell.MotionPhase = AutonomousCellMotionPhase.Idle;
+		cell.PhaseElapsedSeconds = 0.0;
+		cell.PhaseDurationSeconds = 0.0;
 	}
 
 	public static void OnJobApplied(PhysicalSimulationContext context, int seed)
@@ -95,7 +97,25 @@ public static class AutonomousCellKinematicsEngine
 		}
 
 		Initialize(context, seed, VirtualAutonomousProductionCellContract.MachineId);
-		context.IsProductionMotionActive = true;
+	}
+
+	public static void OnProductionResumed(PhysicalSimulationContext context, int seed)
+	{
+		if (!context.AutonomousCell.IsEnabled)
+		{
+			return;
+		}
+
+		AutonomousCellKinematicsState cell = context.AutonomousCell;
+		if (cell.CompletedParts == 0
+		    && cell.MotionPhase is AutonomousCellMotionPhase.Idle or AutonomousCellMotionPhase.WaitRawMaterial)
+		{
+			AdvancePhase(
+				cell,
+				AutonomousCellMotionPhase.HiddenInboundDelivery,
+				seed,
+				ResolveDuration(seed, AutonomousCellMotionPhase.HiddenInboundDelivery, Machine3SeedArchitecture.LogisticsAmrSeed));
+		}
 	}
 
 	public static void Tick(
