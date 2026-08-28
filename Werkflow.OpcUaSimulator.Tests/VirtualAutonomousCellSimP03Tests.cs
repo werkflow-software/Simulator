@@ -5,6 +5,7 @@ using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Kinematics;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Models;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Profiles;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Services;
+using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Validation;
 using Werkflow.OpcUaSimulator.Core.VirtualMachine;
 using Xunit;
 
@@ -97,13 +98,15 @@ public class VirtualAutonomousCellBaselineTests
 	[Fact]
 	public void SIM_P03_CoreValues_Invariant_AcrossProfileSelection()
 	{
-		(BaselineRunResult core, Dictionary<string, double> coreSnapshots) = RunBaseline(VigilAutonomousCellProfileFactory.CreateCore24(), captureCoreSnapshots: true);
-		(BaselineRunResult expanded, Dictionary<string, double> expandedSnapshots) = RunBaseline(VigilAutonomousCellProfileFactory.CreateExpanded48(), captureCoreSnapshots: true);
+		(BaselineRunResult core, Dictionary<string, double> coreSnapshots) = RunBaseline(VigilAutonomousCellProfileFactory.CreateCore24(), captureSnapshots: true);
+		(BaselineRunResult expanded, Dictionary<string, double> expandedSnapshots) = RunBaseline(VigilAutonomousCellProfileFactory.CreateExpanded48(), captureSnapshots: true);
 		Assert.Equal(core.CompletedParts, expanded.CompletedParts);
 		Assert.Equal(core.ReplenishmentEvents, expanded.ReplenishmentEvents);
 		Assert.Equal(core.ContainerExchangeEvents, expanded.ContainerExchangeEvents);
-		foreach (string key in coreSnapshots.Keys)
+		foreach (string key in AutonomousCellKinematicsState.CoreSignalIds)
 		{
+			Assert.True(coreSnapshots.ContainsKey(key), key);
+			Assert.True(expandedSnapshots.ContainsKey(key), key);
 			Assert.Equal(coreSnapshots[key], expandedSnapshots[key]);
 		}
 	}
@@ -130,9 +133,9 @@ public class VirtualAutonomousCellBaselineTests
 		File.Delete(path);
 	}
 
-	private static (BaselineRunResult Result, Dictionary<string, double> Snapshots) RunBaseline(
+	internal static (BaselineRunResult Result, Dictionary<string, double> Snapshots) RunBaseline(
 		PhysicalMachineProfile profile,
-		bool captureCoreSnapshots = false)
+		bool captureSnapshots = false)
 	{
 		PhysicalSimulationEngine engine = new(
 			new HiddenProcessStateEngine(),
@@ -180,15 +183,12 @@ public class VirtualAutonomousCellBaselineTests
 			ticks++;
 		}
 
-		if (captureCoreSnapshots)
+		if (captureSnapshots)
 		{
-			foreach (string signalId in AutonomousCellKinematicsState.CoreSignalIds)
+			HashSet<string> enabled = profile.Signals.Where(s => s.IsEnabled).Select(s => s.SignalId).ToHashSet(StringComparer.OrdinalIgnoreCase);
+			foreach (SignalRuntimeState signal in session.Runtime.Signals.Where(s => enabled.Contains(s.SignalId)))
 			{
-				SignalRuntimeState? signal = session.Runtime.Signals.FirstOrDefault(s => s.SignalId == signalId);
-				if (signal != null)
-				{
-					snapshots[signalId] = signal.CurrentValue;
-				}
+				snapshots[signal.SignalId] = signal.CurrentValue;
 			}
 		}
 
@@ -206,11 +206,111 @@ public class VirtualAutonomousCellBaselineTests
 		}, snapshots);
 	}
 
-	private sealed class BaselineRunResult
+	internal sealed class BaselineRunResult
 	{
 		public int CompletedParts { get; init; }
 		public int ReplenishmentEvents { get; init; }
 		public int ContainerExchangeEvents { get; init; }
 		public string ProductSequenceObserved { get; init; } = string.Empty;
 	}
+}
+
+public class VirtualAutonomousCellProfileValidationP20R1Tests
+{
+	private static readonly PhysicalMachineProfileValidator Validator = new();
+
+	[Fact]
+	public void SIM_P20R1_CoreProfile_ValidationPasses()
+	{
+		PhysicalMachineProfile profile = VigilAutonomousCellProfileFactory.CreateCore24();
+		PhysicalProfileValidationResult result = Validator.Validate(profile);
+		Assert.True(result.IsValid, string.Join("; ", result.Errors.Select(e => e.Message)));
+	}
+
+	[Fact]
+	public void SIM_P20R1_ExpandedProfile_ValidationPasses()
+	{
+		PhysicalMachineProfile profile = VigilAutonomousCellProfileFactory.CreateExpanded48();
+		PhysicalProfileValidationResult result = Validator.Validate(profile);
+		Assert.True(result.IsValid, string.Join("; ", result.Errors.Select(e => e.Message)));
+	}
+
+	[Fact]
+	public void SIM_P20R1_NumericSignals_HaveValidRangeMetadata()
+	{
+		foreach (PhysicalMachineProfile profile in new[] { VigilAutonomousCellProfileFactory.CreateCore24(), VigilAutonomousCellProfileFactory.CreateExpanded48() })
+		{
+			foreach (SignalDefinition signal in profile.Signals.Where(s => s.IsEnabled && RequiresNumericRanges(s.DataType)))
+			{
+				Assert.True(signal.NormalMinimum < signal.NormalMaximum, signal.SignalId);
+				Assert.True(signal.HardMinimum < signal.HardMaximum, signal.SignalId);
+				Assert.True(signal.HardMinimum <= signal.NormalMinimum, signal.SignalId);
+				Assert.True(signal.NormalMaximum <= signal.HardMaximum, signal.SignalId);
+				Assert.InRange(signal.InitialValue, signal.HardMinimum, signal.HardMaximum);
+			}
+		}
+	}
+
+	[Fact]
+	public void SIM_P20R1_SessionFactory_CreatesMachine3Core24Session()
+	{
+		PhysicalMachineSessionFactory factory = CreateSessionFactory();
+		PhysicalMachineSession session = factory.TryCreateSession(
+			VirtualAutonomousProductionCellContract.MachineId,
+			VirtualAutonomousProductionCellContract.DisplayName,
+			VigilAutonomousCellProfileFactory.ProfileIdCore24)!;
+		Assert.NotNull(session);
+		Assert.Equal(24, session.Profile.Signals.Count(s => s.IsEnabled));
+	}
+
+	[Fact]
+	public void SIM_P20R1_BaselineGeneratedValues_StayWithinHardLimits()
+	{
+		PhysicalMachineProfile profile = VigilAutonomousCellProfileFactory.CreateExpanded48();
+		Dictionary<string, SignalDefinition> definitions = profile.Signals
+			.Where(s => s.IsEnabled)
+			.ToDictionary(s => s.SignalId, StringComparer.OrdinalIgnoreCase);
+		(_, Dictionary<string, double> snapshots) = VirtualAutonomousCellBaselineTests.RunBaseline(profile, captureSnapshots: true);
+
+		foreach ((string signalId, double value) in snapshots)
+		{
+			if (!definitions.TryGetValue(signalId, out SignalDefinition? definition) || !RequiresNumericRanges(definition.DataType))
+			{
+				continue;
+			}
+
+			Assert.InRange(value, definition.HardMinimum, definition.HardMaximum);
+		}
+	}
+
+	[Fact]
+	public void SIM_P20R1_LaserProfile_ValidationRegressionPasses()
+	{
+		PhysicalProfileValidationResult result = Validator.Validate(VigilLabLaserReducedProfileFactory.Create());
+		Assert.True(result.IsValid, string.Join("; ", result.Errors.Select(e => e.Message)));
+	}
+
+	[Fact]
+	public void SIM_P20R1_PressBrakeProfile_ValidationRegressionPasses()
+	{
+		PhysicalProfileValidationResult result = Validator.Validate(VigilPressBrakeReducedProfileFactory.Create());
+		Assert.True(result.IsValid, string.Join("; ", result.Errors.Select(e => e.Message)));
+	}
+
+	[Fact]
+	public void SIM_P20R1_CameraExposureIndex_InitialValueWithinHardLimits()
+	{
+		SignalDefinition signal = VigilAutonomousCellProfileFactory.CreateExpanded48().Signals
+			.Single(s => s.SignalId == "Vision.CameraExposureIndex");
+		Assert.Equal(100, signal.InitialValue);
+		Assert.InRange(signal.InitialValue, signal.HardMinimum, signal.HardMaximum);
+	}
+
+	private static bool RequiresNumericRanges(PhysicalSignalDataType dataType) => (uint)dataType <= 3u;
+
+	private static PhysicalMachineSessionFactory CreateSessionFactory() =>
+		new(
+			new JsonPhysicalMachineProfileLoader(new PhysicalMachineProfileValidator()),
+			new PhysicalMachineProfileValidator(),
+			new PhysicalMachineRuntimeFactory());
 }

@@ -61,11 +61,11 @@ public static class VigilAutonomousCellProfileFactory
 
 	private static List<SignalDefinition> BuildBaseSignals() =>
 	[
-		CreateInt32("Cell.OperationalState", "Cell Operational State", SignalCategory.Production, 0),
+		CreateInt32("Cell.OperationalState", "Cell Operational State", SignalCategory.Production, 0, 3, 0, 0, 5),
 		CreateString("Cell.CurrentProductId", "Current Product Id", SignalCategory.Production, "A"),
-		CreateInt64("Cell.CompletedPartCount", "Completed Part Count", SignalCategory.Production, 0),
+		CreateInt64("Cell.CompletedPartCount", "Completed Part Count", SignalCategory.Production, 0, 28, 0, 0, 35),
 		CreateBool("Inbound.RawMaterialPresent", "Raw Material Present", SignalCategory.Production, false),
-		CreateInt32("Inbound.PalletQuantityRemaining", "Pallet Quantity Remaining", SignalCategory.Production, 0),
+		CreateInt32("Inbound.PalletQuantityRemaining", "Pallet Quantity Remaining", SignalCategory.Production, 0, 12, 0, 0, 15),
 		CreateString("LoadRobot.ActivityState", "Load Robot Activity", SignalCategory.Axis, "LR_AC_00"),
 		CreateNumeric("LoadRobot.AxisPosition", "Load Axis Position", SignalCategory.Axis, "mm", 0, 1200, 0, 0.1),
 		CreateNumeric("LoadRobot.GripperPressure", "Gripper Pressure", SignalCategory.Process, "bar", 0, 8, 0, 0.1),
@@ -82,7 +82,7 @@ public static class VigilAutonomousCellProfileFactory
 		CreateNumeric("Vision.DimensionOffset", "Dimension Offset", SignalCategory.Process, "mm", -5, 5, 0, 0.5),
 		CreateNumeric("Vision.SurfaceScore", "Surface Score", SignalCategory.Process, "score", 0, 100, 50, 0.5),
 		CreateNumeric("Vision.AlignmentDeviation", "Alignment Deviation", SignalCategory.Process, "mm", -3, 3, 0, 0.5),
-		CreateInt32("Sorting.PositionIndex", "Sorting Position", SignalCategory.Production, 0),
+		CreateInt32("Sorting.PositionIndex", "Sorting Position", SignalCategory.Production, 0, 4, 0, 0, 10),
 		CreateNumeric("Output.ContainerFillLevel", "Container Fill Level", SignalCategory.Production, "ratio", 0, 1, 0, 0.5),
 		CreateBool("Output.ContainerExchangeRequested", "Container Exchange Requested", SignalCategory.Production, false),
 		CreateNumeric("Process.EnergyIntegral", "Energy Integral", SignalCategory.Process, "kJ", 0, 500, 0, 0.5),
@@ -99,15 +99,15 @@ public static class VigilAutonomousCellProfileFactory
 		CreateNumeric("Output.ContainerFillPercent", "Container Fill Percent", SignalCategory.Production, "%", 0, 100, 0, 0.5),
 		CreateNumeric("Cell.AmbientHumidity", "Ambient Humidity", SignalCategory.Thermal, "%RH", 0, 100, 45, 5.0),
 		CreateNumeric("Fixture.VibrationRms", "Fixture Vibration", SignalCategory.Process, "mm/s", 0, 20, 0, 0.5),
-		CreateInt32("Vision.CameraExposureIndex", "Camera Exposure", SignalCategory.Process, 100),
+		CreateInt32("Vision.CameraExposureIndex", "Camera Exposure", SignalCategory.Process, 90, 105, 100, 80, 120),
 		CreateNumeric("Process.ToolWearIndex", "Tool Wear Index", SignalCategory.Process, "ratio", 0, 1, 0, 10.0),
 		CreateNumeric("Cell.EnclosureTemperature", "Enclosure Temperature", SignalCategory.Thermal, "C", 15, 45, 22, 5.0),
 		CreateBool("Vision.CalibrationPulse", "Calibration Pulse", SignalCategory.Process, false),
-		CreateInt64("Fixture.MaintenanceCounter", "Maintenance Counter", SignalCategory.Production, 0),
+		CreateInt64("Fixture.MaintenanceCounter", "Maintenance Counter", SignalCategory.Production, 0, 28, 0, 0, 100),
 		CreateNumeric("Process.ForceSensorNoiseChannel", "Force Noise Channel", SignalCategory.Process, "kN", 0, 80, 0, 0.1),
 		CreateNumeric("Vision.RawPixelContrast", "Raw Pixel Contrast", SignalCategory.Process, "score", 0, 100, 50, 0.5),
 		CreateNumeric("Auxiliary.FacilityPowerRipple", "Facility Power Ripple", SignalCategory.Thermal, "V", 220, 240, 230, 0.2),
-		CreateInt64("Auxiliary.UnrelatedConveyorEncoder", "Unrelated Conveyor Encoder", SignalCategory.Production, 0),
+		CreateInt64("Auxiliary.UnrelatedConveyorEncoder", "Unrelated Conveyor Encoder", SignalCategory.Production, 0, 10_000, 0, 0, 20_000),
 		CreateNumeric("Vision.AlignmentDeviationIntermittent", "Alignment Intermittent", SignalCategory.Process, "mm", -3, 3, 0, 0.5)
 	];
 
@@ -148,7 +148,15 @@ public static class VigilAutonomousCellProfileFactory
 			DecimalPlaces = 2
 		};
 
-	private static SignalDefinition CreateInt32(string id, string name, SignalCategory category, int initial) =>
+	private static SignalDefinition CreateInt32(
+		string id,
+		string name,
+		SignalCategory category,
+		int normalMin,
+		int normalMax,
+		int initial,
+		int hardMin,
+		int hardMax) =>
 		new()
 		{
 			SignalId = id,
@@ -157,11 +165,25 @@ public static class VigilAutonomousCellProfileFactory
 			DisplayName = name,
 			Category = category,
 			DataType = PhysicalSignalDataType.Int32,
+			NormalMinimum = normalMin,
+			NormalMaximum = normalMax,
+			NominalValue = initial,
+			HardMinimum = hardMin,
+			HardMaximum = hardMax,
 			InitialValue = initial,
-			UpdateInterval = TimeSpan.FromSeconds(0.5)
+			UpdateInterval = TimeSpan.FromSeconds(0.5),
+			DecimalPlaces = 0
 		};
 
-	private static SignalDefinition CreateInt64(string id, string name, SignalCategory category, long initial) =>
+	private static SignalDefinition CreateInt64(
+		string id,
+		string name,
+		SignalCategory category,
+		long normalMin,
+		long normalMax,
+		long initial,
+		long hardMin,
+		long hardMax) =>
 		new()
 		{
 			SignalId = id,
@@ -170,8 +192,14 @@ public static class VigilAutonomousCellProfileFactory
 			DisplayName = name,
 			Category = category,
 			DataType = PhysicalSignalDataType.Int64,
+			NormalMinimum = normalMin,
+			NormalMaximum = normalMax,
+			NominalValue = initial,
+			HardMinimum = hardMin,
+			HardMaximum = hardMax,
 			InitialValue = initial,
-			UpdateInterval = TimeSpan.FromSeconds(0.5)
+			UpdateInterval = TimeSpan.FromSeconds(0.5),
+			DecimalPlaces = 0
 		};
 
 	private static SignalDefinition CreateString(string id, string name, SignalCategory category, string initial) =>
