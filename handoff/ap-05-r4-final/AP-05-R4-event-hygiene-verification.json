@@ -1,15 +1,15 @@
 {
-  "VerificationRunId": "ap5r4-20260810193614-700d869a7d7549d5845448115a6",
-  "StartedAtUtc": "2026-08-10T19:36:14.9317556Z",
-  "EndedAtUtc": "2026-08-10T19:36:14.9319667Z",
+  "VerificationRunId": "ap5r4-20260831173056-5df1bcad528749a1ada556f6e9c",
+  "StartedAtUtc": "2026-08-31T17:30:56.907646Z",
+  "EndedAtUtc": "2026-08-31T17:30:56.907958Z",
   "HydraulicLeak": {
     "ExperimentId": "R4-HYD",
     "FaultRuns": [
       {
         "RunId": "fault-1",
-        "ThresholdApproachingCount": 67,
-        "ThresholdEnteredCount": 43,
-        "ThresholdExitedCount": 42,
+        "ThresholdApproachingCount": 68,
+        "ThresholdEnteredCount": 44,
+        "ThresholdExitedCount": 43,
         "ThresholdConfirmedCount": 1,
         "DuplicateApproachingCount": 0,
         "InvalidTransitionCount": 0,
@@ -54,7 +54,7 @@
   "ControlRegression": true,
   "NormalRegression": true,
   "MetricsRegression": {
-    "VerificationRunId": "ap5-20260810193614-598a2fc5d1f54f34abc964aae",
+    "VerificationRunId": "ap5-20260831173056-d7fb7d4cc7a048d28abe42b1a",
     "EvidenceType": "SyntheticTestEvidence",
     "TruePositivePassed": true,
     "MissedDetectionPassed": true,

@@ -83,6 +83,7 @@ public static class AutonomousCellKinematicsEngine
 		cell.ProcessToolWearIndex = 0.0;
 		cell.AuxiliaryConveyorEncoder = 0;
 		ResetIrrelevantStreams(cell);
+		AutonomousCellScale96SignalEngine.Reset(cell.Scale96, seed);
 		AutonomousCellExposedSignalSemantics.ApplyTokens(cell);
 		cell.MotionPhase = AutonomousCellMotionPhase.Idle;
 		cell.PhaseElapsedSeconds = 0.0;
@@ -149,6 +150,11 @@ public static class AutonomousCellKinematicsEngine
 		UpdatePhysicsForPhase(cell, dt, seed);
 		UpdateThermal(cell, dt);
 		TickIrrelevantIndependent(cell, dt, seed);
+		bool scale96Active = profile.Signals.Any(s => s.IsEnabled && AutonomousCellScale96SignalIds.IsScale96Signal(s.SignalId));
+		if (scale96Active)
+		{
+			AutonomousCellScale96SignalEngine.Tick(cell, cell.Scale96, dt, seed);
+		}
 
 		if (cell.PhaseElapsedSeconds >= cell.PhaseDurationSeconds)
 		{
@@ -157,6 +163,11 @@ public static class AutonomousCellKinematicsEngine
 
 		ApplySignals(runtime, cell);
 		ApplyExpandedSignals(runtime, cell, seed);
+		if (scale96Active)
+		{
+			AutonomousCellScale96SignalEngine.Apply(runtime, cell, cell.Scale96, seed);
+		}
+
 		ApplyBankSignals(runtime, profile, cell, seed);
 	}
 

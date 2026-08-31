@@ -170,6 +170,11 @@ public sealed class AutonomousCellKinematicsState
 
 	public bool ControlsExpandedSignal(string signalId) =>
 		IsEnabled && AutonomousCellExpandedSignalIds.All.Contains(signalId);
+
+	public bool ControlsScale96Signal(string signalId) =>
+		IsEnabled && AutonomousCellScale96SignalIds.IsScale96Signal(signalId);
+
+	public AutonomousCellScale96Runtime Scale96 { get; } = new();
 }
 
 public static class AutonomousCellExpandedSignalIds

@@ -31,7 +31,6 @@
     "forming_end",
     "forming_start",
     "inter_part_wait",
-    "operator_wait_start",
     "part_end",
     "part_start",
     "return_end",
@@ -84,8 +83,8 @@
       "SignalId": "Machine.LastProductionChange",
       "Resolved": true,
       "Readable": true,
-      "InitialValue": "2026-08-23T17:10:32.0177232Z",
-      "LaterValue": "2026-08-23T17:10:45.9236004Z",
+      "InitialValue": "2026-08-31T17:34:17.5173447Z",
+      "LaterValue": "2026-08-31T17:34:31.3336671Z",
       "Dynamic": true
     },
     {
@@ -101,7 +100,7 @@
       "Resolved": true,
       "Readable": true,
       "InitialValue": "0",
-      "LaterValue": "5.521997282782833",
+      "LaterValue": "24.5",
       "Dynamic": true
     },
     {
@@ -116,16 +115,16 @@
       "SignalId": "Process.BendAngle",
       "Resolved": true,
       "Readable": true,
-      "InitialValue": "4.1943350000000095",
-      "LaterValue": "69.952275",
+      "InitialValue": "58.260310000000004",
+      "LaterValue": "58.260310000000004",
       "Dynamic": true
     },
     {
       "SignalId": "Process.FormingForce",
       "Resolved": true,
       "Readable": true,
-      "InitialValue": "41.26647500000004",
-      "LaterValue": "189.28068749999997",
+      "InitialValue": "180.250775",
+      "LaterValue": "180.250775",
       "Dynamic": true
     },
     {
@@ -140,15 +139,15 @@
       "SignalId": "Thermal.HydraulicOilTemp",
       "Resolved": true,
       "Readable": true,
-      "InitialValue": "38.32526871000003",
-      "LaterValue": "37.46849528000002",
+      "InitialValue": "38.25661738000003",
+      "LaterValue": "37.4748435250001",
       "Dynamic": true
     },
     {
       "SignalId": "Cycle.ActivityState",
       "Resolved": true,
       "Readable": true,
-      "InitialValue": "CY_AC_00",
+      "InitialValue": "CY_AC_01",
       "LaterValue": "CY_AC_00",
       "Dynamic": true
     }

@@ -1,6 +1,6 @@
 # AP-04-R5 Validator Truth Summary
 
-VerificationRunId: `ap4r5-20260810121547-bc3888ded7b3476885df83f`
+VerificationRunId: `ap4r5-20260831172954-3d918343ba1c450e961522b`
 
 | Check | Passed |
 |-------|--------|
@@ -10,9 +10,3 @@ VerificationRunId: `ap4r5-20260810121547-bc3888ded7b3476885df83f`
 | Negative validator tests | True |
 | Ap4R5Passed | True |
 | Ap4OverallPassed | True |
-
-## Git
-
-- Commit message: `Correct AP 4 evidence validator truthfulness`
-- Tag: `opcua-simulator-fault-scenarios-ap4-final-r5` (Zielcommit = R5-Release)
-- Branch: `feature/physical-learning-simulator` (ahead of origin)

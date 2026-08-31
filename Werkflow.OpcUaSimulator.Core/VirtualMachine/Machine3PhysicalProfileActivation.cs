@@ -35,7 +35,8 @@ public static class Machine3PhysicalProfileActivation
 			throw new InvalidOperationException(
 				$"Unsupported {EnvironmentVariableName}='{normalized}'. " +
 				$"Supported values: {VirtualAutonomousProductionCellContract.PhysicalProfileIdCore24}, " +
-				$"{VirtualAutonomousProductionCellContract.PhysicalProfileIdExpanded48}.");
+				$"{VirtualAutonomousProductionCellContract.PhysicalProfileIdExpanded48}, " +
+				$"{VirtualAutonomousProductionCellContract.PhysicalProfileIdScale96}.");
 		}
 
 		machine.PhysicalProfileId = normalized;
@@ -43,10 +44,18 @@ public static class Machine3PhysicalProfileActivation
 
 	public static bool IsSupportedProfileId(string profileId) =>
 		profileId.Equals(VirtualAutonomousProductionCellContract.PhysicalProfileIdCore24, StringComparison.OrdinalIgnoreCase)
-		|| profileId.Equals(VirtualAutonomousProductionCellContract.PhysicalProfileIdExpanded48, StringComparison.OrdinalIgnoreCase);
+		|| profileId.Equals(VirtualAutonomousProductionCellContract.PhysicalProfileIdExpanded48, StringComparison.OrdinalIgnoreCase)
+		|| profileId.Equals(VirtualAutonomousProductionCellContract.PhysicalProfileIdScale96, StringComparison.OrdinalIgnoreCase);
 
 	public static int ResolveEnabledSignalCount(string? physicalProfileId)
 	{
+		if (physicalProfileId?.Equals(
+			    VirtualAutonomousProductionCellContract.PhysicalProfileIdScale96,
+			    StringComparison.OrdinalIgnoreCase) == true)
+		{
+			return VigilAutonomousCellProfileFactory.CreateScale96().Signals.Count(s => s.IsEnabled);
+		}
+
 		if (physicalProfileId?.Equals(
 			    VirtualAutonomousProductionCellContract.PhysicalProfileIdExpanded48,
 			    StringComparison.OrdinalIgnoreCase) == true)
@@ -59,6 +68,13 @@ public static class Machine3PhysicalProfileActivation
 
 	public static string ResolveOperatorProfileLabel(string? physicalProfileId)
 	{
+		if (physicalProfileId?.Equals(
+			    VirtualAutonomousProductionCellContract.PhysicalProfileIdScale96,
+			    StringComparison.OrdinalIgnoreCase) == true)
+		{
+			return "SCALE96";
+		}
+
 		if (physicalProfileId?.Equals(
 			    VirtualAutonomousProductionCellContract.PhysicalProfileIdExpanded48,
 			    StringComparison.OrdinalIgnoreCase) == true)

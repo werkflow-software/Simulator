@@ -32,6 +32,7 @@ public sealed class SignalCalculationEngine : ISignalCalculationEngine
 			if (context.Kinematics.ControlsSignal(item.SignalId) || context.PressBrake.ControlsSignal(item.SignalId)
 			    || (context.AutonomousCell.IsEnabled && (context.AutonomousCell.ControlsSignal(item.SignalId)
 			        || context.AutonomousCell.ControlsExpandedSignal(item.SignalId)
+			        || context.AutonomousCell.ControlsScale96Signal(item.SignalId)
 			        || item.SignalId.StartsWith("Bank.", StringComparison.OrdinalIgnoreCase))))
 			{
 				continue;

@@ -8,7 +8,3 @@ dotnet test Werkflow.OpcUaSimulator.sln -c Release --filter "FullyQualifiedName~
 ```
 
 154 non-integration tests passed (0 failed).
-
-## Git
-
-- Tag: `opcua-simulator-fault-scenarios-ap4-final-r5` auf R5-Release-Commit

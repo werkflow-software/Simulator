@@ -1,6 +1,6 @@
 {
   "VigilEvaluationAvailable": false,
-  "EvidenceType": 2,
+  "EvidenceType": "NotAvailable",
   "RealVigilLearningEvaluation": "NotExecuted",
   "FaultCount": 3,
   "DetectedFaultCount": 0,
@@ -16,7 +16,7 @@
   "MaxLeadTime": null,
   "ControlRunCount": 1,
   "ControlRunsWithWarning": 0,
-  "NormalDuration": "00:00:00",
+  "NormalDuration": "00:00:30",
   "WarningsPerNormalHour": null,
   "PerRepetitionLeadTimes": []
 }

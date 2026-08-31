@@ -4,7 +4,7 @@
   "ExperimentVersion": "1.0",
   "MachineProfileId": "bending-hydraulic-machine-300",
   "ScenarioId": "hydraulic-leak",
-  "ExperimentType": 1,
+  "ExperimentType": "FaultLearningSeries",
   "WarmupDuration": "00:00:10",
   "NormalLearningDuration": "00:00:30",
   "FaultRunCount": 2,
@@ -25,7 +25,7 @@
   "StopOnFault": true,
   "ResetBetweenRuns": true,
   "ShuffleRuns": false,
-  "VigilMode": 0,
+  "VigilMode": "GroundTruthOnly",
   "ControlScenarioIds": [
     "hydraulic-leak"
   ],

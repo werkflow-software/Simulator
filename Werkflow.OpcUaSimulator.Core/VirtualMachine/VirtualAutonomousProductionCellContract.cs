@@ -19,5 +19,7 @@ public static class VirtualAutonomousProductionCellContract
 
 	public const string PhysicalProfileIdExpanded48 = "vigil-autonomous-cell-expanded48";
 
+	public const string PhysicalProfileIdScale96 = "vigil-autonomous-cell-scale96";
+
 	public const string Purpose = "VIGIL cross-machine generalization validation (Machine 3 autonomous production cell)";
 }

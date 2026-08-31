@@ -1,11 +1,11 @@
 {
-  "verificationRunId": "ap6r3-20260810212535-008a6bb4b7c74b44b3e8c6674d0",
-  "startedAtUtc": "2026-08-10T21:25:35.4805312Z",
-  "endedAtUtc": "2026-08-10T21:25:38.3895817Z",
+  "verificationRunId": "ap6r3-20260831113011-7f4184e092a448a692770a6bbc2",
+  "startedAtUtc": "2026-08-31T11:30:11.833977Z",
+  "endedAtUtc": "2026-08-31T11:30:14.5055848Z",
   "contrast": {
-    "primaryTextReadable": true,
+    "primaryTextReadable": false,
     "buttonTextReadable": true,
-    "disabledButtonReadable": true,
+    "disabledButtonReadable": false,
     "noCriticalLowContrastAreas": true
   },
   "trayBehavior": {
@@ -24,9 +24,9 @@
     "machineStillRunningAfterX": true
   },
   "ap6R2Regression": {
-    "verificationRunId": "ap6r2-20260810212535-024c018acaeb4df5a46a5b31dda",
-    "startedAtUtc": "2026-08-10T21:25:35.6828043Z",
-    "endedAtUtc": "2026-08-10T21:25:38.3894586Z",
+    "verificationRunId": "ap6r2-20260831113012-93bb24f2bbfe4974ab4a319f38f",
+    "startedAtUtc": "2026-08-31T11:30:12.038725Z",
+    "endedAtUtc": "2026-08-31T11:30:14.5053998Z",
     "runtimeBinding": {
       "liveSignalCount": 309,
       "expectedPhysicalSignals": 309,
@@ -36,57 +36,57 @@
         {
           "semantic": "XPosition",
           "signalId": "Axis01.Position",
-          "hmiValue": "597.03 mm",
-          "runtimeValue": "597,032175162966",
+          "hmiValue": "30.00 mm",
+          "runtimeValue": "30",
           "bound": true
         },
         {
           "semantic": "YPosition",
           "signalId": "Axis02.Position",
-          "hmiValue": "635.37 mm",
-          "runtimeValue": "635,3662462106441",
+          "hmiValue": "50.00 mm",
+          "runtimeValue": "50",
           "bound": true
         },
         {
           "semantic": "ZPosition",
           "signalId": "Axis03.Position",
-          "hmiValue": "620.89 mm",
-          "runtimeValue": "620,8916674469149",
+          "hmiValue": "20.00 mm",
+          "runtimeValue": "20",
           "bound": true
         },
         {
           "semantic": "MotorCurrent",
           "signalId": "Axis01.MotorCurrent",
-          "hmiValue": "4.71 A",
-          "runtimeValue": "4,709145016037948",
+          "hmiValue": "4.56 A",
+          "runtimeValue": "4,562041698045554",
           "bound": true
         },
         {
           "semantic": "MotorTemperature",
           "signalId": "Axis01.MotorTemperature",
-          "hmiValue": "33.53 \u00B0C",
-          "runtimeValue": "33,52863191715953",
+          "hmiValue": "23.18 \u00B0C",
+          "runtimeValue": "23,178278310566032",
           "bound": true
         },
         {
           "semantic": "CoolingTemperature",
           "signalId": "Cooling.PrimaryCircuit.Temperature",
-          "hmiValue": "23.61 \u00B0C",
-          "runtimeValue": "23,60680060058993",
+          "hmiValue": "23.59 \u00B0C",
+          "runtimeValue": "23,591053123653953",
           "bound": true
         },
         {
           "semantic": "PowerDemand",
           "signalId": "Process.PowerDemand",
-          "hmiValue": "3.05 kW",
-          "runtimeValue": "3,045342956048109",
+          "hmiValue": "0.55 kW",
+          "runtimeValue": "0,55",
           "bound": true
         },
         {
           "semantic": "VibrationRms",
           "signalId": "Mechanical.VibrationRms",
-          "hmiValue": "1.22 mm/s",
-          "runtimeValue": "1,2161687872866962",
+          "hmiValue": "0.91 mm/s",
+          "runtimeValue": "0,9098132446231574",
           "bound": true
         },
         {
@@ -136,7 +136,7 @@
       "explicitShutdownRequired": true
     },
     "ap5Regression": {
-      "machineId": "1ab03efb-4965-4252-b684-520b22fa936e",
+      "machineId": "cf74e1f6-5950-48d3-a068-8f7add7a0e38",
       "endpoint": "opc.tcp://127.0.0.1:48510",
       "nodesInspected": 309,
       "valuesInspected": 309,
@@ -160,6 +160,8 @@
     "ap6R2Passed": true,
     "failedCriteria": []
   },
-  "ap6R3Passed": true,
-  "failedCriteria": []
+  "ap6R3Passed": false,
+  "failedCriteria": [
+    "ap6r3-verification-incomplete"
+  ]
 }

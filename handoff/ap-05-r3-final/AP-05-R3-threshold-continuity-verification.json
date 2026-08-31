@@ -1,18 +1,19 @@
 {
-  "VerificationRunId": "ap5r3-20260810191814-ea9c04d73f274e17b2f802d56fe",
-  "StartedAtUtc": "2026-08-10T19:18:14.4063278Z",
-  "EndedAtUtc": "2026-08-10T19:18:17.0226785Z",
+  "VerificationRunId": "ap5r3-20260831173036-b7baf90051f64a86b7dfa4bcf68",
+  "StartedAtUtc": "2026-08-31T17:30:36.1786609Z",
+  "EndedAtUtc": "2026-08-31T17:30:43.6481412Z",
   "HydraulicLeak": {
     "FaultRuns": [
       {
         "RunId": "fault-1",
-        "ThresholdFirstReachedAt": "00:08:30",
+        "ThresholdFirstReachedAt": "00:11:45",
         "ThresholdEnterEvents": [
-          "00:08:30",
           "00:11:45",
           "00:14:40",
+          "00:14:45",
           "00:17:42.5000000",
           "00:17:47.5000000",
+          "00:17:52.5000000",
           "00:20:32.5000000",
           "00:20:47.5000000",
           "00:21:00",
@@ -53,10 +54,11 @@
           "01:16:30"
         ],
         "ThresholdExitEvents": [
-          "00:08:32.5000000",
           "00:11:47.5000000",
+          "00:14:42.5000000",
           "00:14:50",
           "00:17:45",
+          "00:17:50",
           "00:17:57.5000000",
           "00:20:35",
           "00:20:55",
@@ -107,10 +109,14 @@
       },
       {
         "RunId": "fault-2",
-        "ThresholdFirstReachedAt": "01:44:35",
+        "ThresholdFirstReachedAt": "01:41:30",
         "ThresholdEnterEvents": [
+          "01:41:30",
           "01:44:35",
-          "01:47:50",
+          "01:44:47.5000000",
+          "01:47:42.5000000",
+          "01:47:47.5000000",
+          "01:50:32.5000000",
           "01:50:47.5000000",
           "01:53:52.5000000",
           "01:56:57.5000000",
@@ -138,8 +144,12 @@
           "02:37:15"
         ],
         "ThresholdExitEvents": [
-          "01:44:37.5000000",
-          "01:47:52.5000000",
+          "01:41:35",
+          "01:44:42.5000000",
+          "01:44:50",
+          "01:47:45",
+          "01:47:55",
+          "01:50:35",
           "01:51:02.5000000",
           "01:54:07.5000000",
           "01:57:12.5000000",
@@ -197,17 +207,17 @@
       },
       {
         "RunId": "fault-2",
-        "ThresholdFirstReachedAt": "00:27:05",
+        "ThresholdFirstReachedAt": "00:27:07.5000000",
         "ThresholdEnterEvents": [
-          "00:27:05"
+          "00:27:07.5000000"
         ],
         "ThresholdExitEvents": [],
-        "ConfirmedThresholdStreakStartedAt": "00:27:05",
-        "ThresholdConfirmedAt": "00:27:20",
+        "ConfirmedThresholdStreakStartedAt": "00:27:07.5000000",
+        "ThresholdConfirmedAt": "00:27:22.5000000",
         "MinimumDuration": "00:00:15",
         "ConfirmedStreakDuration": "00:00:15",
         "ExitInsideConfirmedStreak": false,
-        "MachineFaultedAt": "00:27:20",
+        "MachineFaultedAt": "00:27:22.5000000",
         "DetectableBeforeFirstReached": true,
         "Passed": true
       },
@@ -253,7 +263,7 @@
     "Passed": true
   },
   "MetricsRegression": {
-    "VerificationRunId": "ap5-20260810191814-e2bf0bda7ad84ca19e890a8bf",
+    "VerificationRunId": "ap5-20260831173036-a5c334a9162b410dba0cde34e",
     "EvidenceType": "SyntheticTestEvidence",
     "TruePositivePassed": true,
     "MissedDetectionPassed": true,

@@ -4,7 +4,7 @@
   "ExperimentVersion": "1.0",
   "MachineProfileId": "laser-processing-machine-300",
   "ScenarioId": "laser-overheating-axis-drive",
-  "ExperimentType": 1,
+  "ExperimentType": "FaultLearningSeries",
   "WarmupDuration": "00:00:10",
   "NormalLearningDuration": "00:00:30",
   "FaultRunCount": 3,
@@ -25,7 +25,7 @@
   "StopOnFault": true,
   "ResetBetweenRuns": true,
   "ShuffleRuns": false,
-  "VigilMode": 0,
+  "VigilMode": "GroundTruthOnly",
   "ControlScenarioIds": [
     "laser-overheating-axis-drive"
   ],

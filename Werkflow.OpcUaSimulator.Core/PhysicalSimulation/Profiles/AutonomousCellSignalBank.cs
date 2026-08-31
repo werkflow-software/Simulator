@@ -8,13 +8,13 @@ public static class AutonomousCellSignalBank
 {
 	public static IReadOnlyList<string> ResolveEnabledSignalIds(AutonomousCellSignalProfileTier tier)
 	{
-		List<string> ids = AutonomousCellExpandedSignalIds.All.ToList();
 		int target = (int)tier;
-		if (target <= ids.Count)
+		if (target <= AutonomousCellScale96SignalIds.All.Count)
 		{
-			return ids.Take(target).ToList();
+			return AutonomousCellScale96SignalIds.All.Take(target).ToList();
 		}
 
+		List<string> ids = AutonomousCellScale96SignalIds.All.ToList();
 		for (int slot = ids.Count; slot < target; slot++)
 		{
 			ids.Add(GenerateBankSignalKey(slot));
@@ -26,13 +26,13 @@ public static class AutonomousCellSignalBank
 	public static IReadOnlyList<SignalDefinition> GenerateDefinitions(AutonomousCellSignalProfileTier tier)
 	{
 		int target = (int)tier;
-		if (target <= AutonomousCellExpandedSignalIds.All.Count)
+		if (target <= AutonomousCellScale96SignalIds.All.Count)
 		{
 			return [];
 		}
 
 		List<SignalDefinition> definitions = [];
-		for (int slot = AutonomousCellExpandedSignalIds.All.Count; slot < target; slot++)
+		for (int slot = AutonomousCellScale96SignalIds.All.Count; slot < target; slot++)
 		{
 			definitions.Add(CreateBankDefinition(slot));
 		}

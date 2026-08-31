@@ -1,0 +1,31 @@
+{
+  "ExperimentId": "R4-HYD",
+  "DisplayName": "AP5 R4 Hydraulic Mini",
+  "ExperimentVersion": "1.0",
+  "MachineProfileId": "bending-hydraulic-machine-300",
+  "ScenarioId": "hydraulic-leak",
+  "ExperimentType": "FaultLearningSeries",
+  "WarmupDuration": "00:00:10",
+  "NormalLearningDuration": "00:00:30",
+  "FaultRunCount": 1,
+  "ControlRunCount": 0,
+  "RecoveryDuration": "00:02:00",
+  "CooldownDuration": "00:00:15",
+  "TimeFactor": 50,
+  "BaseSeed": 202,
+  "Variation": {
+    "IntensityVariationFraction": 0.15,
+    "StartOffsetVariation": "00:00:30",
+    "DriftRateVariationFraction": 0.1,
+    "DurationVariationFraction": 0.1,
+    "BackgroundNoiseVariation": 0.05,
+    "VaryJobBetweenRuns": true,
+    "VaryNormalPhaseBetweenRuns": true
+  },
+  "StopOnFault": true,
+  "ResetBetweenRuns": true,
+  "ShuffleRuns": false,
+  "VigilMode": "GroundTruthOnly",
+  "ControlScenarioIds": [],
+  "AdditionalFaultScenarioIds": []
+}
