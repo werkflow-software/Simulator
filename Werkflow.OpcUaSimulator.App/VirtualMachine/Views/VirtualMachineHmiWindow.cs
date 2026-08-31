@@ -132,6 +132,7 @@ public sealed class VirtualMachineHmiWindow : Window
 		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+		grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
 		var selector = new ComboBox
 		{
@@ -152,36 +153,44 @@ public sealed class VirtualMachineHmiWindow : Window
 		Grid.SetColumn(endpoint, 1);
 		grid.Children.Add(endpoint);
 
+		var signalProfile = MakeBoundBlock(nameof(VirtualMachineHmiViewModel.ActiveSignalProfileText), 11, FontWeights.SemiBold, "Signalprofil: {0}");
+		Grid.SetColumn(signalProfile, 2);
+		grid.Children.Add(signalProfile);
+
+		var signalCount = MakeBoundBlock(nameof(VirtualMachineHmiViewModel.ActiveSignalCountText), 11, FontWeights.Normal, "Signale: {0}");
+		Grid.SetColumn(signalCount, 3);
+		grid.Children.Add(signalCount);
+
 		var title = MakeHeaderText(_viewModel.MachineTitle, 18, FontWeights.Bold);
-		Grid.SetColumn(title, 2);
+		Grid.SetColumn(title, 4);
 		grid.Children.Add(title);
 
 		var mode = MakeBoundBlock("ModeText", 12, FontWeights.Normal, "Betriebsart: {0}");
-		Grid.SetColumn(mode, 3);
+		Grid.SetColumn(mode, 5);
 		grid.Children.Add(mode);
 
 		var state = MakeBoundBlock("MachineStateText", 13, FontWeights.SemiBold, "Maschine: {0}");
-		Grid.SetColumn(state, 4);
+		Grid.SetColumn(state, 6);
 		grid.Children.Add(state);
 
 		var phase = MakeBoundBlock("ProcessPhaseText", 13, FontWeights.Bold, "Phase: {0}");
-		Grid.SetColumn(phase, 5);
+		Grid.SetColumn(phase, 7);
 		grid.Children.Add(phase);
 
 		var job = MakeBoundBlock("JobName", 12, FontWeights.Normal, "Szenario: {0}");
-		Grid.SetColumn(job, 6);
+		Grid.SetColumn(job, 8);
 		grid.Children.Add(job);
 
 		var product = MakeBoundBlock("ProductVariantText", 12, FontWeights.SemiBold, "Produkt: {0}");
-		Grid.SetColumn(product, 7);
+		Grid.SetColumn(product, 9);
 		grid.Children.Add(product);
 
 		var counter = MakeBoundBlock("CounterText", 12, FontWeights.Normal, "Ist/Soll: {0}");
-		Grid.SetColumn(counter, 8);
+		Grid.SetColumn(counter, 10);
 		grid.Children.Add(counter);
 
 		var opc = MakeBoundBlock("OpcUaStatus", 12, FontWeights.SemiBold, "OPC UA: {0}");
-		Grid.SetColumn(opc, 9);
+		Grid.SetColumn(opc, 11);
 		grid.Children.Add(opc);
 
 		var right = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
@@ -189,7 +198,7 @@ public sealed class VirtualMachineHmiWindow : Window
 		right.Children.Add(MakeButton("Vollbild", (_, _) =>
 			WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized));
 		right.Children.Add(MakeButton("Maschine beenden", async (_, _) => await _viewModel.ShutdownMachineCommand.ExecuteAsync(null)));
-		Grid.SetColumn(right, 10);
+		Grid.SetColumn(right, 12);
 		grid.Children.Add(right);
 
 		panel.Child = grid;

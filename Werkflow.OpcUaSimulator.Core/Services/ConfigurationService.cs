@@ -72,6 +72,22 @@ public sealed class ConfigurationService : IConfigurationService
 			machine.UpdateEndpointFromHostPort();
 			NormalizeMachine(machine);
 		}
+		Machine3PhysicalProfileActivation.Apply(Configuration.Machines);
+		foreach (MachineConfiguration machine in Configuration.Machines.Where(m =>
+			         m.Id == VirtualAutonomousProductionCellContract.MachineId
+			         || m.Port == VirtualAutonomousProductionCellContract.Port))
+		{
+			_logService.Log(
+				LogCategory.Configuration,
+				"Machine-3 physical profile: "
+				+ Machine3PhysicalProfileActivation.ResolveOperatorProfileLabel(machine.PhysicalProfileId)
+				+ " ("
+				+ Machine3PhysicalProfileActivation.ResolveEnabledSignalCount(machine.PhysicalProfileId)
+				+ " signals)"
+				+ (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(Machine3PhysicalProfileActivation.EnvironmentVariableName))
+					? "; default configuration"
+					: $"; env {Machine3PhysicalProfileActivation.EnvironmentVariableName}"));
+		}
 		NormalizeEvents(Configuration.Events);
 		ILogService logService = _logService;
 		if (logService is LogService logService2)

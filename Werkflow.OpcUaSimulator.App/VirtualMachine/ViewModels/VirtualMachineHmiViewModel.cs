@@ -89,6 +89,8 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	private string _nextStepPreviewText = "—";
 	private bool _isPressBrakeMachine;
 	private bool _isAutonomousCellMachine;
+	private string _activeSignalProfileText = "—";
+	private string _activeSignalCountText = "—";
 	private string _activeStationText = "—";
 	private string _materialStatusText = "—";
 	private string _containerStatusText = "—";
@@ -183,6 +185,8 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 	public string NextStepPreviewText => _nextStepPreviewText;
 	public bool IsPressBrakeMachine => _isPressBrakeMachine;
 	public bool IsAutonomousCellMachine => _isAutonomousCellMachine;
+	public string ActiveSignalProfileText => _activeSignalProfileText;
+	public string ActiveSignalCountText => _activeSignalCountText;
 	public string ActiveStationText => _activeStationText;
 	public string MaterialStatusText => _materialStatusText;
 	public string ContainerStatusText => _containerStatusText;
@@ -427,6 +431,7 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		ApplyContractNormalization(_machine);
 		_selectedMachineId = _machine.Id;
 		_machineTitle = _machine.Name;
+		UpdateActiveSignalProfilePresentation(_machine);
 		OnPropertyChanged(nameof(MachineTitle));
 		OnPropertyChanged(nameof(MachineId));
 		OnPropertyChanged(nameof(Endpoint));
@@ -1236,6 +1241,31 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 
 		LiveSignalCount = liveCount;
 		OnPropertyChanged(nameof(LiveSignalCount));
+		if (_isAutonomousCellMachine && _machine != null)
+		{
+			UpdateActiveSignalProfilePresentation(_machine, session.Profile.Signals.Count(s => s.IsEnabled));
+		}
+	}
+
+	private void UpdateActiveSignalProfilePresentation(MachineConfiguration machine, int? enabledSignalCount = null)
+	{
+		bool isAutonomousCell = machine.Port == VirtualAutonomousProductionCellContract.Port
+			|| machine.Id == VirtualAutonomousProductionCellContract.MachineId;
+		if (!isAutonomousCell)
+		{
+			_activeSignalProfileText = "—";
+			_activeSignalCountText = "—";
+		}
+		else
+		{
+			_activeSignalProfileText = Machine3PhysicalProfileActivation.ResolveOperatorProfileLabel(machine.PhysicalProfileId);
+			int count = enabledSignalCount
+				?? Machine3PhysicalProfileActivation.ResolveEnabledSignalCount(machine.PhysicalProfileId);
+			_activeSignalCountText = count.ToString();
+		}
+
+		OnPropertyChanged(nameof(ActiveSignalProfileText));
+		OnPropertyChanged(nameof(ActiveSignalCountText));
 	}
 
 	private static void UpdateMetricCollection(
@@ -1514,6 +1544,8 @@ public sealed class VirtualMachineHmiViewModel : ObservableObject
 		_statusTone = "idle";
 		_remainingCounterText = "—";
 		_isAutonomousCellMachine = false;
+		_activeSignalProfileText = "—";
+		_activeSignalCountText = "—";
 		_activeStationText = "—";
 		_materialStatusText = "—";
 		_containerStatusText = "—";
