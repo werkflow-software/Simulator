@@ -1,3 +1,4 @@
+using Werkflow.OpcUaSimulator.App.VirtualMachine.ViewModels;
 using Werkflow.OpcUaSimulator.Core.Defaults;
 using Werkflow.OpcUaSimulator.Core.Models;
 using Werkflow.OpcUaSimulator.Core.PhysicalSimulation.Kinematics;
@@ -107,5 +108,29 @@ public sealed class Machine3PhysicalProfileActivationTests
 			Assert.DoesNotContain("AMR", signal.SignalId, StringComparison.OrdinalIgnoreCase);
 			Assert.DoesNotContain("Hidden", signal.SignalId, StringComparison.OrdinalIgnoreCase);
 		}
+	}
+
+	[Fact]
+	public void SIM_P32R4_Hmi_ExposesActiveProfileAndSignalCountBindings()
+	{
+		string viewModel = ReadAppSource("VirtualMachine/ViewModels/VirtualMachineHmiViewModel.cs");
+		string window = ReadAppSource("VirtualMachine/Views/VirtualMachineHmiWindow.cs");
+
+		Assert.Contains("ActiveSignalProfileText", viewModel);
+		Assert.Contains("ActiveSignalCountText", viewModel);
+		Assert.Contains("UpdateActiveSignalProfilePresentation", viewModel);
+		Assert.Contains("Machine3PhysicalProfileActivation.ResolveOperatorProfileLabel", viewModel);
+		Assert.Contains(nameof(VirtualMachineHmiViewModel.ActiveSignalProfileText), window);
+		Assert.Contains(nameof(VirtualMachineHmiViewModel.ActiveSignalCountText), window);
+	}
+
+	private static string ReadAppSource(string relativePath)
+	{
+		string path = Path.GetFullPath(Path.Combine(
+			AppContext.BaseDirectory,
+			"..", "..", "..", "..",
+			"Werkflow.OpcUaSimulator.App",
+			relativePath));
+		return File.ReadAllText(path);
 	}
 }

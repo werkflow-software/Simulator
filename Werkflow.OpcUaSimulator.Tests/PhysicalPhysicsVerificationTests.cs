@@ -9,8 +9,7 @@ namespace Werkflow.OpcUaSimulator.Tests;
 [Collection("PhysicalVerification")]
 public class PhysicalPhysicsVerificationTests
 {
-	[Trait("Category", "Integration")]
-	[Fact]
+	[Machine12IntegrationFact]
 	public async Task Physics_NormalOperation_OneMachine()
 	{
 		R1LongRunReport report = await PhysicalPhysicsR1VerificationHarness.RunSingleMachineAsync();
@@ -19,8 +18,7 @@ public class PhysicalPhysicsVerificationTests
 		Assert.InRange(report.Machines[0].SignalCount, 285, 320);
 	}
 
-	[Trait("Category", "Integration")]
-	[Fact]
+	[Machine12IntegrationFact]
 	public async Task Physics_NormalOperation_TwoMachines()
 	{
 		R1LongRunReport report = await PhysicalPhysicsR1VerificationHarness.RunDualMachineAsync();

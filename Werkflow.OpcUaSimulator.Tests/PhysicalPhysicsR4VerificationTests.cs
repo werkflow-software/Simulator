@@ -14,8 +14,7 @@ public class PhysicalPhysicsR4VerificationTests
         Assert.Equal(9, report.Results.Count);
     }
 
-    [Trait("Category", "Integration")]
-    [Fact]
+    [Machine12IntegrationFact]
     public async Task Physics_R4_EndToEnd_TwoMachines()
     {
         var runId = PhysicalPhysicsR4VerificationHarness.CreateVerificationRunId();

@@ -71,7 +71,7 @@ public class PhysicalAp6R3Tests
 		Assert.Contains("if (_window == null)", source);
 	}
 
-	[Fact]
+	[Machine12IntegrationFact]
 	public async Task AP6R3_Evidence_ExportVerificationJson()
 	{
 		var report = await PhysicalAp6R3VerificationHarness.RunVerificationAsync();

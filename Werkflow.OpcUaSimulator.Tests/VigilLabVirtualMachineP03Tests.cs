@@ -15,16 +15,19 @@ namespace Werkflow.OpcUaSimulator.Tests;
 public sealed class VigilLabVirtualMachineP03Tests
 {
 	[Fact]
-	public void P03_VirtualMachineMode_ContainsExactlyTwoTargetMachines()
+	public void P03_VirtualMachineMode_ContainsVigilGeneralizationMachines()
 	{
 		var configurationService = CreateConfigurationService();
 		configurationService.InitializeAsync(ApplicationOperatingMode.VirtualMachine).GetAwaiter().GetResult();
 
 		var machines = configurationService.Configuration.Machines;
-		Assert.Equal(2, machines.Count);
+		Assert.Equal(4, machines.Count);
 		Assert.Contains(machines, m => m.Id == VirtualMachineContract.MachineId);
+		Assert.Contains(machines, m => m.Id == VirtualPressBrakeContract.MachineId);
+		Assert.Contains(machines, m => m.Id == VirtualAutonomousProductionCellContract.MachineId);
 		Assert.Contains(machines, m => m.Id == VigilLabMachineContract.MachineId);
-		Assert.DoesNotContain(machines, m => m.Port is 4841 or 4842 or 4843);
+		Assert.All(machines, m => Assert.True(m.IsActive));
+		Assert.Equal(VirtualAutonomousProductionCellContract.Port, machines.Single(m => m.Id == VirtualAutonomousProductionCellContract.MachineId).Port);
 	}
 
 	[Fact]

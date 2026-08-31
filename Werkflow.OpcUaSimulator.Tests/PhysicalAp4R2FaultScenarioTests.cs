@@ -63,8 +63,7 @@ public class PhysicalAp4R2FaultScenarioTests
         Assert.True(report.Intermittent.EpisodeCount >= 3);
     }
 
-    [Trait("Category", "Integration")]
-    [Fact]
+    [Machine12IntegrationFact]
     public async Task AP4R2_FinalEndToEnd_ShortRun()
     {
         Environment.SetEnvironmentVariable("AP4R2_E2E_SECONDS", "120");

@@ -16,8 +16,7 @@ public class PhysicalPhysicsR2VerificationTests
         Assert.True(report.Bending.PhaseChanges >= 4);
     }
 
-    [Trait("Category", "Integration")]
-    [Fact]
+    [Machine12IntegrationFact]
     public async Task Physics_R2_EndToEnd_TwoMachines()
     {
         var report = await PhysicalPhysicsR2VerificationHarness.RunEndToEndAsync(42, 99, TimeSpan.FromSeconds(90));

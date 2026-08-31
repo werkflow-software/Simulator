@@ -17,8 +17,7 @@ public class PhysicalPhysicsR3VerificationTests
         Assert.True(report.DependencyChecks.Count >= 12);
     }
 
-    [Trait("Category", "Integration")]
-    [Fact]
+    [Machine12IntegrationFact]
     public async Task Physics_R3_EndToEnd_TwoMachines()
     {
         var report = await PhysicalPhysicsR3VerificationHarness.RunEndToEndAsync(42, 99, TimeSpan.FromSeconds(90));

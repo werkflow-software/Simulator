@@ -49,9 +49,9 @@ public class PhysicalAp6R1StartupTests
 	public void AP6R1_App_OnStartup_ShowsMainWindowExplicitly()
 	{
 		string source = ReadAppSource("App.cs");
-		string onStartup = source.Split("protected override void OnStartup", 2)[1].Split("private async Task CompleteStartupAsync", 2)[0];
-		Assert.Contains("mainWindow.Show()", onStartup);
-		Assert.Contains("mainWindow.Visibility = Visibility.Visible", onStartup);
+		string onStartup = source.Split("protected override void OnStartup", 2)[1].Split("private IHost CreateHost", 2)[0];
+		Assert.Contains("ShowModeSelector()", onStartup);
+		Assert.Contains("ShutdownMode.OnExplicitShutdown", onStartup);
 	}
 
 	[Fact]
@@ -70,9 +70,9 @@ public class PhysicalAp6R1StartupTests
 	public void AP6R1_App_CompleteStartup_InitializesTrayService()
 	{
 		string source = ReadAppSource("App.cs");
-		string completeStartup = source.Split("CompleteStartupAsync", 2)[1].Split("private IHost CreateHost", 2)[0];
-		Assert.Contains("GetRequiredService<SimulatorTrayService>", completeStartup);
-		Assert.Contains("EnsureInitialized()", completeStartup);
+		Assert.Contains("AddSingleton<SimulatorTrayService>", source);
+		Assert.Contains("GetService<SimulatorTrayService>()?.Dispose()", source);
+		Assert.Contains("AddSingleton<Func<VirtualMachineWindowService>>", source);
 	}
 
 	[Fact]

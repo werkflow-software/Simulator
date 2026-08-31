@@ -12,7 +12,7 @@ namespace Werkflow.OpcUaSimulator.Tests;
 
 public class LaserKinematicsPlausibilityTests
 {
-	[Fact]
+	[Machine12IntegrationFact]
 	public void VirtualMachine_Kinematics_UseWorkspaceAndPhaseFeed()
 	{
 		PhysicalMachineProfile profile = LaserProcessingMachine300ProfileFactory.Create();
